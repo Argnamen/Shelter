@@ -7,12 +7,23 @@ public class MonsterView : MonoBehaviour
 
     public void Initialize(MonsterType type)
     {
-        // Setup sprite and animations based on type
+        // Настройка спрайта и анимаций
     }
 
     public void Die()
     {
         _animator.SetTrigger("Die");
+
+        // Автоматически уничтожаем через 1 секунду
         Destroy(gameObject, 1f);
+    }
+
+    // Добавляем DisposableCollector если его нет
+    private void Awake()
+    {
+        if (GetComponent<DisposableCollector>() == null)
+        {
+            gameObject.AddComponent<DisposableCollector>();
+        }
     }
 }

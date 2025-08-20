@@ -6,6 +6,7 @@ public class GameInstaller : MonoInstaller
 {
     [SerializeField] private DungeonView _dungeonView;
     [SerializeField] private UIView _uiView;
+    [SerializeField] private CameraController _cameraController;
 
     public override void InstallBindings()
     {
@@ -18,5 +19,7 @@ public class GameInstaller : MonoInstaller
         Container.Bind<MonsterFactory>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<GamePresenter>().AsSingle().NonLazy();
+
+        Container.Bind<CameraController>().FromInstance(_cameraController).AsSingle();
     }
 }

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum RoomType { Combat, Rest, Treasure, Stairs }
+public enum RoomType {None, Combat, Rest, Treasure, Stairs }
 
 public class RoomModel
 {

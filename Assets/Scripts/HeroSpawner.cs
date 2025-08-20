@@ -25,7 +25,7 @@ public class HeroSpawner
             var heroModel = new HeroModel();
             _gameModel.ActiveHeroes.Add(heroModel);
 
-            var heroView = _dungeonView.CreateHeroView();
+            var heroView = _dungeonView.CreateHeroView(heroModel);
             _container.Instantiate<HeroPresenter>(new object[] { heroModel, heroView, _gameModel });
 
             heroModel.CurrentRoomIndex.Value = 0;
