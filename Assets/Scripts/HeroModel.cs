@@ -7,4 +7,4 @@ public class HeroModel
     public HeroState State { get; set; } = HeroState.Entering;
 }
 
-public enum HeroState { Entering, Fighting, Resting, Leaving }
+public enum HeroState { Entering, Fighting, Resting, Leaving, Dead }
