@@ -5,11 +5,26 @@ public class HeroView : MonoBehaviour
     [SerializeField] private Animator _animator;
     [SerializeField] private SpriteRenderer _spriteRenderer;
 
+    private void Start()
+    {
+        if (_animator != null)
+        {
+            _animator.Play("Idle");
+        }
+        
+    }
     public void SetMoving(bool isMoving)
     {
         if (_animator != null)
         {
-            _animator.SetBool("IsMoving", isMoving);
+            if (isMoving)
+            {
+                _animator.Play("Run");
+            }
+            else
+            {
+                _animator.Play("Idle");
+            }
         }
     }
 
@@ -19,7 +34,7 @@ public class HeroView : MonoBehaviour
         {
             if (isFighting)
             {
-                _animator.SetTrigger("Fight");
+                _animator.Play("Fight");
             }
         }
     }
@@ -28,7 +43,7 @@ public class HeroView : MonoBehaviour
     {
         if (_animator != null)
         {
-            _animator.SetTrigger("Die");
+            _animator.Play("Die");
         }
 
         // Уничтожаем объект через 1 секунду

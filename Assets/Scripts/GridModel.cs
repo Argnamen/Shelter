@@ -35,6 +35,19 @@ public class GridModel
         AvailablePositions.Add(new Vector2Int(2, 2));
     }
 
+    private bool IsGridNull()
+    {
+        foreach (var item in Grid)
+        {
+            if (item != null)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public bool IsPositionValid(Vector2Int position)
     {
         return position.x >= 0 && position.x < GridWidth &&
@@ -48,7 +61,15 @@ public class GridModel
 
     public bool CanPlaceRoomAt(Vector2Int position)
     {
-        if (!IsPositionEmpty(position)) return false;
+        if (IsGridNull())
+        {
+            return true;
+        }
+
+        if (!IsPositionEmpty(position)) 
+        { 
+            return false; 
+        }
 
         // Проверяем соседние позиции (только ортогональные соседи)
         Vector2Int[] neighbors = {

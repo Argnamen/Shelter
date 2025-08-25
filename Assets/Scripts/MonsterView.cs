@@ -12,7 +12,7 @@ public class MonsterView : MonoBehaviour
 
     public void Die()
     {
-        _animator.SetTrigger("Die");
+        _animator.Play("Die");
 
         // Автоматически уничтожаем через 1 секунду
         Destroy(gameObject, 1f);

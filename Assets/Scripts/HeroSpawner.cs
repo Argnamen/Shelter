@@ -60,12 +60,11 @@ public class HeroSpawner
         // Устанавливаем начальную позицию за пределами экрана
         heroView.transform.position = new Vector3(-5, 2, 0);
 
+        heroModel.CurrentRoomIndex.Value = 0;
+
         _container.Instantiate<HeroPresenter>(new object[] {
             heroModel, heroView, _gameModel, _gridService, this
         });
-
-        // Герой начинает движение к первой комнате
-        heroModel.CurrentRoomIndex.Value = 0;
     }
 
     public void RemoveHero(HeroModel hero)

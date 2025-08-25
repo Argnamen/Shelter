@@ -197,7 +197,7 @@ public class HeroPresenter : IDisposable
 
         if (_view != null)
         {
-            UnityEngine.Object.Destroy(_view.gameObject);
+            _view.Die();
         }
     }
 }

@@ -77,12 +77,11 @@ public class GamePresenter : IInitializable, IDisposable
         _model.Gold.Value = 500; // Стартовое золото
         _model.DungeonLevel.Value = 1;
 
+        _dungeonView.InitializeGrid();
+
         // Создаем начальную комнату
         var startPosition = new Vector2Int(2, 2);
         _gridService.TryPlaceRoom(RoomType.Combat, startPosition);
-
-        // Инициализируем сетку
-        _dungeonView.InitializeGrid();
 
         _uiView.ShowMessage("Welcome to Dungeon Shelter! Build rooms and defend against heroes!");
     }
