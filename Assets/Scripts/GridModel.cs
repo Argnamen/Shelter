@@ -3,36 +3,34 @@ using UnityEngine;
 
 public class GridModel
 {
-    public int GridWidth { get; private set; } = 5;
-    public int GridHeight { get; private set; } = 5;
-    public float CellSize { get; private set; } = 2.5f;
+    private int _width = 5;
+    private int _height  = 5;
+    private float _cellSize = 2.5f;
+
+    private Vector2Int _startPosition;
 
     public RoomModel[,] Grid { get; private set; }
     public List<Vector2Int> AvailablePositions { get; } = new();
 
-    public GridModel()
+    public GridModel(int width, int height, float cellSize, Vector2Int startPos)
     {
-        InitializeGrid();
-    }
-
-    public GridModel(int width, int height, float cellSize)
-    {
-        GridWidth = width;
-        GridHeight = height;
-        CellSize = cellSize;
+        _width = width;
+        _height = height;
+        _cellSize = cellSize;
+        _startPosition = startPos;
         InitializeGrid();
     }
 
     private void InitializeGrid()
     {
-        Grid = new RoomModel[GridWidth, GridHeight];
+        Grid = new RoomModel[_width, _height];
         InitializeAvailablePositions();
     }
 
     private void InitializeAvailablePositions()
     {
         // Центральная позиция для стартовой комнаты
-        AvailablePositions.Add(new Vector2Int(2, 2));
+        AvailablePositions.Add(_startPosition);
     }
 
     private bool IsGridNull()
@@ -50,8 +48,8 @@ public class GridModel
 
     public bool IsPositionValid(Vector2Int position)
     {
-        return position.x >= 0 && position.x < GridWidth &&
-               position.y >= 0 && position.y < GridHeight;
+        return position.x >= 0 && position.x < _width &&
+               position.y >= 0 && position.y < _height;
     }
 
     public bool IsPositionEmpty(Vector2Int position)
@@ -75,8 +73,8 @@ public class GridModel
         Vector2Int[] neighbors = {
             new(position.x + 1, position.y),
             new(position.x - 1, position.y),
-            new(position.x, position.y + 1),
-            new(position.x, position.y - 1)
+            //new(position.x, position.y + 1),
+            //new(position.x, position.y - 1)
         };
 
         foreach (var neighbor in neighbors)
@@ -107,7 +105,8 @@ public class GridModel
 
         // Добавляем новые возможные позиции вокруг установленной комнаты
         Vector2Int[] directions = {
-            new(1, 0), new(-1, 0), new(0, 1), new(0, -1)
+            new(1, 0), new(-1, 0),
+            //new(0, 1), new(0, -1)
         };
 
         foreach (var direction in directions)
@@ -123,16 +122,16 @@ public class GridModel
     public Vector3 GridToWorldPosition(Vector2Int gridPosition)
     {
         return new Vector3(
-            gridPosition.x * CellSize,
-            gridPosition.y * CellSize,
+            gridPosition.x * _cellSize,
+            gridPosition.y * _cellSize,
             0
         );
     }
 
     public Vector2Int WorldToGridPosition(Vector3 worldPosition)
     {
-        int x = Mathf.RoundToInt(worldPosition.x / CellSize);
-        int y = Mathf.RoundToInt(worldPosition.y / CellSize);
+        int x = Mathf.RoundToInt(worldPosition.x / _cellSize);
+        int y = Mathf.RoundToInt(worldPosition.y / _cellSize);
         return new Vector2Int(x, y);
     }
 

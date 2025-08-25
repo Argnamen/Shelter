@@ -10,6 +10,7 @@ public class HeroSpawner
     private readonly DungeonView _dungeonView;
     private readonly DiContainer _container;
     private readonly GridService _gridService;
+    private readonly GameData _gameData;
 
     private CompositeDisposable _spawnDisposables = new();
 
@@ -17,12 +18,14 @@ public class HeroSpawner
         GameModel gameModel,
         DungeonView dungeonView,
         DiContainer container,
-        GridService gridService)
+        GridService gridService,
+        GameData gameData)
     {
         _gameModel = gameModel;
         _dungeonView = dungeonView;
         _container = container;
         _gridService = gridService;
+        _gameData = gameData;
     }
 
     public void SpawnHeroWave()
@@ -57,8 +60,8 @@ public class HeroSpawner
             return;
         }
 
-        // Устанавливаем начальную позицию за пределами экрана
-        heroView.transform.position = new Vector3(-5, 2, 0);
+        // Устанавливаем начальную позицию за пределами сетки
+        heroView.transform.position = ((Vector3Int)_gameData.StartHeroPosition);
 
         heroModel.CurrentRoomIndex.Value = 0;
 

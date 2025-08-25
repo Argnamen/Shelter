@@ -7,17 +7,20 @@ public class RoomFactory
     private readonly MonsterFactory _monsterFactory;
     private readonly DiContainer _container;
     private readonly GridModel _gridModel;
+    private readonly GameData _gameData;
 
     public RoomFactory(
         DungeonView dungeonView,
         MonsterFactory monsterFactory,
         DiContainer container,
-        GridModel gridModel)
+        GridModel gridModel,
+        GameData gameData)
     {
         _dungeonView = dungeonView;
         _monsterFactory = monsterFactory;
         _container = container;
         _gridModel = gridModel;
+        _gameData = gameData;
     }
 
     public RoomModel CreateRoom(RoomType type, Vector2Int position)

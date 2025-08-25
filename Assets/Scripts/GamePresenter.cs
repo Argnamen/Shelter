@@ -11,6 +11,8 @@ public class GamePresenter : IInitializable, IDisposable
     private readonly UIView _uiView;
     private readonly GridService _gridService;
     private readonly HeroSpawner _heroSpawner;
+    private readonly CameraController _cameraController;
+    private readonly GameData _gameData;
 
     private CompositeDisposable _disposables = new();
     private IDisposable _heroWaveSubscription;
@@ -20,13 +22,17 @@ public class GamePresenter : IInitializable, IDisposable
         DungeonView dungeonView,
         UIView uiView,
         GridService gridService,
-        HeroSpawner heroSpawner)
+        HeroSpawner heroSpawner,
+        CameraController cameraController,
+        GameData gameData)
     {
         _model = model;
         _dungeonView = dungeonView;
         _uiView = uiView;
         _gridService = gridService;
         _heroSpawner = heroSpawner;
+        _cameraController = cameraController;
+        _gameData = gameData;
     }
 
     public void Initialize()
@@ -74,14 +80,16 @@ public class GamePresenter : IInitializable, IDisposable
     private void InitializeGame()
     {
         // Инициализация начального состояния
-        _model.Gold.Value = 500; // Стартовое золото
+        _model.Gold.Value = _gameData.StartGold; // Стартовое золото
         _model.DungeonLevel.Value = 1;
 
         _dungeonView.InitializeGrid();
 
         // Создаем начальную комнату
-        var startPosition = new Vector2Int(2, 2);
+        var startPosition = _gameData.StartRoomPosition;
         _gridService.TryPlaceRoom(RoomType.Combat, startPosition);
+
+        _cameraController.FocusOnRoom(startPosition);
 
         _uiView.ShowMessage("Welcome to Dungeon Shelter! Build rooms and defend against heroes!");
     }

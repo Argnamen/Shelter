@@ -10,7 +10,7 @@ public class HeroPresenter : IDisposable
     private readonly GameModel _gameModel;
     private readonly GridService _gridService;
     private readonly HeroSpawner _heroSpawner;
-    private readonly GridModel _gridModel;
+    private readonly GameData _gameData;
 
     private CompositeDisposable _disposables = new();
     private bool _isDisposed = false;
@@ -21,14 +21,14 @@ public class HeroPresenter : IDisposable
         GameModel gameModel,
         GridService gridService,
         HeroSpawner heroSpawner,
-        GridModel gridModel)
+        GameData gameData)
     {
         _model = model;
         _view = view;
         _gameModel = gameModel;
         _gridService = gridService;
         _heroSpawner = heroSpawner;
-        _gridModel = gridModel;
+        _gameData = gameData;
 
         Initialize();
     }
@@ -99,7 +99,7 @@ public class HeroPresenter : IDisposable
         if (_isDisposed) return;
 
         _view.SetMoving(true);
-        await MoveToPosition(new Vector3(-5, 2, 0));
+        await MoveToPosition(new Vector3(_gameData.StartHeroPosition.x, _gameData.StartHeroPosition.y, 0));
         _view.SetMoving(false);
     }
 
@@ -181,8 +181,8 @@ public class HeroPresenter : IDisposable
     private Vector3 GetWorldPosition(Vector2Int gridPosition)
     {
         return new Vector3(
-            gridPosition.x * _gridModel.CellSize,
-            gridPosition.y * _gridModel.CellSize,
+            gridPosition.x * _gameData.CellSize,
+            gridPosition.y * _gameData.CellSize,
             0
         );
     }

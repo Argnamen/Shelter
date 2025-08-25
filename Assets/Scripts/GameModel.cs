@@ -15,21 +15,25 @@ public class GameModel
     public List<HeroModel> ActiveHeroes { get; } = new();
     public List<RoomModel> Rooms { get; } = new();
 
+    private readonly GameData _gameData;
+
     // События для уведомлений
     public Subject<Unit> OnHeroSpawned { get; } = new();
     public Subject<Unit> OnHeroDefeated { get; } = new();
     public Subject<RoomModel> OnRoomBuilt { get; } = new();
     public Subject<int> OnGoldChanged { get; } = new();
 
-    public GameModel()
+    public GameModel(GameData gameData)
     {
+        _gameData = gameData;
+
         Initialize();
     }
 
     private void Initialize()
     {
         // Начальные значения
-        Gold.Value = 500;
+        Gold.Value = _gameData.StartGold;
         DungeonLevel.Value = 1;
     }
 

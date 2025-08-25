@@ -6,12 +6,17 @@ public class GameInstaller : MonoInstaller
     [SerializeField] private DungeonView _dungeonView;
     [SerializeField] private UIView _uiView;
     [SerializeField] private GameObject _gridCellPrefab;
+    [SerializeField] private CameraController _cameraController;
+    [SerializeField] private GameData _gameData;
 
     public override void InstallBindings()
     {
+        //Данные
+        Container.Bind<GameData>().FromInstance(_gameData).AsSingle();
+
         // Модели
         Container.BindInterfacesAndSelfTo<GameModel>().AsSingle();
-        Container.Bind<GridModel>().AsSingle();
+        Container.Bind<GridModel>().FromInstance(new GridModel(_gameData.GridWidth, _gameData.GridHeight, _gameData.CellSize, _gameData.StartHeroPosition)).AsSingle();
 
         // Вью
         Container.Bind<DungeonView>().FromInstance(_dungeonView).AsSingle();
@@ -26,5 +31,8 @@ public class GameInstaller : MonoInstaller
         // Презентеры
         Container.BindInterfacesAndSelfTo<GamePresenter>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<BuildPresenter>().AsSingle().NonLazy();
+
+        //Камера
+        Container.Bind<CameraController>().FromInstance(_cameraController).AsSingle();
     }
 }

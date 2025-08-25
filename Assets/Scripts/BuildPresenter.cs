@@ -8,7 +8,7 @@ public class BuildPresenter : IInitializable, IDisposable
     private readonly UIView _uiView;
     private readonly GridService _gridService;
     private readonly DungeonView _dungeonView;
-    private readonly GameModel _gameModel;
+    private readonly GameData _gameData;
 
     private CompositeDisposable _disposables = new();
     private RoomType _selectedRoomType = RoomType.Combat;
@@ -18,12 +18,13 @@ public class BuildPresenter : IInitializable, IDisposable
         UIView uiView,
         GridService gridService,
         DungeonView dungeonView,
-        GameModel gameModel)
+        GameModel gameModel,
+        GameData gameData)
     {
         _uiView = uiView;
         _gridService = gridService;
         _dungeonView = dungeonView;
-        _gameModel = gameModel;
+        _gameData = gameData;
     }
 
     public void Initialize()
@@ -67,8 +68,8 @@ public class BuildPresenter : IInitializable, IDisposable
     {
         var mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         var gridPosition = new Vector2Int(
-            Mathf.RoundToInt(mouseWorldPos.x / 2.5f), // Соответствует CellSize
-            Mathf.RoundToInt(mouseWorldPos.y / 2.5f)
+            Mathf.RoundToInt(mouseWorldPos.x / _gameData.CellSize), // Соответствует CellSize
+            Mathf.RoundToInt(mouseWorldPos.y / _gameData.CellSize)
         );
 
         Debug.Log($"Clicked grid position: {gridPosition}");

@@ -6,12 +6,14 @@ public class GridService
     private readonly GridModel _gridModel;
     private readonly RoomFactory _roomFactory;
     private readonly GameModel _gameModel;
+    private readonly GameData _gameData;
 
-    public GridService(GridModel gridModel, RoomFactory roomFactory, GameModel gameModel)
+    public GridService(GridModel gridModel, RoomFactory roomFactory, GameModel gameModel, GameData gameData)
     {
         _gridModel = gridModel;
         _roomFactory = roomFactory;
         _gameModel = gameModel;
+        _gameData = gameData;
     }
 
     public bool TryPlaceRoom(RoomType roomType, Vector2Int position)
@@ -55,9 +57,9 @@ public class GridService
 
     public Vector2Int? GetRoomPosition(RoomModel room)
     {
-        for (int x = 0; x < _gridModel.GridWidth; x++)
+        for (int x = 0; x < _gameData.GridWidth; x++)
         {
-            for (int y = 0; y < _gridModel.GridHeight; y++)
+            for (int y = 0; y < _gameData.GridHeight; y++)
             {
                 if (_gridModel.Grid[x, y] == room)
                 {
