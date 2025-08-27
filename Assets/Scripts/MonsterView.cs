@@ -10,6 +10,22 @@ public class MonsterView : MonoBehaviour
         // Настройка спрайта и анимаций
     }
 
+    private void Start()
+    {
+        _animator.Play("Idle");
+    }
+
+    public void SetFighting(bool isFighting = true)
+    {
+        if (_animator != null)
+        {
+            if (isFighting)
+            {
+                _animator.Play("Fight");
+            }
+        }
+    }
+
     public void Die()
     {
         _animator.Play("Die");

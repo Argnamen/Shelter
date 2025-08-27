@@ -5,7 +5,6 @@ public class RoomView : MonoBehaviour
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Transform _monstersContainer;
     [SerializeField] private Transform _heroesContainer;
-
     public Vector2Int Position { get; private set; }
     public RoomType Type { get; private set; }
 

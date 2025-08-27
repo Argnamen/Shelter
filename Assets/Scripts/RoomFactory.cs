@@ -4,35 +4,35 @@ using Zenject;
 public class RoomFactory
 {
     private readonly DungeonView _dungeonView;
-    private readonly MonsterFactory _monsterFactory;
     private readonly DiContainer _container;
     private readonly GridModel _gridModel;
     private readonly GameData _gameData;
+    private readonly MonsterSpawner _monsterSpawner;
 
     public RoomFactory(
         DungeonView dungeonView,
-        MonsterFactory monsterFactory,
         DiContainer container,
         GridModel gridModel,
-        GameData gameData)
+        GameData gameData,
+        MonsterSpawner monsterSpawner)
     {
         _dungeonView = dungeonView;
-        _monsterFactory = monsterFactory;
         _container = container;
         _gridModel = gridModel;
         _gameData = gameData;
+        _monsterSpawner = monsterSpawner;
     }
 
     public RoomModel CreateRoom(RoomType type, Vector2Int position)
     {
         var roomModel = new RoomModel(type, position);
 
-        // Добавляем монстров в зависимости от типа комнаты
-        AddMonstersToRoom(roomModel);
-
         // Создаем визуальное представление
         var worldPosition = _gridModel.GridToWorldPosition(position);
         var roomView = _dungeonView.CreateRoomView(type, worldPosition);
+
+        // Добавляем монстров в зависимости от типа комнаты
+        AddMonstersToRoom(roomModel, roomView);
 
         if (roomView == null)
         {
@@ -47,18 +47,18 @@ public class RoomFactory
         return roomModel;
     }
 
-    private void AddMonstersToRoom(RoomModel room)
+    private void AddMonstersToRoom(RoomModel room, RoomView roomView)
     {
         switch (room.Type)
         {
             case RoomType.Combat:
-                AddMonsters(room, MonsterType.Slime, Random.Range(2, 5));
+                AddMonsters(room, roomView, MonsterType.Slime, Random.Range(2, 5));
                 break;
             case RoomType.Rest:
-                AddMonsters(room, MonsterType.Skeleton, Random.Range(1, 3));
+                AddMonsters(room, roomView, MonsterType.Skeleton, Random.Range(1, 3));
                 break;
             case RoomType.Treasure:
-                AddMonsters(room, MonsterType.Goblin, Random.Range(1, 2));
+                AddMonsters(room, roomView, MonsterType.Goblin, Random.Range(1, 2));
                 break;
             case RoomType.Stairs:
                 // Лестницы без монстров
@@ -66,11 +66,11 @@ public class RoomFactory
         }
     }
 
-    private void AddMonsters(RoomModel room, MonsterType type, int count)
+    private void AddMonsters(RoomModel room, RoomView roomView, MonsterType type, int count)
     {
         for (int i = 0; i < count; i++)
         {
-            room.Monsters.Add(new MonsterModel(type, 30));
+            room.Monsters.Add(_monsterSpawner.Spawn(type, 20, 0, 1, room, roomView.AddMonsterView));
         }
     }
 }

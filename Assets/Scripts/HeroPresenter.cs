@@ -12,6 +12,8 @@ public class HeroPresenter : IDisposable
     private readonly HeroSpawner _heroSpawner;
     private readonly GameData _gameData;
 
+    private RoomModel _roomModel;
+
     private CompositeDisposable _disposables = new();
     private bool _isDisposed = false;
 
@@ -50,7 +52,13 @@ public class HeroPresenter : IDisposable
             return;
         }
 
+        if(_roomModel != null)
+            _roomModel.Heroes.Remove(_model);
+
         var room = _gameModel.Rooms[roomIndex];
+
+        _roomModel = room;
+
         await MoveToRoom(room);
 
         switch (room.Type)
@@ -82,9 +90,14 @@ public class HeroPresenter : IDisposable
     {
         if (_isDisposed) return;
 
+        _roomModel.Enter.Value = false;
+
         _view.SetMoving(true);
 
         var roomPosition = _gridService.GetRoomPosition(room);
+
+        room.Heroes.Add(_model);
+
         if (roomPosition.HasValue)
         {
             var worldPosition = GetWorldPosition(roomPosition.Value);
@@ -92,11 +105,15 @@ public class HeroPresenter : IDisposable
         }
 
         _view.SetMoving(false);
+
+        _roomModel.Enter.Value = true;
     }
 
     private async UniTask MoveToExit()
     {
         if (_isDisposed) return;
+
+        _roomModel.Heroes.Remove(_model);
 
         _view.SetMoving(true);
         await MoveToPosition(new Vector3(_gameData.StartHeroPosition.x, _gameData.StartHeroPosition.y, 0));
@@ -134,11 +151,15 @@ public class HeroPresenter : IDisposable
 
         foreach (var monster in room.Monsters.ToArray()) // Используем ToArray чтобы избежать модификации коллекции
         {
-            if (_isDisposed) break;
+            while (monster.Health.Value > 0)
+            {
+                if (_isDisposed) break;
 
-            monster.Health.Value -= 10;
-            _model.Health.Value -= 5;
-            await UniTask.Delay(300);
+                monster.Health.Value -= 10;
+                await UniTask.Delay(300);
+            }
+
+            if (_isDisposed) break;
         }
 
         _view.SetFighting(false);

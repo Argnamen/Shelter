@@ -12,6 +12,18 @@ public class RoomPresenter : IDisposable
     {
         _model = model;
         _view = view;
+
+        Spawn();
+    }
+
+    private void Spawn()
+    {
+       
+    }
+
+    private void Enter()
+    {
+
     }
 
     // Можно добавить логику комнаты здесь, если понадобится
