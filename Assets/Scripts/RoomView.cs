@@ -3,7 +3,7 @@ using UnityEngine;
 public class RoomView : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _spriteRenderer;
-    [SerializeField] private Transform _monstersContainer;
+    [SerializeField] private Transform[] _monstersContainer;
     [SerializeField] private Transform _heroesContainer;
     public Vector2Int Position { get; private set; }
     public RoomType Type { get; private set; }
@@ -40,7 +40,14 @@ public class RoomView : MonoBehaviour
 
     public void AddMonsterView(MonsterView monsterView)
     {
-        monsterView.transform.SetParent(_monstersContainer);
+        foreach (var container in _monstersContainer)
+        {
+            if (container.childCount == 0)
+            {
+                monsterView.transform.SetParent(container);
+                break;
+            }
+        }
     }
 
     public void AddHeroView(HeroView heroView)

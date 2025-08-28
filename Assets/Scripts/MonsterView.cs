@@ -21,7 +21,7 @@ public class MonsterView : MonoBehaviour
         {
             if (isFighting)
             {
-                _animator.Play("Fight");
+                _animator.Play("Attack");
             }
         }
     }

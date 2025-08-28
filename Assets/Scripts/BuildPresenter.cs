@@ -9,6 +9,7 @@ public class BuildPresenter : IInitializable, IDisposable
     private readonly GridService _gridService;
     private readonly DungeonView _dungeonView;
     private readonly GameData _gameData;
+    private readonly CameraController _cameraController;
 
     private CompositeDisposable _disposables = new();
     private RoomType _selectedRoomType = RoomType.Combat;
@@ -20,12 +21,14 @@ public class BuildPresenter : IInitializable, IDisposable
         GridService gridService,
         DungeonView dungeonView,
         GameModel gameModel,
-        GameData gameData)
+        GameData gameData,
+        CameraController cameraController)
     {
         _uiView = uiView;
         _gridService = gridService;
         _dungeonView = dungeonView;
         _gameData = gameData;
+        _cameraController = cameraController;
     }
 
     public void Initialize()
@@ -68,7 +71,7 @@ public class BuildPresenter : IInitializable, IDisposable
     {
         // Подписка на клики мыши для строительства
         Observable.EveryUpdate()
-            .Where(_ => _isBuildMode && Input.GetMouseButtonDown(0))
+            .Where(_ => Input.GetMouseButtonDown(0))
             .Subscribe(_ => HandleGridClick())
             .AddTo(_disposables);
     }
@@ -81,16 +84,24 @@ public class BuildPresenter : IInitializable, IDisposable
             Mathf.RoundToInt(mouseWorldPos.y / _gameData.CellSize)
         );
 
-        Debug.Log($"Clicked grid position: {gridPosition}");
-
-        if (_gridService.CanPlaceRoomAt(gridPosition))
+        if (_gridService.GetRoomAt(gridPosition) != null)
         {
-            TryBuildRoom(_selectedRoomType, gridPosition, _monsterType);
+            _cameraController.FocusOnRoom(_gridService.GetWorldPosition(gridPosition));
         }
-        else
+
+        if (_isBuildMode)
         {
-            Debug.LogWarning($"Cannot build at position {gridPosition}");
-            _uiView.ShowMessage("Cannot build here!");
+            Debug.Log($"Clicked grid position: {gridPosition}");
+
+            if (_gridService.CanPlaceRoomAt(gridPosition))
+            {
+                TryBuildRoom(_selectedRoomType, gridPosition, _monsterType);
+            }
+            else
+            {
+                Debug.LogWarning($"Cannot build at position {gridPosition}");
+                _uiView.ShowMessage("Cannot build here!");
+            }
         }
     }
 

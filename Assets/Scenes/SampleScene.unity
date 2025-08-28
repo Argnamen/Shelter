@@ -1583,10 +1583,10 @@ RectTransform:
   - {fileID: 679437452}
   m_Father: {fileID: 1066280224}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -403.776, y: 3.5394897}
-  m_SizeDelta: {x: -1673.5521, y: -283.0789}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 501, y: 3.5394897}
+  m_SizeDelta: {x: 351.44788, y: 796.92114}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &965722790
 MonoBehaviour:
@@ -1758,6 +1758,14 @@ PrefabInstance:
     - target: {fileID: 5966478045322115109, guid: 844588fa9ff020f4d9337924a247af27, type: 3}
       propertyPath: m_Name
       value: CameraController
+      objectReference: {fileID: 0}
+    - target: {fileID: 6442300183151225019, guid: 844588fa9ff020f4d9337924a247af27, type: 3}
+      propertyPath: _maxZoom
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6442300183151225019, guid: 844588fa9ff020f4d9337924a247af27, type: 3}
+      propertyPath: _minZoom
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7380250225728851427, guid: 844588fa9ff020f4d9337924a247af27, type: 3}
       propertyPath: m_LocalPosition.x

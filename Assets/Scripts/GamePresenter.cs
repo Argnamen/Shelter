@@ -89,7 +89,7 @@ public class GamePresenter : IInitializable, IDisposable
         var startPosition = _gameData.StartRoomPosition;
         _gridService.TryPlaceRoom(RoomType.Rest, startPosition);
 
-        _cameraController.FocusOnRoom(startPosition);
+        _cameraController.FocusOnRoom(_gridService.GetWorldPosition(startPosition));
 
         _uiView.ShowMessage("Welcome to Dungeon Shelter! Build rooms and defend against heroes!");
     }

@@ -82,9 +82,9 @@ public class CameraController : MonoBehaviour
         _targetPosition = new Vector3(worldPosition.x, worldPosition.y, _targetPosition.z);
     }
 
-    public void FocusOnRoom(Vector2Int roomGridPosition)
+    public void FocusOnRoom(Vector3 roomGridPosition)
     {
-        Vector3 roomWorldPosition = new Vector3(roomGridPosition.x * 2f, roomGridPosition.y * 2f, 0);
+        Vector3 roomWorldPosition = roomGridPosition;
         MoveToPosition(roomWorldPosition);
     }
 
