@@ -23,9 +23,9 @@ public class RoomFactory
         _monsterSpawner = monsterSpawner;
     }
 
-    public RoomModel CreateRoom(RoomType type, Vector2Int position)
+    public RoomModel CreateRoom(RoomType type, Vector2Int position, MonsterType monsterType = MonsterType.None)
     {
-        var roomModel = new RoomModel(type, position);
+        var roomModel = new RoomModel(type, monsterType, position);
 
         // Создаем визуальное представление
         var worldPosition = _gridModel.GridToWorldPosition(position);
@@ -52,13 +52,13 @@ public class RoomFactory
         switch (room.Type)
         {
             case RoomType.Combat:
-                AddMonsters(room, roomView, MonsterType.Slime, Random.Range(2, 5));
+                AddMonsters(room, roomView, room.Monster, 2);
                 break;
             case RoomType.Rest:
-                AddMonsters(room, roomView, MonsterType.Skeleton, Random.Range(1, 3));
+                
                 break;
             case RoomType.Treasure:
-                AddMonsters(room, roomView, MonsterType.Goblin, Random.Range(1, 2));
+                
                 break;
             case RoomType.Stairs:
                 // Лестницы без монстров

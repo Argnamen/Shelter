@@ -16,11 +16,14 @@ public class UIView : MonoBehaviour
 
     [Header("Build Menu")]
     [SerializeField] private GameObject _buildMenu;
-    [SerializeField] private Button _combatRoomButton;
     [SerializeField] private Button _restRoomButton;
     [SerializeField] private Button _treasureRoomButton;
     [SerializeField] private Button _stairsRoomButton;
     [SerializeField] private Button _closeBuildMenuButton;
+
+    [SerializeField] private Button _slimeButton;
+    [SerializeField] private Button _skelletButton;
+    [SerializeField] private Button _goblinButton;
 
     [Header("Room Selection")]
     [SerializeField] private GameObject _roomSelectionPanel;
@@ -36,23 +39,42 @@ public class UIView : MonoBehaviour
     public Observable<Unit> OnPlayButtonClicked => _playButton.OnClickAsObservable();
 
     public Observable<RoomType> OnRoomTypeSelected { get; private set; }
+    public Observable<MonsterType> OnMonsterTypeSelected { get; private set; }
     public Observable<Unit> OnCloseBuildMenuClicked => _closeBuildMenuButton.OnClickAsObservable();
 
     private void Awake()
     {
         InitializeRoomSelection();
+        ToggleBuildMenu(false);
     }
 
     private void InitializeRoomSelection()
     {
         // Создаем Subject для выбора типа комнаты
         var roomSelectionSubject = new Subject<RoomType>();
-        OnRoomTypeSelected = roomSelectionSubject;
+        var monsterSelectionSubject = new Subject<MonsterType>();
 
-        // Подписываем кнопки комнат
-        _combatRoomButton.OnClickAsObservable()
-            .Subscribe(_ => roomSelectionSubject.OnNext(RoomType.Combat))
-            .AddTo(this);
+        OnRoomTypeSelected = roomSelectionSubject;
+        OnMonsterTypeSelected = monsterSelectionSubject;
+
+
+        _slimeButton.OnClickAsObservable().Subscribe(_ => 
+        { 
+            roomSelectionSubject.OnNext(RoomType.Combat);
+            monsterSelectionSubject.OnNext(MonsterType.Slime);
+        }).AddTo(this);
+
+        _skelletButton.OnClickAsObservable().Subscribe(_ =>
+        {
+            roomSelectionSubject.OnNext(RoomType.Combat);
+            monsterSelectionSubject.OnNext(MonsterType.Skeleton);
+        }).AddTo(this);
+
+        _goblinButton.OnClickAsObservable().Subscribe(_ =>
+        {
+            roomSelectionSubject.OnNext(RoomType.Combat);
+            monsterSelectionSubject.OnNext(MonsterType.Eagle);
+        }).AddTo(this);
 
         _restRoomButton.OnClickAsObservable()
             .Subscribe(_ => roomSelectionSubject.OnNext(RoomType.Rest))

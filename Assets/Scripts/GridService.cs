@@ -16,7 +16,7 @@ public class GridService
         _gameData = gameData;
     }
 
-    public bool TryPlaceRoom(RoomType roomType, Vector2Int position)
+    public bool TryPlaceRoom(RoomType roomType, Vector2Int position, MonsterType monsterType = MonsterType.None)
     {
         if (!_gridModel.CanPlaceRoomAt(position))
         {
@@ -31,7 +31,7 @@ public class GridService
             return false;
         }
 
-        var room = _roomFactory.CreateRoom(roomType, position);
+        var room = _roomFactory.CreateRoom(roomType, position, monsterType);
         if (room == null)
         {
             Debug.LogError("Failed to create room!");

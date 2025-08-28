@@ -12,6 +12,7 @@ public class BuildPresenter : IInitializable, IDisposable
 
     private CompositeDisposable _disposables = new();
     private RoomType _selectedRoomType = RoomType.Combat;
+    private MonsterType _monsterType = MonsterType.None;
     private bool _isBuildMode = false;
 
     public BuildPresenter(
@@ -53,6 +54,14 @@ public class BuildPresenter : IInitializable, IDisposable
                 if (_isBuildMode) HighlightAvailablePositions();
             })
             .AddTo(_disposables);
+
+        _uiView.OnMonsterTypeSelected
+            .Subscribe(monsterType =>
+            {
+                _monsterType = monsterType;
+
+            })
+            .AddTo(_disposables);
     }
 
     private void SetupGridInput()
@@ -76,7 +85,7 @@ public class BuildPresenter : IInitializable, IDisposable
 
         if (_gridService.CanPlaceRoomAt(gridPosition))
         {
-            TryBuildRoom(_selectedRoomType, gridPosition);
+            TryBuildRoom(_selectedRoomType, gridPosition, _monsterType);
         }
         else
         {
@@ -121,9 +130,9 @@ public class BuildPresenter : IInitializable, IDisposable
         _dungeonView.HighlightAvailablePositions(availablePositions);
     }
 
-    public bool TryBuildRoom(RoomType roomType, Vector2Int position)
+    public bool TryBuildRoom(RoomType roomType, Vector2Int position, MonsterType monsterType = MonsterType.None)
     {
-        if (_gridService.TryPlaceRoom(roomType, position))
+        if (_gridService.TryPlaceRoom(roomType, position, monsterType))
         {
             _uiView.ShowMessage($"Built {roomType} room!");
             HighlightAvailablePositions(); // Обновляем подсветку

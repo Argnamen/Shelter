@@ -87,7 +87,7 @@ public class GamePresenter : IInitializable, IDisposable
 
         // Создаем начальную комнату
         var startPosition = _gameData.StartRoomPosition;
-        _gridService.TryPlaceRoom(RoomType.Combat, startPosition);
+        _gridService.TryPlaceRoom(RoomType.Rest, startPosition);
 
         _cameraController.FocusOnRoom(startPosition);
 

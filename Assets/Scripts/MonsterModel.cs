@@ -17,4 +17,4 @@ public class MonsterModel
     }
 }
 
-public enum MonsterType { Slime, Skeleton, Goblin }
+public enum MonsterType { None, Slime, Skeleton, Eagle }
