@@ -156,6 +156,7 @@ MonoBehaviour:
   _gridCellPrefab: {fileID: 4412707099607119033, guid: 0ace6a45691d937429d63418ba6c68ea, type: 3}
   _cameraController: {fileID: 570496271}
   _gameData: {fileID: 11400000, guid: 9bfd26acaff32e9438ddb8b46314aabc, type: 2}
+  _roomsData: {fileID: 11400000, guid: c53bcdf393a5d9646b364d077bdfedc4, type: 2}
 --- !u!4 &45015666
 Transform:
   m_ObjectHideFlags: 0

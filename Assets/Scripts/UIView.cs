@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 public class UIView : MonoBehaviour
 {
@@ -33,13 +34,14 @@ public class UIView : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _messageText;
     [SerializeField] private float _messageDuration = 2f;
 
+    [Inject] private RoomsData _roomsData;
+
     private IDisposable _messageDisposable;
 
     public Observable<Unit> OnBuildButtonClicked => _buildButton.OnClickAsObservable();
     public Observable<Unit> OnPlayButtonClicked => _playButton.OnClickAsObservable();
 
-    public Observable<RoomType> OnRoomTypeSelected { get; private set; }
-    public Observable<MonsterType> OnMonsterTypeSelected { get; private set; }
+    public Observable<RoomData> OnRoomSelected { get; private set; }
     public Observable<Unit> OnCloseBuildMenuClicked => _closeBuildMenuButton.OnClickAsObservable();
 
     private void Awake()
@@ -51,41 +53,36 @@ public class UIView : MonoBehaviour
     private void InitializeRoomSelection()
     {
         // Создаем Subject для выбора типа комнаты
-        var roomSelectionSubject = new Subject<RoomType>();
-        var monsterSelectionSubject = new Subject<MonsterType>();
+        var roomSelectionSubject = new Subject<RoomData>();
 
-        OnRoomTypeSelected = roomSelectionSubject;
-        OnMonsterTypeSelected = monsterSelectionSubject;
+        OnRoomSelected = roomSelectionSubject;
 
 
         _slimeButton.OnClickAsObservable().Subscribe(_ => 
         { 
-            roomSelectionSubject.OnNext(RoomType.Combat);
-            monsterSelectionSubject.OnNext(MonsterType.Slime);
+            roomSelectionSubject.OnNext(_roomsData.Rooms.Find(x => x.Type == RoomType.Combat && x.MonsterType == MonsterType.Slime));
         }).AddTo(this);
 
         _skelletButton.OnClickAsObservable().Subscribe(_ =>
         {
-            roomSelectionSubject.OnNext(RoomType.Combat);
-            monsterSelectionSubject.OnNext(MonsterType.Skeleton);
+            roomSelectionSubject.OnNext(_roomsData.Rooms.Find(x => x.Type == RoomType.Combat && x.MonsterType == MonsterType.Skeleton));
         }).AddTo(this);
 
         _goblinButton.OnClickAsObservable().Subscribe(_ =>
         {
-            roomSelectionSubject.OnNext(RoomType.Combat);
-            monsterSelectionSubject.OnNext(MonsterType.Eagle);
+            roomSelectionSubject.OnNext(_roomsData.Rooms.Find(x => x.Type == RoomType.Combat && x.MonsterType == MonsterType.Eagle));
         }).AddTo(this);
 
         _restRoomButton.OnClickAsObservable()
-            .Subscribe(_ => roomSelectionSubject.OnNext(RoomType.Rest))
+            .Subscribe(_ => roomSelectionSubject.OnNext(_roomsData.Rooms.Find(x => x.Type == RoomType.Rest)))
             .AddTo(this);
 
         _treasureRoomButton.OnClickAsObservable()
-            .Subscribe(_ => roomSelectionSubject.OnNext(RoomType.Treasure))
+            .Subscribe(_ => roomSelectionSubject.OnNext(_roomsData.Rooms.Find(x => x.Type == RoomType.Treasure)))
             .AddTo(this);
 
         _stairsRoomButton.OnClickAsObservable()
-            .Subscribe(_ => roomSelectionSubject.OnNext(RoomType.Stairs))
+            .Subscribe(_ => roomSelectionSubject.OnNext(_roomsData.Rooms.Find(x => x.Type == RoomType.Stairs)))
             .AddTo(this);
     }
 

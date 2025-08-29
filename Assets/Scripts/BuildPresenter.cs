@@ -1,3 +1,4 @@
+using DG.Tweening;
 using R3;
 using System;
 using UnityEngine;
@@ -49,20 +50,13 @@ public class BuildPresenter : IInitializable, IDisposable
             .Subscribe(_ => ToggleBuildMode())
             .AddTo(_disposables);
 
-        _uiView.OnRoomTypeSelected
-            .Subscribe(roomType =>
+        _uiView.OnRoomSelected
+            .Subscribe(room =>
             {
-                _selectedRoomType = roomType;
-                _uiView.SetSelectedRoomText(roomType);
+                _selectedRoomType = room.Type;
+                _monsterType = room.MonsterType;
+                _uiView.SetSelectedRoomText(_selectedRoomType);
                 if (_isBuildMode) HighlightAvailablePositions();
-            })
-            .AddTo(_disposables);
-
-        _uiView.OnMonsterTypeSelected
-            .Subscribe(monsterType =>
-            {
-                _monsterType = monsterType;
-
             })
             .AddTo(_disposables);
     }
@@ -93,7 +87,7 @@ public class BuildPresenter : IInitializable, IDisposable
         {
             Debug.Log($"Clicked grid position: {gridPosition}");
 
-            if (_gridService.CanPlaceRoomAt(gridPosition))
+            if (_gridService.CanPlaceRoomAt(gridPosition, _selectedRoomType))
             {
                 TryBuildRoom(_selectedRoomType, gridPosition, _monsterType);
             }
@@ -137,7 +131,7 @@ public class BuildPresenter : IInitializable, IDisposable
 
     private void HighlightAvailablePositions()
     {
-        var availablePositions = _gridService.GetAvailablePositions();
+        var availablePositions = _gridService.GetAvailablePositions(_selectedRoomType);
         _dungeonView.HighlightAvailablePositions(availablePositions);
     }
 

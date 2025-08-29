@@ -103,18 +103,6 @@ public class GameModel
         DungeonLevel.Value++;
     }
 
-    public int GetRoomCost(RoomType roomType)
-    {
-        return roomType switch
-        {
-            RoomType.Combat => 100 + (DungeonLevel.Value - 1) * 20,
-            RoomType.Rest => 150 + (DungeonLevel.Value - 1) * 25,
-            RoomType.Treasure => 200 + (DungeonLevel.Value - 1) * 30,
-            RoomType.Stairs => 250 + (DungeonLevel.Value - 1) * 40,
-            _ => 100
-        };
-    }
-
     public int GetHeroSpawnCount()
     {
         // Количество героев увеличивается с уровнем подземелья

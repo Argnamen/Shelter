@@ -27,9 +27,9 @@ public class DebugUIView : MonoBehaviour
             Debug.Log("Play button clicked!");
         }).AddTo(this);
 
-        _uiView.OnRoomTypeSelected.Subscribe(roomType =>
+        _uiView.OnRoomSelected.Subscribe(room =>
         {
-            Debug.Log($"Room type selected: {roomType}");
+            Debug.Log($"Room type selected: {room.Type}");
         }).AddTo(this);
     }
 

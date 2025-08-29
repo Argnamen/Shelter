@@ -7,24 +7,27 @@ public class GridService
     private readonly RoomFactory _roomFactory;
     private readonly GameModel _gameModel;
     private readonly GameData _gameData;
+    private readonly RoomsData _roomsData;
 
-    public GridService(GridModel gridModel, RoomFactory roomFactory, GameModel gameModel, GameData gameData)
+    public GridService(GridModel gridModel, RoomFactory roomFactory, GameModel gameModel, GameData gameData, RoomsData roomData)
     {
         _gridModel = gridModel;
         _roomFactory = roomFactory;
         _gameModel = gameModel;
         _gameData = gameData;
+        _roomsData = roomData;
     }
 
     public bool TryPlaceRoom(RoomType roomType, Vector2Int position, MonsterType monsterType = MonsterType.None)
     {
-        if (!_gridModel.CanPlaceRoomAt(position))
+        RoomData roomData = _roomsData.Rooms.Find(x => x.Type == roomType && x.MonsterType == monsterType);
+        if (!_gridModel.CanPlaceRoomAt(position, roomData))
         {
             Debug.LogWarning($"Cannot place room at position {position}");
             return false;
         }
 
-        int roomCost = _gameModel.GetRoomCost(roomType);
+        int roomCost = roomData.Cost;
         if (!_gameModel.TrySpendGold(roomCost))
         {
             Debug.LogWarning($"Not enough gold to build {roomType} room. Need {roomCost} gold.");
@@ -38,16 +41,43 @@ public class GridService
             return false;
         }
 
-        _gridModel.AddRoom(room, position);
+        _gridModel.AddRoom(roomData, room, position);
         _gameModel.AddRoom(room);
 
         Debug.Log($"Room placed at {position}. Type: {roomType}. Cost: {roomCost} gold.");
         return true;
     }
 
-    public IReadOnlyList<Vector2Int> GetAvailablePositions()
+    public IReadOnlyList<Vector2Int> GetAvailablePositions(RoomType roomType)
     {
-        return _gridModel.AvailablePositions;
+        RoomData roomData = _roomsData.Rooms.Find(x => x.Type == roomType);
+        List<Vector2Int> newReturn = new List<Vector2Int>();
+
+        foreach(var pos in _gridModel.AvailablePositions)
+        {
+            var FindRoom = GetRoomAt(pos);
+
+            foreach (var specialNeighbors in roomData.SpecialNeighbors)
+            {
+                if (FindRoom != null &&
+                    FindRoom.Type == specialNeighbors.NeighborType)
+                {
+                    if(GetRoomAt(pos + specialNeighbors.Neighbor) == null)
+                        newReturn.Add(pos + specialNeighbors.Neighbor);
+                }
+            }
+
+            foreach (var posNewRoom in roomData.Neighbors) 
+            {
+                if (FindRoom != null)
+                {
+                    if(GetRoomAt(pos + posNewRoom) == null)
+                        newReturn.Add(pos + posNewRoom);
+                }
+            }
+        }
+
+        return newReturn;
     }
 
     public RoomModel GetRoomAt(Vector2Int position)
@@ -90,8 +120,8 @@ public class GridService
         return _gridModel.IsPositionEmpty(position);
     }
 
-    public bool CanPlaceRoomAt(Vector2Int position)
+    public bool CanPlaceRoomAt(Vector2Int position, RoomType roomType)
     {
-        return _gridModel.CanPlaceRoomAt(position);
+        return _gridModel.CanPlaceRoomAt(position, _roomsData.Rooms.Find(x => x.Type == roomType));
     }
 }

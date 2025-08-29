@@ -55,8 +55,8 @@ public class GamePresenter : IInitializable, IDisposable
             .AddTo(_disposables);
 
         // Выбор типа комнаты
-        _uiView.OnRoomTypeSelected
-            .Subscribe(roomType => _uiView.SetSelectedRoomText(roomType))
+        _uiView.OnRoomSelected
+            .Subscribe(room => _uiView.SetSelectedRoomText(room.Type))
             .AddTo(_disposables);
     }
 

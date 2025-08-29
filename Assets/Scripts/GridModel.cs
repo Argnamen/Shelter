@@ -57,7 +57,7 @@ public class GridModel
         return IsPositionValid(position) && Grid[position.x, position.y] == null;
     }
 
-    public bool CanPlaceRoomAt(Vector2Int position)
+    public bool CanPlaceRoomAt(Vector2Int position, RoomData data)
     {
         if (IsGridNull())
         {
@@ -69,26 +69,35 @@ public class GridModel
             return false; 
         }
 
-        // ѕровер€ем соседние позиции (только ортогональные соседи)
-        Vector2Int[] neighbors = {
-            new(position.x + 1, position.y),
-            new(position.x - 1, position.y),
-            //new(position.x, position.y + 1),
-            //new(position.x, position.y - 1)
-        };
-
-        foreach (var neighbor in neighbors)
+        if (data != null)
         {
-            if (IsPositionValid(neighbor) && Grid[neighbor.x, neighbor.y] != null)
+            Vector2Int newNeighbor = new Vector2Int();
+
+            foreach (var neighbor in data.Neighbors)
             {
-                return true;
+                newNeighbor = neighbor + position;
+
+                if (IsPositionValid(newNeighbor) && Grid[newNeighbor.x, newNeighbor.y] != null)
+                {
+                    return true;
+                }
+            }
+
+            foreach (var neighbor in data.SpecialNeighbors)
+            {
+                newNeighbor = neighbor.Neighbor + position;
+
+                if (IsPositionValid(newNeighbor) && Grid[newNeighbor.x, newNeighbor.y] != null)
+                {
+                    return true;
+                }
             }
         }
 
         return false;
     }
 
-    public void AddRoom(RoomModel room, Vector2Int position)
+    public void AddRoom(RoomData data, RoomModel room, Vector2Int position)
     {
         if (!IsPositionEmpty(position)) return;
 
@@ -96,23 +105,28 @@ public class GridModel
         room.Position = position;
 
         // ќбновл€ем доступные позиции
-        UpdateAvailablePositions(position);
+        //UpdateAvailablePositions(data, position);
+
+        AvailablePositions.Add(position);
     }
 
-    private void UpdateAvailablePositions(Vector2Int placedPosition)
+    private void UpdateAvailablePositions(RoomData data, Vector2Int placedPosition)
     {
         AvailablePositions.Remove(placedPosition);
 
-        // ƒобавл€ем новые возможные позиции вокруг установленной комнаты
-        Vector2Int[] directions = {
-            new(1, 0), new(-1, 0),
-            //new(0, 1), new(0, -1)
-        };
-
-        foreach (var direction in directions)
+        foreach (var direction in data.Neighbors)
         {
             var newPos = placedPosition + direction;
-            if (IsPositionEmpty(newPos) && CanPlaceRoomAt(newPos) && !AvailablePositions.Contains(newPos))
+            if (IsPositionEmpty(newPos) && CanPlaceRoomAt(newPos, data) && !AvailablePositions.Contains(newPos))
+            {
+                AvailablePositions.Add(newPos);
+            }
+        }
+
+        foreach (var direction in data.SpecialNeighbors)
+        {
+            var newPos = placedPosition + direction.Neighbor;
+            if (IsPositionEmpty(newPos) && CanPlaceRoomAt(newPos, data) && !AvailablePositions.Contains(newPos))
             {
                 AvailablePositions.Add(newPos);
             }

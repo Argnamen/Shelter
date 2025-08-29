@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Game", menuName = "ScriptableObjects/Data", order = 1)]
+[CreateAssetMenu(fileName = "Game", menuName = "ScriptableObjects/GameData", order = 1)]
 public class GameData : ScriptableObject
 {
     public int GridHeight = 5;
