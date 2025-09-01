@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using R3;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class HeroPresenter : IDisposable
@@ -16,6 +17,10 @@ public class HeroPresenter : IDisposable
 
     private CompositeDisposable _disposables = new();
     private bool _isDisposed = false;
+
+    private Vector2Int _moveVector = Vector2Int.right;
+
+    private List<Vector2Int> _cleanRooms = new();
 
     public HeroPresenter(
         HeroModel model,
@@ -37,15 +42,24 @@ public class HeroPresenter : IDisposable
 
     private void Initialize()
     {
+        InitCleanRooms();
         _model.CurrentRoomIndex.Subscribe(OnRoomChanged).AddTo(_disposables);
         _model.Health.Subscribe(OnHealthChanged).AddTo(_disposables);
+    }
+
+    private void InitCleanRooms()
+    {
+        foreach (var room in _gameModel.Rooms)
+        {
+            _cleanRooms.Add(room.Position);
+        }
     }
 
     private async void OnRoomChanged(int roomIndex)
     {
         if (_isDisposed) return;
 
-        if (roomIndex < 0 || roomIndex >= _gameModel.Rooms.Count)
+        if (_cleanRooms.Count == 0)
         {
             await MoveToExit();
             Dispose();
@@ -55,7 +69,16 @@ public class HeroPresenter : IDisposable
         if(_roomModel != null)
             _roomModel.Heroes.Remove(_model);
 
-        var room = _gameModel.Rooms[roomIndex];
+        var room = FindRoom(roomIndex);
+
+        if (room == null)
+        {
+            await MoveToExit();
+            Dispose();
+            return;
+        }
+
+        _cleanRooms.Remove(room.Position);
 
         _roomModel = room;
 
@@ -76,6 +99,65 @@ public class HeroPresenter : IDisposable
 
         // Переходим к следующей комнате
         _model.CurrentRoomIndex.Value++;
+    }
+
+    private RoomModel FindRoom(int roomIndex)
+    {
+        var room = _gameModel.Rooms[0];
+
+        if (_roomModel == null)
+        {
+            return room;
+        }
+        else
+        {
+            var nextRoom = _gridService.GetRoomAt(_roomModel.Position + _moveVector);
+
+            if (_roomModel.Type == RoomType.Stairs)
+            {
+                if (_cleanRooms.FindAll(x => x.y == _roomModel.Position.y).Count != 0)
+                {
+                    if (nextRoom != null)
+                    {
+                        return nextRoom;
+                    }
+
+                    _moveVector *= -1;
+                    return _gridService.GetRoomAt(_roomModel.Position + _moveVector);
+
+                }
+
+                if (_cleanRooms.FindAll(x => x.y == _roomModel.Position.y - 1).Count != 0)
+                {
+                    nextRoom = _gridService.GetRoomAt(_roomModel.Position + Vector2Int.down);
+
+                    if (nextRoom.Type == RoomType.Stairs)
+                    {
+                        _moveVector = UnityEngine.Random.Range(0, 2) == 0 ? Vector2Int.right : Vector2Int.left;
+
+                        return nextRoom;
+                    }
+                    else
+                    {
+                        return _gridService.GetRoomAt(_roomModel.Position + _moveVector);
+                    }
+                }
+
+                return null;
+            }
+            else
+            {
+                if (nextRoom != null)
+                {
+                    return nextRoom;
+                }
+
+                _moveVector *= -1;
+                return _gridService.GetRoomAt(_roomModel.Position + _moveVector);
+            }
+
+
+        }
     }
 
     private void OnHealthChanged(int health)
