@@ -1,3 +1,4 @@
+using ModestTree;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,19 +9,28 @@ public class GridService
     private readonly GameModel _gameModel;
     private readonly GameData _gameData;
     private readonly RoomsData _roomsData;
+    private readonly DungeonView _dungeonView;
 
-    public GridService(GridModel gridModel, RoomFactory roomFactory, GameModel gameModel, GameData gameData, RoomsData roomData)
+    public GridService(GridModel gridModel, RoomFactory roomFactory, GameModel gameModel, GameData gameData, RoomsData roomData, DungeonView dungeonView)
     {
         _gridModel = gridModel;
         _roomFactory = roomFactory;
         _gameModel = gameModel;
         _gameData = gameData;
         _roomsData = roomData;
+        _dungeonView = dungeonView;
     }
 
     public bool TryPlaceRoom(RoomType roomType, Vector2Int position, MonsterType monsterType = MonsterType.None)
     {
         RoomData roomData = _roomsData.Rooms.Find(x => x.Type == roomType && x.MonsterType == monsterType);
+
+        if (roomType != RoomType.Rest && !GetAvailablePositions(roomType).ContainsItem(position))
+        {
+            Debug.LogWarning($"Cannot place room at position {position}");
+            return false;
+        }
+
         if (!_gridModel.CanPlaceRoomAt(position, roomData))
         {
             Debug.LogWarning($"Cannot place room at position {position}");
@@ -46,6 +56,16 @@ public class GridService
 
         Debug.Log($"Room placed at {position}. Type: {roomType}. Cost: {roomCost} gold.");
         return true;
+    }
+
+    public void RemoveRoom(Vector2Int position)
+    {
+        if (_gameModel.Rooms[0].Position != position)
+        {
+            _gameModel.RemoveRoom(_gridModel.GetRoomAt(position));
+            _gridModel.RemoveRoom(position);
+            _dungeonView.RemoveRoomView(position);
+        }
     }
 
     public IReadOnlyList<Vector2Int> GetAvailablePositions(RoomType roomType)

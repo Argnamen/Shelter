@@ -1,5 +1,6 @@
 using R3;
 using System;
+using UnityEngine;
 
 public class RoomPresenter : IDisposable
 {
@@ -18,12 +19,27 @@ public class RoomPresenter : IDisposable
 
     private void Spawn()
     {
-       
+        _model.Destroy.Subscribe(Destroy).AddTo(_disposables);
+    }
+
+    private void Destroy(bool destroyed)
+    {
+        if (destroyed)
+        {
+            _view.DestroyRoom();
+            Dispose();
+        }
     }
 
     private void Enter()
     {
 
+    }
+
+    public void Remove()
+    {
+        GameObject.Destroy(_view.gameObject);
+        Dispose();
     }
 
     // Можно добавить логику комнаты здесь, если понадобится

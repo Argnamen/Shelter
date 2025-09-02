@@ -110,6 +110,13 @@ public class GridModel
         AvailablePositions.Add(position);
     }
 
+    public void RemoveRoom(Vector2Int position)
+    {
+        if (IsPositionEmpty(position)) return;
+
+        Grid[position.x, position.y] = null;
+    }
+
     private void UpdateAvailablePositions(RoomData data, Vector2Int placedPosition)
     {
         AvailablePositions.Remove(placedPosition);

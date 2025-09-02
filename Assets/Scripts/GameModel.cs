@@ -64,6 +64,8 @@ public class GameModel
     public void RemoveRoom(RoomModel room)
     {
         Rooms.Remove(room);
+        TotalRoomsBuilt.Value--;
+        room.Destroy.Value = true;
     }
 
     public RoomModel GetRoomAtPosition(Vector2Int position)

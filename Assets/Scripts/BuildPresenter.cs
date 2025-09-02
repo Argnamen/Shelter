@@ -15,6 +15,7 @@ public class BuildPresenter : IInitializable, IDisposable
     private CompositeDisposable _disposables = new();
     private RoomType _selectedRoomType = RoomType.Combat;
     private MonsterType _monsterType = MonsterType.None;
+    private Vector2Int _destroyRoomPosition;
     private bool _isBuildMode = false;
 
     public BuildPresenter(
@@ -59,6 +60,8 @@ public class BuildPresenter : IInitializable, IDisposable
                 if (_isBuildMode) HighlightAvailablePositions();
             })
             .AddTo(_disposables);
+
+        _uiView.OnDeleteRoomButtonClicked.Subscribe(_=> RemoveRoom()).AddTo(_disposables);
     }
 
     private void SetupGridInput()
@@ -81,6 +84,11 @@ public class BuildPresenter : IInitializable, IDisposable
         if (_gridService.GetRoomAt(gridPosition) != null)
         {
             _cameraController.FocusOnRoom(_gridService.GetWorldPosition(gridPosition));
+
+            if (_isBuildMode)
+            {
+                _destroyRoomPosition = gridPosition;
+            }
         }
 
         if (_isBuildMode)
@@ -146,6 +154,15 @@ public class BuildPresenter : IInitializable, IDisposable
 
         _uiView.ShowMessage("Build failed!");
         return false;
+    }
+
+    public void RemoveRoom()
+    {
+        if (_destroyRoomPosition != null)
+        {
+            _gridService.RemoveRoom(_destroyRoomPosition);
+            HighlightAvailablePositions();
+        }
     }
 
     public void Dispose()

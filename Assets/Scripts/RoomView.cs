@@ -54,4 +54,9 @@ public class RoomView : MonoBehaviour
     {
         heroView.transform.SetParent(_heroesContainer);
     }
+
+    public void DestroyRoom()
+    {
+        Destroy(gameObject);
+    }
 }

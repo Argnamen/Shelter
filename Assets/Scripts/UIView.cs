@@ -21,6 +21,7 @@ public class UIView : MonoBehaviour
     [SerializeField] private Button _treasureRoomButton;
     [SerializeField] private Button _stairsRoomButton;
     [SerializeField] private Button _closeBuildMenuButton;
+    [SerializeField] private Button _deleteRoom;
 
     [SerializeField] private Button _slimeButton;
     [SerializeField] private Button _skelletButton;
@@ -40,6 +41,7 @@ public class UIView : MonoBehaviour
 
     public Observable<Unit> OnBuildButtonClicked => _buildButton.OnClickAsObservable();
     public Observable<Unit> OnPlayButtonClicked => _playButton.OnClickAsObservable();
+    public Observable<Unit> OnDeleteRoomButtonClicked => _deleteRoom.OnClickAsObservable();
 
     public Observable<RoomData> OnRoomSelected { get; private set; }
     public Observable<Unit> OnCloseBuildMenuClicked => _closeBuildMenuButton.OnClickAsObservable();
@@ -105,6 +107,7 @@ public class UIView : MonoBehaviour
     {
         _buildMenu.SetActive(show);
         _roomSelectionPanel.SetActive(show);
+        _deleteRoom.gameObject.SetActive(show);
     }
 
     public bool IsBuildMenuActive()

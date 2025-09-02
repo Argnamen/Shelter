@@ -131,6 +131,16 @@ public class DungeonView : MonoBehaviour
         return room;
     }
 
+    public void RemoveRoomView(Vector2Int roomPosition)
+    {
+        var gridPos = roomPosition;
+
+        if (IsValidGridPosition(gridPos))
+        {
+            _gridCells[gridPos.x, gridPos.y].SetActive(true);
+        }
+    }
+
     public HeroView CreateHeroView()
     {
         var prefab = Resources.Load<HeroView>("Heroes/Hero_1");

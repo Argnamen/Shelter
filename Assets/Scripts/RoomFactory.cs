@@ -1,5 +1,6 @@
 using UnityEngine;
 using Zenject;
+using System.Collections.Generic;
 
 public class RoomFactory
 {
@@ -8,6 +9,8 @@ public class RoomFactory
     private readonly GridModel _gridModel;
     private readonly GameData _gameData;
     private readonly MonsterSpawner _monsterSpawner;
+    
+    private List<RoomPresenter> roomPresenters = new List<RoomPresenter>();
 
     public RoomFactory(
         DungeonView dungeonView,
