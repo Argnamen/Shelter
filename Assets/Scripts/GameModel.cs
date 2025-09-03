@@ -74,7 +74,7 @@ public class GameModel
 
         if(room.Type == RoomType.Stairs)
         {
-            SpawnStairsRoom(room);
+            UpdateStairsRoom(room, true);
         }
 
         foreach (var lockRoom in Rooms.FindAll(x => x.Position.y == room.Position.y).OrderBy(x => x.Position.x).ToList())
@@ -93,7 +93,7 @@ public class GameModel
 
         if (room.Type == RoomType.Stairs)
         {
-            DestroyStrairsRoom(room);
+            UpdateStairsRoom(room, false);
         }
 
         foreach (var lockRoom in Rooms)
@@ -102,29 +102,16 @@ public class GameModel
         }
     }
 
-    private void SpawnStairsRoom(RoomModel room)
+    private void UpdateStairsRoom(RoomModel room, bool isSpawn)
     {
         var allStairRoom = Rooms.FindAll(x => x.Position.x == room.Position.x && x.Position.y < room.Position.y && x.Type == room.Type);
 
         foreach (var lockRoom in allStairRoom)
         {
-            lockRoom.IsUnlocked = true;
+            lockRoom.IsUnlocked = isSpawn;
             RoomsIsUnlock(lockRoom);
         }
     }
-    private void DestroyStrairsRoom(RoomModel room)
-    {
-        var allStairRoom = Rooms.FindAll(x => x.Position.x == room.Position.x && x.Position.y < room.Position.y && x.Type == room.Type);
-
-        foreach (var lockRoom in allStairRoom)
-        {
-            lockRoom.IsUnlocked = false;
-            RoomsIsUnlock(lockRoom);
-
-            
-        }
-    }
-
     private void RoomsIsUnlock(RoomModel room, List<RoomModel> roomModels = null)
     {
         var rooms = new List<RoomModel>();
@@ -144,7 +131,8 @@ public class GameModel
 
         for (int i = 0; i < rooms.Count; i++)
         {
-            if ((rooms[i].Type == RoomType.Stairs && rooms[i].IsUnlocked) || rooms[i].Position == _gameData.StartRoomPosition)
+            if ((rooms[i].Type == RoomType.Stairs && rooms[i].IsUnlocked) || 
+                (rooms[i].Position == _gameData.StartRoomPosition))
             {
                 isStair = true;
             }
