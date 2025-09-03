@@ -51,7 +51,8 @@ public class HeroPresenter : IDisposable
     {
         foreach (var room in _gameModel.Rooms)
         {
-            _cleanRooms.Add(room.Position);
+            if(room.IsUnlocked)
+                _cleanRooms.Add(room.Position);
         }
     }
 
@@ -69,9 +70,9 @@ public class HeroPresenter : IDisposable
         if(_roomModel != null)
             _roomModel.Heroes.Remove(_model);
 
-        var room = FindRoom(roomIndex);
+        var room = FindRoom();
 
-        if (room == null)
+        if (_cleanRooms == null || _cleanRooms.Count == 0)
         {
             await MoveToExit();
             Dispose();
@@ -101,7 +102,7 @@ public class HeroPresenter : IDisposable
         _model.CurrentRoomIndex.Value++;
     }
 
-    private RoomModel FindRoom(int roomIndex)
+    private RoomModel FindRoom()
     {
         var room = _gameModel.Rooms[0];
 

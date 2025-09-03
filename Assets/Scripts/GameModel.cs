@@ -56,9 +56,31 @@ public class GameModel
 
     public void AddRoom(RoomModel room)
     {
+        var findRoom = Rooms.Find(x => x.Position == room.Position);
+
+        if (findRoom != null && findRoom.Type == RoomType.None)
+        {
+            Rooms.Remove(findRoom);
+        }
+        else
+        {
+            TotalRoomsBuilt.Value++;
+            OnRoomBuilt.OnNext(room);
+        }
+
         Rooms.Add(room);
-        TotalRoomsBuilt.Value++;
-        OnRoomBuilt.OnNext(room);
+
+        RoomsIsUnlock(room);
+
+        if(room.Type == RoomType.Stairs)
+        {
+            SpawnStairsRoom(room);
+        }
+
+        foreach (var lockRoom in Rooms.FindAll(x => x.Position.y == room.Position.y).OrderBy(x => x.Position.x).ToList())
+        {
+            Debug.Log(lockRoom.Type + " " + lockRoom.Position + " " + lockRoom.IsUnlocked);
+        }
     }
 
     public void RemoveRoom(RoomModel room)
@@ -66,6 +88,83 @@ public class GameModel
         Rooms.Remove(room);
         TotalRoomsBuilt.Value--;
         room.Destroy.Value = true;
+
+        RoomsIsUnlock(room);
+
+        if (room.Type == RoomType.Stairs)
+        {
+            DestroyStrairsRoom(room);
+        }
+
+        foreach (var lockRoom in Rooms)
+        {
+            Debug.Log(lockRoom.Type + " " + lockRoom.Position + " " + lockRoom.IsUnlocked);
+        }
+    }
+
+    private void SpawnStairsRoom(RoomModel room)
+    {
+        var allStairRoom = Rooms.FindAll(x => x.Position.x == room.Position.x && x.Position.y < room.Position.y && x.Type == room.Type);
+
+        foreach (var lockRoom in allStairRoom)
+        {
+            lockRoom.IsUnlocked = true;
+            RoomsIsUnlock(lockRoom);
+        }
+    }
+    private void DestroyStrairsRoom(RoomModel room)
+    {
+        var allStairRoom = Rooms.FindAll(x => x.Position.x == room.Position.x && x.Position.y < room.Position.y && x.Type == room.Type);
+
+        foreach (var lockRoom in allStairRoom)
+        {
+            lockRoom.IsUnlocked = false;
+            RoomsIsUnlock(lockRoom);
+
+            
+        }
+    }
+
+    private void RoomsIsUnlock(RoomModel room, List<RoomModel> roomModels = null)
+    {
+        var rooms = new List<RoomModel>();
+
+        if(roomModels != null)
+        {
+            rooms = roomModels;
+        }
+        else
+        {
+            rooms = Rooms.FindAll(x => x.Position.y == room.Position.y);
+        }
+
+        rooms = rooms.OrderBy(x => x.Position.x).ToList();
+
+        bool isStair = false;
+
+        for (int i = 0; i < rooms.Count; i++)
+        {
+            if ((rooms[i].Type == RoomType.Stairs && rooms[i].IsUnlocked) || rooms[i].Position == _gameData.StartRoomPosition)
+            {
+                isStair = true;
+            }
+
+            if (i + 1 >= rooms.Count || rooms[i + 1].Position.x - rooms[i].Position.x > 1)
+            {
+                for (int j = 0; j <= i; j++)
+                {
+                    rooms[j].IsUnlocked = isStair;
+                    Rooms.Find(x => x == rooms[j]).IsUnlocked = isStair;
+                }
+
+                rooms.RemoveRange(0, i + 1);
+
+                RoomsIsUnlock(room, rooms);
+
+                return;
+            }
+
+        }
     }
 
     public RoomModel GetRoomAtPosition(Vector2Int position)

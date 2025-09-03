@@ -25,7 +25,7 @@ public class GridService
     {
         RoomData roomData = _roomsData.Rooms.Find(x => x.Type == roomType && x.MonsterType == monsterType);
 
-        if (roomType != RoomType.Rest && !GetAvailablePositions(roomType).ContainsItem(position))
+        if (position != _gameData.StartRoomPosition && !GetAvailablePositions(roomType).ContainsItem(position))
         {
             Debug.LogWarning($"Cannot place room at position {position}");
             return false;
@@ -76,6 +76,9 @@ public class GridService
         foreach(var pos in _gridModel.AvailablePositions)
         {
             var FindRoom = GetRoomAt(pos);
+
+            if (FindRoom != null && !FindRoom.IsUnlocked)
+                continue;
 
             foreach (var specialNeighbors in roomData.SpecialNeighbors)
             {
