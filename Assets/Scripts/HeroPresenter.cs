@@ -60,17 +60,17 @@ public class HeroPresenter : IDisposable
     {
         if (_isDisposed) return;
 
-        if (_cleanRooms.Count == 0)
+        var room = FindRoom();
+
+        if (_cleanRooms.Count == 0 || room == null)
         {
             await MoveToExit();
             Dispose();
             return;
         }
 
-        if(_roomModel != null)
+        if (_roomModel != null)
             _roomModel.Heroes.Remove(_model);
-
-        var room = FindRoom();
 
         if (_cleanRooms == null || _cleanRooms.Count == 0)
         {
@@ -132,15 +132,18 @@ public class HeroPresenter : IDisposable
                 {
                     nextRoom = _gridService.GetRoomAt(_roomModel.Position + Vector2Int.down);
 
-                    if (nextRoom.Type == RoomType.Stairs)
+                    if (nextRoom != null)
                     {
-                        _moveVector = UnityEngine.Random.Range(0, 2) == 0 ? Vector2Int.right : Vector2Int.left;
+                        if (nextRoom.Type == RoomType.Stairs)
+                        {
+                            _moveVector = UnityEngine.Random.Range(0, 2) == 0 ? Vector2Int.right : Vector2Int.left;
 
-                        return nextRoom;
-                    }
-                    else
-                    {
-                        return _gridService.GetRoomAt(_roomModel.Position + _moveVector);
+                            return nextRoom;
+                        }
+                        else
+                        {
+                            return _gridService.GetRoomAt(_roomModel.Position + _moveVector);
+                        }
                     }
                 }
 

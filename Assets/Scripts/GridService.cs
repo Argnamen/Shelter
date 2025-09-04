@@ -77,26 +77,36 @@ public class GridService
         {
             var FindRoom = GetRoomAt(pos);
 
+            if(roomType == RoomType.Stairs && FindRoom != null)
+            {
+                
+            }
+
             if (FindRoom != null && !FindRoom.IsUnlocked)
                 continue;
 
-            foreach (var specialNeighbors in roomData.SpecialNeighbors)
+            if (roomData.SpecialNeighbors != null && roomData.SpecialNeighbors.Length > 0 && _gameModel.Rooms.Find(x => x.Type == roomType) != null) 
             {
-                if (FindRoom != null &&
-                    FindRoom.Type == specialNeighbors.NeighborType)
+                foreach (var specialNeighbors in roomData.SpecialNeighbors)
                 {
-                    if(GetRoomAt(pos + specialNeighbors.Neighbor) == null)
-                        newReturn.Add(pos + specialNeighbors.Neighbor);
+                    if (FindRoom != null &&
+                        FindRoom.Type == specialNeighbors.NeighborType)
+                    {
+                        if (GetRoomAt(pos + specialNeighbors.Neighbor) == null)
+                            newReturn.Add(pos + specialNeighbors.Neighbor);
+                    }
                 }
             }
-
-            foreach (var posNewRoom in roomData.Neighbors) 
+            else 
             {
-                if (FindRoom != null)
+                foreach (var posNewRoom in roomData.Neighbors)
                 {
-                    if(GetRoomAt(pos + posNewRoom) == null)
-                        newReturn.Add(pos + posNewRoom);
-                }
+                    if (FindRoom != null)
+                    {
+                        if (GetRoomAt(pos + posNewRoom) == null)
+                            newReturn.Add(pos + posNewRoom);
+                    }
+                } 
             }
         }
 
