@@ -30,43 +30,49 @@ public class HeroSpawner
 
     public void SpawnHeroWave()
     {
-        int heroCount = _gameModel.GetHeroSpawnCount();
-
-        for (int i = 0; i < heroCount; i++)
-        {
-            SpawnHeroWithDelay(i * 0.5f); // Задержка между спавном героев
-        }
+        SpawnHeroWithDelay(0.5f);
     }
 
     private void SpawnHeroWithDelay(float delay)
     {
         Observable.Timer(TimeSpan.FromSeconds(delay))
-            .Subscribe(_ => SpawnHero())
+            .Subscribe(_ => SpawnSquad())
             .AddTo(_spawnDisposables);
     }
 
-    private void SpawnHero()
+    private void SpawnSquad()
     {
-        Debug.Log("Spawning hero...");
+        Debug.Log("Spawning squad...");
 
-        var heroModel = new HeroModel();
-        _gameModel.AddHero(heroModel);
+        int heroCount = _gameModel.GetSquadSpawnCount();
+        var heroes = new List<HeroModel>();
 
-        var heroView = _dungeonView.CreateHeroView();
-        if (heroView == null)
+        for (int i = 0; i < heroCount; i++)
         {
-            Debug.LogError("Failed to create hero view!");
-            _gameModel.RemoveHero(heroModel);
-            return;
+            var heroModel = new HeroModel(HeroClass.Damager, 100);
+
+            _gameModel.AddHero(heroModel);
+
+            var heroView = _dungeonView.CreateHeroView();
+            if (heroView == null)
+            {
+                Debug.LogError("Failed to create hero view!");
+                _gameModel.RemoveHero(heroModel);
+                return;
+            }
+
+            // Устанавливаем начальную позицию за пределами сетки
+            heroView.transform.position = ((Vector3Int)_gameData.StartHeroPosition);
+
+            heroes.Add(heroModel);
+
+            _container.Instantiate<HeroPresenter>(new object[] {
+            heroModel, heroView, _gameModel, _gridService, this
+        });
         }
 
-        // Устанавливаем начальную позицию за пределами сетки
-        heroView.transform.position = ((Vector3Int)_gameData.StartHeroPosition);
-
-        heroModel.CurrentRoomIndex.Value = 0;
-
-        _container.Instantiate<HeroPresenter>(new object[] {
-            heroModel, heroView, _gameModel, _gridService, this
+        _container.Instantiate<SquadHeroPresenter>(new object[] {
+            new SquadHeroModel(heroes), _gameModel, _gridService, this
         });
     }
 

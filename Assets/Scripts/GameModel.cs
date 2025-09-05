@@ -192,7 +192,7 @@ public class GameModel
         DungeonLevel.Value++;
     }
 
-    public int GetHeroSpawnCount()
+    public int GetSquadSpawnCount()
     {
         // Количество героев увеличивается с уровнем подземелья
         return UnityEngine.Random.Range(1, 3 + DungeonLevel.Value);

@@ -58,8 +58,10 @@ public class MonsterPresenter : IDisposable
         _view.SetFighting();
         await UniTask.Delay(500);
 
-        foreach (var hero in _roomModel.Heroes.ToArray()) // Используем ToArray чтобы избежать модификации коллекции
+        foreach (var squad in _roomModel.Squad.ToArray()) // Используем ToArray чтобы избежать модификации коллекции
         {
+            var hero = squad.GetHero();
+
             while (hero.Health.Value > 0)
             {
                 if (_isDisposed) break;

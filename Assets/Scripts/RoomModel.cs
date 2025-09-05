@@ -10,7 +10,7 @@ public class RoomModel
     public MonsterType Monster { get; }
     public Vector2Int Position { get; set; }
     public List<MonsterModel> Monsters { get; } = new();
-    public List<HeroModel> Heroes { get; } = new();
+    public List<SquadHeroModel> Squad { get; } = new();
     public ReactiveProperty<bool> Enter { get; } = new(false);
     public ReactiveProperty<bool> Destroy { get; } = new();
     public bool IsUnlocked { get; set; } = true;

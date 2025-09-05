@@ -18,9 +18,7 @@ public class HeroPresenter : IDisposable
     private CompositeDisposable _disposables = new();
     private bool _isDisposed = false;
 
-    private Vector2Int _moveVector = Vector2Int.right;
-
-    private List<Vector2Int> _cleanRooms = new();
+    public bool isDie = false;
 
     public HeroPresenter(
         HeroModel model,
@@ -42,48 +40,62 @@ public class HeroPresenter : IDisposable
 
     private void Initialize()
     {
-        InitCleanRooms();
-        _model.CurrentRoomIndex.Subscribe(OnRoomChanged).AddTo(_disposables);
+        _model.CurrentRoomModel.Subscribe(OnRoomChanged).AddTo(_disposables);
         _model.Health.Subscribe(OnHealthChanged).AddTo(_disposables);
     }
 
-    private void InitCleanRooms()
+    private void OnHealthChanged(int health)
     {
-        foreach (var room in _gameModel.Rooms)
+        if (health <= 0 && !_isDisposed)
         {
-            if(room.IsUnlocked)
-                _cleanRooms.Add(room.Position);
+            isDie = true;
+            Die();
         }
     }
 
-    private async void OnRoomChanged(int roomIndex)
+    private async void OnRoomChanged(RoomModel room)
     {
-        if (_isDisposed) return;
-
-        var room = FindRoom();
-
-        if (_cleanRooms.Count == 0 || room == null)
-        {
-            await MoveToExit();
-            Dispose();
+        if (_roomModel == null && room == null)
             return;
-        }
 
-        if (_roomModel != null)
-            _roomModel.Heroes.Remove(_model);
-
-        if (_cleanRooms == null || _cleanRooms.Count == 0)
-        {
-            await MoveToExit();
-            Dispose();
-            return;
-        }
-
-        _cleanRooms.Remove(room.Position);
+        _model.HeroIsReady.Value = false;
 
         _roomModel = room;
 
-        await MoveToRoom(room);
+        if (_isDisposed) return;
+
+        if(room == null)
+        {
+            await MoveToExit();
+            Dispose();
+            return;
+        }
+        else
+        {
+            await MoveToRoom(room);
+        }
+
+        _model.HeroIsReady.Value = true;
+    }
+    private async UniTask MoveToRoom(RoomModel room)
+    {
+        if (_isDisposed) return;
+
+        _roomModel.Enter.Value = false;
+
+        _view.SetMoving(true);
+
+        var roomPosition = _gridService.GetRoomPosition(room);
+
+        if (roomPosition.HasValue)
+        {
+            var worldPosition = GetWorldPosition(roomPosition.Value);
+            await MoveToPosition(worldPosition);
+        }
+
+        _view.SetMoving(false);
+
+        _roomModel.Enter.Value = true;
 
         switch (room.Type)
         {
@@ -97,109 +109,11 @@ public class HeroPresenter : IDisposable
                 await LootTreasure(room);
                 break;
         }
-
-        // Переходим к следующей комнате
-        _model.CurrentRoomIndex.Value++;
-    }
-
-    private RoomModel FindRoom()
-    {
-        var room = _gameModel.Rooms[0];
-
-        if (_roomModel == null)
-        {
-            return room;
-        }
-        else
-        {
-            var nextRoom = _gridService.GetRoomAt(_roomModel.Position + _moveVector);
-
-            if (_roomModel.Type == RoomType.Stairs)
-            {
-                if (_cleanRooms.FindAll(x => x.y == _roomModel.Position.y).Count != 0)
-                {
-                    if (nextRoom != null)
-                    {
-                        return nextRoom;
-                    }
-
-                    _moveVector *= -1;
-                    return _gridService.GetRoomAt(_roomModel.Position + _moveVector);
-
-                }
-
-                if (_cleanRooms.FindAll(x => x.y == _roomModel.Position.y - 1).Count != 0)
-                {
-                    nextRoom = _gridService.GetRoomAt(_roomModel.Position + Vector2Int.down);
-
-                    if (nextRoom != null)
-                    {
-                        if (nextRoom.Type == RoomType.Stairs)
-                        {
-                            _moveVector = UnityEngine.Random.Range(0, 2) == 0 ? Vector2Int.right : Vector2Int.left;
-
-                            return nextRoom;
-                        }
-                        else
-                        {
-                            return _gridService.GetRoomAt(_roomModel.Position + _moveVector);
-                        }
-                    }
-                }
-
-                return null;
-            }
-            else
-            {
-                if (nextRoom != null)
-                {
-                    return nextRoom;
-                }
-
-                _moveVector *= -1;
-                return _gridService.GetRoomAt(_roomModel.Position + _moveVector);
-            }
-
-
-        }
-    }
-
-    private void OnHealthChanged(int health)
-    {
-        if (health <= 0 && !_isDisposed)
-        {
-            Die();
-        }
-    }
-
-    private async UniTask MoveToRoom(RoomModel room)
-    {
-        if (_isDisposed) return;
-
-        _roomModel.Enter.Value = false;
-
-        _view.SetMoving(true);
-
-        var roomPosition = _gridService.GetRoomPosition(room);
-
-        room.Heroes.Add(_model);
-
-        if (roomPosition.HasValue)
-        {
-            var worldPosition = GetWorldPosition(roomPosition.Value);
-            await MoveToPosition(worldPosition);
-        }
-
-        _view.SetMoving(false);
-
-        _roomModel.Enter.Value = true;
     }
 
     private async UniTask MoveToExit()
     {
         if (_isDisposed) return;
-
-        _roomModel.Heroes.Remove(_model);
 
         _view.SetMoving(true);
         await MoveToPosition(new Vector3(_gameData.StartHeroPosition.x, _gameData.StartHeroPosition.y, 0));
@@ -228,7 +142,7 @@ public class HeroPresenter : IDisposable
         }
     }
 
-    private async UniTask FightMonsters(RoomModel room)
+    public async UniTask FightMonsters(RoomModel room)
     {
         if (_isDisposed || room.Monsters.Count == 0) return;
 
@@ -251,7 +165,7 @@ public class HeroPresenter : IDisposable
         _view.SetFighting(false);
     }
 
-    private async UniTask RestInRoom(RoomModel room)
+    public async UniTask RestInRoom(RoomModel room)
     {
         if (_isDisposed) return;
 
@@ -263,7 +177,7 @@ public class HeroPresenter : IDisposable
         }
     }
 
-    private async UniTask LootTreasure(RoomModel room)
+    public async UniTask LootTreasure(RoomModel room)
     {
         if (_isDisposed) return;
 
