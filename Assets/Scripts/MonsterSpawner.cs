@@ -11,6 +11,8 @@ public class MonsterSpawner
     private readonly GameData _gameData;
     private readonly RoomModel _roomModel;
     private readonly MonsterFactory _monsterFactory;
+    private readonly DayCycleService _dayCycleService;
+    private readonly GameModel _gameModel;
 
     private CompositeDisposable _spawnDisposables = new();
 
@@ -19,13 +21,17 @@ public class MonsterSpawner
         DungeonView dungeonView,
         DiContainer container,
         GameData gameData,
-        MonsterFactory monsterFactory)
+        MonsterFactory monsterFactory,
+        DayCycleService dayCycleService)
     {
         _dungeonView = dungeonView;
         _container = container;
         _gameData = gameData;
         _monsterFactory = monsterFactory;
+        _dayCycleService = dayCycleService;
+        _gameModel = gameModel;
 
+        _dayCycleService.Time.Subscribe(StartAutoSpawning).AddTo(_spawnDisposables);
     }
 
     public void SpawnWave(MonsterType type, int roomIndex)
@@ -47,7 +53,7 @@ public class MonsterSpawner
             .AddTo(_spawnDisposables);
     }
 
-    public MonsterModel Spawn(MonsterType type, int health, int roomIndex, float delay, RoomModel roomModel = null, Action<MonsterView> action = null)
+    public MonsterModel Spawn(MonsterType type, int health, int roomIndex, float delay, RoomModel roomModel = null)
     {
         Debug.Log("Spawning monster...");
 
@@ -60,12 +66,7 @@ public class MonsterSpawner
             return null;
         }
 
-        if (action != null)
-        {
-            action.Invoke(view);
-        }
-
-        view.transform.localPosition = Vector3.zero;
+        roomModel.AddMonsterView.Value = view;
 
         _container.Instantiate<MonsterPresenter>(new object[] {
            type, model, view, roomModel, _gameData
@@ -79,13 +80,16 @@ public class MonsterSpawner
         _roomModel.Monsters.Remove(monster);
     }
 
-    public void StartAutoSpawning(float interval, int roomIndex)
+    public void StartAutoSpawning(float time)
     {
-        StopAutoSpawning();
-
-        //Observable.Interval(TimeSpan.FromSeconds(interval))
-            //.Subscribe(_ => SpawnWave(roomIndex))
-            //.AddTo(_spawnDisposables);
+        if(time <= 0)
+        {
+            foreach(var room in _gameModel.Rooms)
+            {
+                if (room.Monster != MonsterType.None && room.Monsters.Count <= 3)
+                    room.Monsters.Add(Spawn(room.Monster, 20, 0, 1, room));
+            }
+        }
     }
 
     public void StopAutoSpawning()

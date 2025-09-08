@@ -40,11 +40,15 @@ public class RoomView : MonoBehaviour
 
     public void AddMonsterView(MonsterView monsterView)
     {
+        if(monsterView == null)
+            return;
+
         foreach (var container in _monstersContainer)
         {
             if (container.childCount == 0)
             {
                 monsterView.transform.SetParent(container);
+                monsterView.transform.localPosition = Vector3.zero;
                 break;
             }
         }
@@ -52,6 +56,9 @@ public class RoomView : MonoBehaviour
 
     public void AddHeroView(HeroView heroView)
     {
+        if (heroView == null)
+            return;
+
         heroView.transform.SetParent(_heroesContainer);
     }
 

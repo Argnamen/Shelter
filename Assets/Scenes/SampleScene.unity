@@ -2036,6 +2036,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buildButton: {fileID: 7280958997007528472}
   _playButton: {fileID: 6831091276324059728}
+  _playButtonText: {fileID: 1871185306}
   _goldText: {fileID: 1230982598}
   _levelText: {fileID: 224133633}
   _heroesCountText: {fileID: 282499784}
@@ -3433,6 +3434,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1871185306 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1645523065519409731, guid: 02f5f9c6ae12ee04ea6e8ae29bdea3fc, type: 3}
+  m_PrefabInstance: {fileID: 6831091276324059727}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1873346720
 GameObject:
   m_ObjectHideFlags: 0

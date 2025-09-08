@@ -195,13 +195,14 @@ public class GameModel
     public int GetSquadSpawnCount()
     {
         //  оличество героев увеличиваетс€ с уровнем подземель€
+        return 1;
         return UnityEngine.Random.Range(1, 3 + DungeonLevel.Value);
     }
 
     public float GetHeroSpawnInterval()
     {
         // »нтервал между волнами уменьшаетс€ с уровнем
-        return Mathf.Max(10f, 30f - DungeonLevel.Value * 2f);
+        return _gameData.LengthDay / _gameData.TimeDaySecond * Mathf.Max(1f, 7f - DungeonLevel.Value * 2f);
     }
 
     // ћетод дл€ наблюдени€ за изменением количества героев

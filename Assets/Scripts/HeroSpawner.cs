@@ -11,6 +11,9 @@ public class HeroSpawner
     private readonly DiContainer _container;
     private readonly GridService _gridService;
     private readonly GameData _gameData;
+    private DayCycleService _dayCycleService;
+
+    private float _spawnTime = 0;
 
     private CompositeDisposable _spawnDisposables = new();
 
@@ -19,13 +22,17 @@ public class HeroSpawner
         DungeonView dungeonView,
         DiContainer container,
         GridService gridService,
-        GameData gameData)
+        GameData gameData,
+        DayCycleService dayCycleService)
     {
         _gameModel = gameModel;
         _dungeonView = dungeonView;
         _container = container;
         _gridService = gridService;
         _gameData = gameData;
+        _dayCycleService = dayCycleService;
+
+        _dayCycleService.Time.Subscribe(StartAutoSpawning).AddTo(_spawnDisposables);
     }
 
     public void SpawnHeroWave()
@@ -81,14 +88,24 @@ public class HeroSpawner
         _gameModel.RemoveHero(hero);
     }
 
-    public void StartAutoSpawning()
+    public void StartAutoSpawning(float time)
     {
-        StopAutoSpawning();
+        if (time <= 0)
+        {
+            _spawnTime = 0;
+            return;
+        }
 
         float interval = _gameModel.GetHeroSpawnInterval();
-        Observable.Interval(TimeSpan.FromSeconds(interval))
-            .Subscribe(_ => SpawnHeroWave())
-            .AddTo(_spawnDisposables);
+
+        _spawnTime += interval;
+
+        if (_spawnTime <= _gameData.TimeDaySecond)
+        {
+            Observable.Timer(TimeSpan.FromSeconds(_spawnTime))
+                .Subscribe(_ => SpawnHeroWave())
+                .AddTo(_spawnDisposables);
+        }
     }
 
     public void StopAutoSpawning()

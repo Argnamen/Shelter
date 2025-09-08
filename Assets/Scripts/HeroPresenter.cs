@@ -72,6 +72,8 @@ public class HeroPresenter : IDisposable
         }
         else
         {
+            room.AddHeroView.Value = _view;
+
             await MoveToRoom(room);
         }
 
@@ -89,8 +91,7 @@ public class HeroPresenter : IDisposable
 
         if (roomPosition.HasValue)
         {
-            var worldPosition = GetWorldPosition(roomPosition.Value);
-            await MoveToPosition(worldPosition);
+            await MoveToPosition();
         }
 
         _view.SetMoving(false);
@@ -116,29 +117,29 @@ public class HeroPresenter : IDisposable
         if (_isDisposed) return;
 
         _view.SetMoving(true);
-        await MoveToPosition(new Vector3(_gameData.StartHeroPosition.x, _gameData.StartHeroPosition.y, 0));
+        await MoveToPosition();
         _view.SetMoving(false);
     }
 
-    private async UniTask MoveToPosition(Vector3 targetPosition)
+    private async UniTask MoveToPosition()
     {
         if (_isDisposed) return;
 
         float duration = 1f;
         float elapsed = 0f;
-        Vector3 startPosition = _view.transform.position;
+        Vector3 startPosition = _view.transform.localPosition;
 
         while (elapsed < duration && !_isDisposed)
         {
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
-            _view.transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+            _view.transform.localPosition = Vector3.Lerp(startPosition, Vector3.zero, t);
             await UniTask.Yield();
         }
 
         if (!_isDisposed)
         {
-            _view.transform.position = targetPosition;
+            _view.transform.localPosition = Vector3.zero;
         }
     }
 

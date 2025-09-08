@@ -13,6 +13,9 @@ public class RoomModel
     public List<SquadHeroModel> Squad { get; } = new();
     public ReactiveProperty<bool> Enter { get; } = new(false);
     public ReactiveProperty<bool> Destroy { get; } = new();
+
+    public ReactiveProperty<MonsterView> AddMonsterView { get; } = new();
+    public ReactiveProperty<HeroView> AddHeroView { get; } = new();
     public bool IsUnlocked { get; set; } = true;
 
     public RoomModel(RoomType type, MonsterType monster, Vector2Int position)
@@ -26,5 +29,6 @@ public class RoomModel
     {
         Type = type;
         Position = position;
+        Monster = MonsterType.None;
     }
 }

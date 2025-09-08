@@ -110,6 +110,8 @@ public class MonsterPresenter : IDisposable
     {
         if (_isDisposed) return;
 
+        _roomModel.Monsters.Remove(_model);
+
         _isDisposed = true;
         _disposables.Dispose();
 

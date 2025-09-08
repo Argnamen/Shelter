@@ -13,9 +13,12 @@ public class GamePresenter : IInitializable, IDisposable
     private readonly HeroSpawner _heroSpawner;
     private readonly CameraController _cameraController;
     private readonly GameData _gameData;
+    private readonly DayCycleService _dayCycleService;
 
     private CompositeDisposable _disposables = new();
     private IDisposable _heroWaveSubscription;
+
+    private bool _isPlay = false;
 
     public GamePresenter(
         GameModel model,
@@ -24,7 +27,8 @@ public class GamePresenter : IInitializable, IDisposable
         GridService gridService,
         HeroSpawner heroSpawner,
         CameraController cameraController,
-        GameData gameData)
+        GameData gameData,
+        DayCycleService dayCycleService)
     {
         _model = model;
         _dungeonView = dungeonView;
@@ -33,6 +37,7 @@ public class GamePresenter : IInitializable, IDisposable
         _heroSpawner = heroSpawner;
         _cameraController = cameraController;
         _gameData = gameData;
+        _dayCycleService = dayCycleService;
     }
 
     public void Initialize()
@@ -46,7 +51,10 @@ public class GamePresenter : IInitializable, IDisposable
     {
         //  нопка Play - запуск волны героев
         _uiView.OnPlayButtonClicked
-            .Subscribe(_ => StartHeroWave())
+            .Subscribe(_ => _uiView.OnPlay())
+            .AddTo(_disposables);
+        _uiView.OnPlayButtonClicked
+            .Subscribe(_ => StartGameCycle())
             .AddTo(_disposables);
 
         //  нопка закрыти€ меню строительства
@@ -92,6 +100,20 @@ public class GamePresenter : IInitializable, IDisposable
         _cameraController.FocusOnRoom(_gridService.GetWorldPosition(startPosition));
 
         _uiView.ShowMessage("Welcome to Dungeon Shelter! Build rooms and defend against heroes!");
+    }
+
+    private void StartGameCycle()
+    {
+        _isPlay = !_isPlay;
+
+        if (_isPlay)
+        {
+            _dayCycleService.StartDay();
+        }
+        else
+        {
+            _dayCycleService.StopDay();
+        }
     }
 
     private void StartHeroWave()

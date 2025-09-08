@@ -11,6 +11,7 @@ public class UIView : MonoBehaviour
     [Header("Main UI")]
     [SerializeField] private Button _buildButton;
     [SerializeField] private Button _playButton;
+    [SerializeField] private TextMeshProUGUI _playButtonText;
     [SerializeField] private TextMeshProUGUI _goldText;
     [SerializeField] private TextMeshProUGUI _levelText;
     [SerializeField] private TextMeshProUGUI _heroesCountText;
@@ -38,6 +39,8 @@ public class UIView : MonoBehaviour
     [Inject] private RoomsData _roomsData;
 
     private IDisposable _messageDisposable;
+
+    private bool _isPlay = false;
 
     public Observable<Unit> OnBuildButtonClicked => _buildButton.OnClickAsObservable();
     public Observable<Unit> OnPlayButtonClicked => _playButton.OnClickAsObservable();
@@ -86,6 +89,20 @@ public class UIView : MonoBehaviour
         _stairsRoomButton.OnClickAsObservable()
             .Subscribe(_ => roomSelectionSubject.OnNext(_roomsData.Rooms.Find(x => x.Type == RoomType.Stairs)))
             .AddTo(this);
+    }
+
+    public void OnPlay()
+    {
+        _isPlay = !_isPlay;
+
+        if (_isPlay)
+        {
+            _playButtonText.text = "Stop";
+        }
+        else
+        {
+            _playButtonText.text = "Play";
+        }
     }
 
     public void UpdateGold(int amount)

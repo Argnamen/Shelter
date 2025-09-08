@@ -34,9 +34,6 @@ public class RoomFactory
         var worldPosition = _gridModel.GridToWorldPosition(position);
         var roomView = _dungeonView.CreateRoomView(type, worldPosition);
 
-        // Добавляем монстров в зависимости от типа комнаты
-        AddMonstersToRoom(roomModel, roomView);
-
         if (roomView == null)
         {
             Debug.LogError($"Failed to create room view for type: {type}");
@@ -46,16 +43,18 @@ public class RoomFactory
         // Создаем презентер
         _container.Instantiate<RoomPresenter>(new object[] { roomModel, roomView });
 
+        AddMonstersToRoom(roomModel);
+
         Debug.Log($"Room created at {position} - {type}");
         return roomModel;
     }
 
-    private void AddMonstersToRoom(RoomModel room, RoomView roomView)
+    private void AddMonstersToRoom(RoomModel room)
     {
         switch (room.Type)
         {
             case RoomType.Combat:
-                AddMonsters(room, roomView, room.Monster, 2);
+                AddMonsters(room, room.Monster, 2);
                 break;
             case RoomType.Rest:
                 
@@ -69,11 +68,11 @@ public class RoomFactory
         }
     }
 
-    private void AddMonsters(RoomModel room, RoomView roomView, MonsterType type, int count)
+    private void AddMonsters(RoomModel room, MonsterType type, int count)
     {
         for (int i = 0; i < count; i++)
         {
-            room.Monsters.Add(_monsterSpawner.Spawn(type, 20, 0, 1, room, roomView.AddMonsterView));
+            room.Monsters.Add(_monsterSpawner.Spawn(type, 20, 0, 1, room));
         }
     }
 }

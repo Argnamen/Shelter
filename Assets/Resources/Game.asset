@@ -18,3 +18,5 @@ MonoBehaviour:
   StartHeroPosition: {x: 0, y: 5}
   StartRoomPosition: {x: 0, y: 4}
   StartGold: 10000
+  TimeDaySecond: 10
+  LengthDay: 10
