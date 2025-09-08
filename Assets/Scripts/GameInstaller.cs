@@ -9,12 +9,16 @@ public class GameInstaller : MonoInstaller
     [SerializeField] private CameraController _cameraController;
     [SerializeField] private GameData _gameData;
     [SerializeField] private RoomsData _roomsData;
+    [SerializeField] private HeroesData _heroesData;
+    [SerializeField] private MonstersData _monstersData;
 
     public override void InstallBindings()
     {
         //Данные
         Container.Bind<GameData>().FromInstance(_gameData).AsSingle();
         Container.Bind<RoomsData>().FromInstance(_roomsData).AsSingle();
+        Container.Bind<HeroesData>().FromInstance(_heroesData).AsSingle();
+        Container.Bind<MonstersData>().FromInstance(_monstersData).AsSingle();
 
         // Модели
         Container.BindInterfacesAndSelfTo<GameModel>().AsSingle();

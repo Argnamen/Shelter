@@ -17,5 +17,3 @@ public class HeroModel
 }
 
 public enum HeroState { Entering, Fighting, Resting, Leaving, Dead }
-
-public enum HeroClass { None, Damager, Tank, Healing, SuperHero }

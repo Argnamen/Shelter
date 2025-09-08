@@ -16,5 +16,3 @@ public class MonsterModel
         RoomIndex = roomIndex;
     }
 }
-
-public enum MonsterType { None, Slime, Skeleton, Eagle }

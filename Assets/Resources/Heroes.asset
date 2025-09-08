@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 698c9d7ee3e052140a098de67a1f6dbc, type: 3}
+  m_Name: Heroes
+  m_EditorClassIdentifier: 
+  Heroes:
+  - Class: 1
+    Name: Damager
+    Health: 100
+    Damage: 10
+    Prefab: {fileID: 4372359415770323847, guid: 1a5eb23310b693b4da334b8678944cfa, type: 3}
+  - Class: 2
+    Name: Tank
+    Health: 200
+    Damage: 5
+    Prefab: {fileID: 4077167114062894948, guid: 6b0bc1825a835cf4fb55b3c286b52ec5, type: 3}
+  - Class: 3
+    Name: Heal
+    Health: 100
+    Damage: 10
+    Prefab: {fileID: 4077167114062894948, guid: 6b0bc1825a835cf4fb55b3c286b52ec5, type: 3}

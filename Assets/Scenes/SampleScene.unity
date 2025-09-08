@@ -157,6 +157,8 @@ MonoBehaviour:
   _cameraController: {fileID: 570496271}
   _gameData: {fileID: 11400000, guid: 9bfd26acaff32e9438ddb8b46314aabc, type: 2}
   _roomsData: {fileID: 11400000, guid: c53bcdf393a5d9646b364d077bdfedc4, type: 2}
+  _heroesData: {fileID: 11400000, guid: bda24dd38b0e98242bd2fbe7c9cd7c19, type: 2}
+  _monstersData: {fileID: 11400000, guid: 37f1411422c96454a8980b7c408ae56c, type: 2}
 --- !u!4 &45015666
 Transform:
   m_ObjectHideFlags: 0
