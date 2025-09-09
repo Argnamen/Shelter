@@ -17,14 +17,17 @@ MonoBehaviour:
     Name: Slime
     Health: 10
     Damage: 10
+    DamageSpeadMillisecond: 300
     Prefab: {fileID: 8164055878693717435, guid: 1c06597e704c8c74ea2e89525185f3aa, type: 3}
   - Type: 2
     Name: Skeleton
     Health: 20
     Damage: 15
+    DamageSpeadMillisecond: 300
     Prefab: {fileID: 1665460524564233873, guid: 43efc49e4588df34e982bc0ff7a36d50, type: 3}
   - Type: 3
     Name: Eagle
     Health: 30
     Damage: 20
+    DamageSpeadMillisecond: 300
     Prefab: {fileID: 5336564136609127741, guid: c158cb7a70264d749b650fad8bedfb1e, type: 3}

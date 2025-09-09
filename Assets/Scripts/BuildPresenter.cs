@@ -11,6 +11,7 @@ public class BuildPresenter : IInitializable, IDisposable
     private readonly DungeonView _dungeonView;
     private readonly GameData _gameData;
     private readonly CameraController _cameraController;
+    private readonly DayCycleService _dayCycleService;
 
     private CompositeDisposable _disposables = new();
     private RoomType _selectedRoomType = RoomType.Combat;
@@ -24,13 +25,15 @@ public class BuildPresenter : IInitializable, IDisposable
         DungeonView dungeonView,
         GameModel gameModel,
         GameData gameData,
-        CameraController cameraController)
+        CameraController cameraController,
+        DayCycleService dayCycleService)
     {
         _uiView = uiView;
         _gridService = gridService;
         _dungeonView = dungeonView;
         _gameData = gameData;
         _cameraController = cameraController;
+        _dayCycleService = dayCycleService;
     }
 
     public void Initialize()
@@ -62,6 +65,8 @@ public class BuildPresenter : IInitializable, IDisposable
             .AddTo(_disposables);
 
         _uiView.OnDeleteRoomButtonClicked.Subscribe(_=> RemoveRoom()).AddTo(_disposables);
+
+        _dayCycleService.Time.Subscribe(x => _uiView.DayValue = x).AddTo(_disposables);
     }
 
     private void SetupGridInput()

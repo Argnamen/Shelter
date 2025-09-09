@@ -87,12 +87,7 @@ public class HeroPresenter : IDisposable
 
         _view.SetMoving(true);
 
-        var roomPosition = _gridService.GetRoomPosition(room);
-
-        if (roomPosition.HasValue)
-        {
-            await MoveToPosition();
-        }
+        await MoveToPosition();
 
         _view.SetMoving(false);
 
@@ -156,8 +151,8 @@ public class HeroPresenter : IDisposable
             {
                 if (_isDisposed) break;
 
-                monster.Health.Value -= 10;
-                await UniTask.Delay(300);
+                monster.Health.Value -= _model.Damage.Value;
+                await UniTask.Delay(_model.DamageSpead.Value);
             }
 
             if (_isDisposed) break;

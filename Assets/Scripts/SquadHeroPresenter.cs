@@ -80,13 +80,11 @@ public class SquadHeroPresenter : IDisposable
         room.Squad.Add(_model);
     }
 
-    private async UniTask NotifyAllHeroesOnRoomChanged(RoomModel room)
+    private void NotifyAllHeroesOnRoomChanged(RoomModel room)
     {
         foreach (var hero in _model.Heroes) 
         {
             hero.CurrentRoomModel.Value = room;
-
-            await UniTask.Delay(100);
         }
     }
 

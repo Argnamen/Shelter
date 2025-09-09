@@ -16,6 +16,7 @@ public class Hero
     public string Name;
     public int Health;
     public int Damage;
+    public int DamageSpeadMillisecond;
     public GameObject Prefab;
 }
 

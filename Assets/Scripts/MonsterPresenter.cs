@@ -66,9 +66,9 @@ public class MonsterPresenter : IDisposable
             {
                 if (_isDisposed) break;
 
-                hero.Health.Value -= 10;
+                hero.Health.Value -= _model.Damage.Value;
 
-                await UniTask.Delay(300);
+                await UniTask.Delay(_model.DamageSpeadMillisecond.Value);
             }
 
             if (_isDisposed) break;

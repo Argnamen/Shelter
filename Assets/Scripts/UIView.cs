@@ -15,6 +15,7 @@ public class UIView : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _goldText;
     [SerializeField] private TextMeshProUGUI _levelText;
     [SerializeField] private TextMeshProUGUI _heroesCountText;
+    [SerializeField] private Slider _daySlider;
 
     [Header("Build Menu")]
     [SerializeField] private GameObject _buildMenu;
@@ -45,6 +46,8 @@ public class UIView : MonoBehaviour
     public Observable<Unit> OnBuildButtonClicked => _buildButton.OnClickAsObservable();
     public Observable<Unit> OnPlayButtonClicked => _playButton.OnClickAsObservable();
     public Observable<Unit> OnDeleteRoomButtonClicked => _deleteRoom.OnClickAsObservable();
+
+    public float DayValue { get { return _daySlider.value; } set { _daySlider.value = value; } }
 
     public Observable<RoomData> OnRoomSelected { get; private set; }
     public Observable<Unit> OnCloseBuildMenuClicked => _closeBuildMenuButton.OnClickAsObservable();

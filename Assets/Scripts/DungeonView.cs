@@ -141,10 +141,10 @@ public class DungeonView : MonoBehaviour
         }
     }
 
-    public HeroView CreateHeroView()
+    public HeroView CreateHeroView(GameObject prefab)
     {
-        var prefab = Resources.Load<HeroView>("Heroes/Hero_1");
-        return Instantiate(prefab, _heroesContainer);
+        var view = Instantiate<HeroView>(prefab.GetComponent<HeroView>());
+        return Instantiate(view, _heroesContainer);
     }
 
     private bool IsValidGridPosition(Vector2Int position)

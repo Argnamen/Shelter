@@ -23,6 +23,10 @@ public class MonsterView : MonoBehaviour
             {
                 _animator.Play("Attack");
             }
+            else
+            {
+                _animator.Play("Idle");
+            }
         }
     }
 

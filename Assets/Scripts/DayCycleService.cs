@@ -36,6 +36,8 @@ public class DayCycleService
         if (Time.Value >= 1)
         {
             Time.Value = 0;
+
+            return;
         }
 
         Time.Value += 1 / _lengthDay;

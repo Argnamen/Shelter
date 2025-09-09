@@ -17,14 +17,17 @@ MonoBehaviour:
     Name: Damager
     Health: 100
     Damage: 10
+    DamageSpeadMillisecond: 300
     Prefab: {fileID: 4372359415770323847, guid: 1a5eb23310b693b4da334b8678944cfa, type: 3}
   - Class: 2
     Name: Tank
     Health: 200
     Damage: 5
+    DamageSpeadMillisecond: 300
     Prefab: {fileID: 4077167114062894948, guid: 6b0bc1825a835cf4fb55b3c286b52ec5, type: 3}
   - Class: 3
     Name: Heal
     Health: 100
     Damage: 10
-    Prefab: {fileID: 4077167114062894948, guid: 6b0bc1825a835cf4fb55b3c286b52ec5, type: 3}
+    DamageSpeadMillisecond: 300
+    Prefab: {fileID: 4077167114062894948, guid: 5cc8c6ac892e0ed4a84ae9d3b4809d7e, type: 3}

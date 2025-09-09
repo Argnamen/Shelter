@@ -11,7 +11,8 @@ public class HeroSpawner
     private readonly DiContainer _container;
     private readonly GridService _gridService;
     private readonly GameData _gameData;
-    private DayCycleService _dayCycleService;
+    private readonly DayCycleService _dayCycleService;
+    private readonly HeroesData _heroesData;
 
     private float _spawnTime = 0;
 
@@ -23,7 +24,8 @@ public class HeroSpawner
         DiContainer container,
         GridService gridService,
         GameData gameData,
-        DayCycleService dayCycleService)
+        DayCycleService dayCycleService,
+        HeroesData heroesData)
     {
         _gameModel = gameModel;
         _dungeonView = dungeonView;
@@ -31,6 +33,7 @@ public class HeroSpawner
         _gridService = gridService;
         _gameData = gameData;
         _dayCycleService = dayCycleService;
+        _heroesData = heroesData;
 
         _dayCycleService.Time.Subscribe(StartAutoSpawning).AddTo(_spawnDisposables);
     }
@@ -56,11 +59,13 @@ public class HeroSpawner
 
         for (int i = 0; i < heroCount; i++)
         {
-            var heroModel = new HeroModel(HeroClass.Damager, 100);
+            var heroData = _heroesData.Heroes[UnityEngine.Random.Range(0, _heroesData.Heroes.Count)];
+            var heroModel = new HeroModel(heroData.Class, heroData.Health, heroData.Damage, heroData.DamageSpeadMillisecond);
 
             _gameModel.AddHero(heroModel);
 
-            var heroView = _dungeonView.CreateHeroView();
+            var heroView = _dungeonView.CreateHeroView(heroData.Prefab);
+
             if (heroView == null)
             {
                 Debug.LogError("Failed to create hero view!");

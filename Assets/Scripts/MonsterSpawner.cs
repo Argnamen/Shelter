@@ -13,6 +13,7 @@ public class MonsterSpawner
     private readonly MonsterFactory _monsterFactory;
     private readonly DayCycleService _dayCycleService;
     private readonly GameModel _gameModel;
+    private readonly MonstersData _monstersData;
 
     private CompositeDisposable _spawnDisposables = new();
 
@@ -22,7 +23,8 @@ public class MonsterSpawner
         DiContainer container,
         GameData gameData,
         MonsterFactory monsterFactory,
-        DayCycleService dayCycleService)
+        DayCycleService dayCycleService,
+        MonstersData monstersData)
     {
         _dungeonView = dungeonView;
         _container = container;
@@ -30,6 +32,7 @@ public class MonsterSpawner
         _monsterFactory = monsterFactory;
         _dayCycleService = dayCycleService;
         _gameModel = gameModel;
+        _monstersData = monstersData;
 
         _dayCycleService.Time.Subscribe(StartAutoSpawning).AddTo(_spawnDisposables);
     }
@@ -38,26 +41,26 @@ public class MonsterSpawner
     {
         int monsterCount = _roomModel.Monsters.Count;
 
-        int health = 100;
-
         for (int i = 0; i < monsterCount; i++)
         {
-            SpawnWithDelay(type, 0.5f, health, roomIndex);
+            SpawnWithDelay(type, 0.5f);
         }
     }
 
-    private void SpawnWithDelay(MonsterType type, float delay, int health, int roomIndex)
+    private void SpawnWithDelay(MonsterType type, float delay)
     {
         Observable.Timer(TimeSpan.FromSeconds(delay))
-            .Subscribe(_ => Spawn(type, health, roomIndex, delay))
+            .Subscribe(_ => Spawn(type))
             .AddTo(_spawnDisposables);
     }
 
-    public MonsterModel Spawn(MonsterType type, int health, int roomIndex, float delay, RoomModel roomModel = null)
+    public MonsterModel Spawn(MonsterType type, RoomModel roomModel = null)
     {
         Debug.Log("Spawning monster...");
 
-        var model = new MonsterModel(type, health, delay, roomIndex);
+        var monsterData = _monstersData.Monsters.Find(monster => monster.Type == type);
+
+        var model = new MonsterModel(type, monsterData.Health, monsterData.Damage, monsterData.DamageSpeadMillisecond);
 
         var view = _monsterFactory.Create(type);
         if (view == null)
@@ -87,7 +90,7 @@ public class MonsterSpawner
             foreach(var room in _gameModel.Rooms)
             {
                 if (room.Monster != MonsterType.None && room.Monsters.Count <= 3)
-                    room.Monsters.Add(Spawn(room.Monster, 20, 0, 1, room));
+                    room.Monsters.Add(Spawn(room.Monster, room));
             }
         }
     }
