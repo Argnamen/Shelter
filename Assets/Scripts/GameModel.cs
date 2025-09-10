@@ -201,7 +201,7 @@ public class GameModel
     public float GetHeroSpawnInterval()
     {
         // »нтервал между волнами уменьшаетс€ с уровнем
-        return _gameData.LengthDay / _gameData.TimeDaySecond * Mathf.Max(1f, 7f - DungeonLevel.Value * 2f);
+        return _gameData.LengthDay / _gameData.TimeDaySecond * UnityEngine.Random.Range(1, _gameData.TimeDaySecond);
     }
 
     // ћетод дл€ наблюдени€ за изменением количества героев

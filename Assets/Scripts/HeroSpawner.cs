@@ -101,15 +101,18 @@ public class HeroSpawner
             return;
         }
 
-        float interval = _gameModel.GetHeroSpawnInterval();
-
-        _spawnTime += interval;
-
-        if (_spawnTime <= _gameData.TimeDaySecond)
+        if (time >= _spawnTime && _spawnTime <= _gameData.TimeDaySecond)
         {
-            Observable.Timer(TimeSpan.FromSeconds(_spawnTime))
-                .Subscribe(_ => SpawnHeroWave())
-                .AddTo(_spawnDisposables);
+            float interval = _gameModel.GetHeroSpawnInterval();
+
+            _spawnTime += interval;
+
+            if (_spawnTime <= _gameData.TimeDaySecond)
+            {
+                Observable.Timer(TimeSpan.FromSeconds(0.1f))
+                    .Subscribe(_ => SpawnHeroWave())
+                    .AddTo(_spawnDisposables);
+            }
         }
     }
 

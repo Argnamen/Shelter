@@ -23,6 +23,8 @@ public class SquadHeroModel
         {
             hero.HeroIsReady.Subscribe(AllHeroIsReady);
 
+            hero.Health.Subscribe(x => RemoveHero(hero, x));
+
             hero.HeroIsReady.Value = true;
         }
     }
@@ -47,6 +49,9 @@ public class SquadHeroModel
 
     public HeroModel GetHero()
     {
+        if (Heroes.Count == 0)
+            return null;
+
         var hero = Heroes.Find(x => x.Class == HeroClass.Tank);
 
         if (hero == null)
@@ -55,5 +60,14 @@ public class SquadHeroModel
         }
 
         return hero;
+    }
+
+    public void RemoveHero(HeroModel hero, int health)
+    {
+        if (health <= 0)
+        {
+            _count--;
+            Heroes.Remove(hero);
+        }
     }
 }

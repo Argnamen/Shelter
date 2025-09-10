@@ -124,8 +124,10 @@ public class HeroPresenter : IDisposable
         float elapsed = 0f;
         Vector3 startPosition = _view.transform.localPosition;
 
-        while (elapsed < duration && !_isDisposed)
+        while (elapsed < duration)
         {
+            if (_isDisposed) return;
+
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
             _view.transform.localPosition = Vector3.Lerp(startPosition, Vector3.zero, t);

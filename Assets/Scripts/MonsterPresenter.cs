@@ -62,6 +62,9 @@ public class MonsterPresenter : IDisposable
         {
             var hero = squad.GetHero();
 
+            if (hero == null)
+                return;
+
             while (hero.Health.Value > 0)
             {
                 if (_isDisposed) break;
