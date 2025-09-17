@@ -72,7 +72,7 @@ public class RoomFactory
     {
         for (int i = 0; i < count; i++)
         {
-            room.Monsters.Add(_monsterSpawner.Spawn(type, room));
+            _monsterSpawner.Spawn(type, room);
         }
     }
 }

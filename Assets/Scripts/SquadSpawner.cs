@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-public class HeroSpawner
+public class SquadSpawner
 {
     private readonly GameModel _gameModel;
     private readonly DungeonView _dungeonView;
@@ -18,7 +18,7 @@ public class HeroSpawner
 
     private CompositeDisposable _spawnDisposables = new();
 
-    public HeroSpawner(
+    public SquadSpawner(
         GameModel gameModel,
         DungeonView dungeonView,
         DiContainer container,
@@ -56,20 +56,18 @@ public class HeroSpawner
 
         int heroCount = _gameModel.GetSquadSpawnCount();
         var heroes = new List<HeroModel>();
+        SquadHeroModel squad;
 
         for (int i = 0; i < heroCount; i++)
         {
             var heroData = _heroesData.Heroes[UnityEngine.Random.Range(0, _heroesData.Heroes.Count)];
             var heroModel = new HeroModel(heroData.Class, heroData.Health, heroData.Damage, heroData.DamageSpeadMillisecond);
 
-            _gameModel.AddHero(heroModel);
-
             var heroView = _dungeonView.CreateHeroView(heroData.Prefab);
 
             if (heroView == null)
             {
                 Debug.LogError("Failed to create hero view!");
-                _gameModel.RemoveHero(heroModel);
                 return;
             }
 
@@ -79,18 +77,21 @@ public class HeroSpawner
             heroes.Add(heroModel);
 
             _container.Instantiate<HeroPresenter>(new object[] {
-            heroModel, heroView, _gameModel, _gridService, this
+            heroModel, heroView, _gameModel
         });
         }
+        squad = new SquadHeroModel(heroes);
+
+        _gameModel.AddSquad(squad);
 
         _container.Instantiate<SquadHeroPresenter>(new object[] {
-            new SquadHeroModel(heroes), _gameModel, _gridService, this
+            squad, _gameModel, _gridService, this
         });
     }
 
-    public void RemoveHero(HeroModel hero)
+    public void RemoveSquad(SquadHeroModel squad)
     {
-        _gameModel.RemoveHero(hero);
+        _gameModel.RemoveSquad(squad);
     }
 
     public void StartAutoSpawning(float time)
@@ -103,7 +104,7 @@ public class HeroSpawner
 
         if (time >= _spawnTime && _spawnTime <= _gameData.TimeDaySecond)
         {
-            float interval = _gameModel.GetHeroSpawnInterval();
+            float interval = _gameModel.GetSquadSpawnInterval();
 
             _spawnTime += interval;
 

@@ -9,17 +9,17 @@ public class GameModel
 {
     public ReactiveProperty<int> Gold { get; } = new(0);
     public ReactiveProperty<int> DungeonLevel { get; } = new(1);
-    public ReactiveProperty<int> TotalHeroesDefeated { get; } = new(0);
+    public ReactiveProperty<int> TotalSquadsDefeated { get; } = new(0);
     public ReactiveProperty<int> TotalRoomsBuilt { get; } = new(0);
 
-    public List<HeroModel> ActiveHeroes { get; } = new();
+    public List<SquadHeroModel> ActiveSquads { get; } = new();
     public List<RoomModel> Rooms { get; } = new();
 
     private readonly GameData _gameData;
 
     // События для уведомлений
-    public Subject<Unit> OnHeroSpawned { get; } = new();
-    public Subject<Unit> OnHeroDefeated { get; } = new();
+    public Subject<Unit> OnSquadSpawned { get; } = new();
+    public Subject<Unit> OnSquadDefeated { get; } = new();
     public Subject<RoomModel> OnRoomBuilt { get; } = new();
     public Subject<int> OnGoldChanged { get; } = new();
 
@@ -75,11 +75,6 @@ public class GameModel
         if(room.Type == RoomType.Stairs)
         {
             UpdateStairsRoom(room, true);
-        }
-
-        foreach (var lockRoom in Rooms.FindAll(x => x.Position.y == room.Position.y).OrderBy(x => x.Position.x).ToList())
-        {
-            Debug.Log(lockRoom.Type + " " + lockRoom.Position + " " + lockRoom.IsUnlocked);
         }
     }
 
@@ -165,25 +160,24 @@ public class GameModel
         return Rooms.Any(room => room.Position == position);
     }
 
-    public void AddHero(HeroModel hero)
+    public void AddSquad(SquadHeroModel squad)
     {
-        ActiveHeroes.Add(hero);
-        OnHeroSpawned.OnNext(Unit.Default);
+        ActiveSquads.Add(squad);
+        OnSquadSpawned.OnNext(Unit.Default);
 
-        // Подписываемся на смерть героя
-        hero.Health
-            .Where(health => health <= 0)
+        // Подписываемся на смерть отряда
+        squad.Count
+            .Where(count => count <= 0)
             .Take(1)
-            .Subscribe(_ => RemoveHero(hero))
-            .AddTo(hero); // Добавляем подписку к герою для автоматической отписки
+            .Subscribe(_ => RemoveSquad(squad)); // Добавляем подписку к отряду для автоматической отписки
     }
 
-    public void RemoveHero(HeroModel hero)
+    public void RemoveSquad(SquadHeroModel squad)
     {
-        if (ActiveHeroes.Remove(hero))
+        if (ActiveSquads.Remove(squad))
         {
-            TotalHeroesDefeated.Value++;
-            OnHeroDefeated.OnNext(Unit.Default);
+            TotalSquadsDefeated.Value++;
+            OnSquadDefeated.OnNext(Unit.Default);
         }
     }
 
@@ -198,31 +192,21 @@ public class GameModel
         return UnityEngine.Random.Range(1, 4);
     }
 
-    public float GetHeroSpawnInterval()
+    public float GetSquadSpawnInterval()
     {
         // Интервал между волнами уменьшается с уровнем
         return _gameData.LengthDay / _gameData.TimeDaySecond * UnityEngine.Random.Range(1, _gameData.TimeDaySecond);
     }
 
     // Метод для наблюдения за изменением количества героев
-    public Observable<int> ObserveHeroesCountChanged()
+    public Observable<int> ObserveSquadsCountChanged()
     {
-        return Observable.EveryValueChanged(this, x => x.ActiveHeroes.Count);
+        return Observable.EveryValueChanged(this, x => x.ActiveSquads.Count);
     }
 
     // Метод для наблюдения за изменением количества комнат
     public Observable<int> ObserveRoomsCountChanged()
     {
         return Observable.EveryValueChanged(this, x => x.Rooms.Count);
-    }
-}
-
-// Расширение для удобной работы с подписками
-public static class HeroModelExtensions
-{
-    public static void AddTo(this IDisposable disposable, HeroModel hero)
-    {
-        // Можно хранить подписки в HeroModel если нужно
-        // В данном случае просто добавляем возможность привязки
     }
 }

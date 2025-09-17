@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using R3;
 using System;
 using System.Collections.Generic;
@@ -9,9 +10,6 @@ public class HeroPresenter : IDisposable
     private readonly HeroModel _model;
     private readonly HeroView _view;
     private readonly GameModel _gameModel;
-    private readonly GridService _gridService;
-    private readonly HeroSpawner _heroSpawner;
-    private readonly GameData _gameData;
 
     private RoomModel _roomModel;
 
@@ -23,17 +21,11 @@ public class HeroPresenter : IDisposable
     public HeroPresenter(
         HeroModel model,
         HeroView view,
-        GameModel gameModel,
-        GridService gridService,
-        HeroSpawner heroSpawner,
-        GameData gameData)
+        GameModel gameModel)
     {
         _model = model;
         _view = view;
         _gameModel = gameModel;
-        _gridService = gridService;
-        _heroSpawner = heroSpawner;
-        _gameData = gameData;
 
         Initialize();
     }
@@ -49,7 +41,7 @@ public class HeroPresenter : IDisposable
         if (health <= 0 && !_isDisposed)
         {
             isDie = true;
-            Die();
+            Dispose();
         }
     }
 
@@ -59,6 +51,11 @@ public class HeroPresenter : IDisposable
             return;
 
         _model.HeroIsReady.Value = false;
+
+        if (_roomModel != null)
+        {
+            _roomModel.Enter.Value = false;
+        }
 
         _roomModel = room;
 
@@ -72,6 +69,8 @@ public class HeroPresenter : IDisposable
         }
         else
         {
+            await new WaitWhile(() => room.Enter.Value);
+
             room.AddHeroView.Value = _view;
 
             await MoveToRoom(room);
@@ -83,15 +82,13 @@ public class HeroPresenter : IDisposable
     {
         if (_isDisposed) return;
 
-        _roomModel.Enter.Value = false;
-
         _view.SetMoving(true);
 
         await MoveToPosition();
 
         _view.SetMoving(false);
 
-        _roomModel.Enter.Value = true;
+        room.Enter.Value = true;
 
         switch (room.Type)
         {
@@ -121,18 +118,13 @@ public class HeroPresenter : IDisposable
         if (_isDisposed) return;
 
         float duration = 1f;
-        float elapsed = 0f;
         Vector3 startPosition = _view.transform.localPosition;
 
-        while (elapsed < duration)
-        {
-            if (_isDisposed) return;
+        if (_isDisposed) return;
 
-            elapsed += Time.deltaTime;
-            float t = elapsed / duration;
-            _view.transform.localPosition = Vector3.Lerp(startPosition, Vector3.zero, t);
-            await UniTask.Yield();
-        }
+        await _view.transform.DOLocalMove(Vector3.zero, duration)
+            .SetEase(Ease.Flash)
+            .AsyncWaitForCompletion();
 
         if (!_isDisposed)
         {
@@ -140,24 +132,25 @@ public class HeroPresenter : IDisposable
         }
     }
 
-    public async UniTask FightMonsters(RoomModel room)
+    private async UniTask FightMonsters(RoomModel room)
     {
-        if (_isDisposed || room.Monsters.Count == 0) return;
+        if (_isDisposed) return;
 
         _view.SetFighting();
         await UniTask.Delay(500);
 
-        foreach (var monster in room.Monsters.ToArray()) // Используем ToArray чтобы избежать модификации коллекции
+        while (room.Monsters.Count > 0)
         {
-            while (monster.Health.Value > 0)
+            if (room.Monsters[0].Health.Value > 0)
             {
                 if (_isDisposed) break;
 
-                monster.Health.Value -= _model.Damage.Value;
-                await UniTask.Delay(_model.DamageSpead.Value);
+                room.Monsters[0].Health.Value -= _model.Damage.Value;
             }
 
             if (_isDisposed) break;
+
+            await UniTask.Delay(_model.DamageSpead.Value);
         }
 
         _view.SetFighting(false);
@@ -189,30 +182,13 @@ public class HeroPresenter : IDisposable
         }
     }
 
-    private void Die()
-    {
-        if (_isDisposed) return;
-
-        _view.Die();
-        Dispose();
-    }
-
-    private Vector3 GetWorldPosition(Vector2Int gridPosition)
-    {
-        return new Vector3(
-            gridPosition.x * _gameData.CellSize,
-            gridPosition.y * _gameData.CellSize,
-            0
-        );
-    }
-
     public void Dispose()
     {
         if (_isDisposed) return;
 
         _isDisposed = true;
         _disposables.Dispose();
-        _heroSpawner.RemoveHero(_model);
+        _model.Die.Value = true;
 
         if (_view != null)
         {

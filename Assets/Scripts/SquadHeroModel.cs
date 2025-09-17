@@ -9,11 +9,12 @@ public class SquadHeroModel
     public List<HeroModel> Heroes = new List<HeroModel>();
     public ReactiveProperty<bool> HeroesIsReady { get; } = new();
 
-    private int _count = 0;
+    public ReactiveProperty<int> Count { get; } = new();
 
     public SquadHeroModel(List<HeroModel> heroModels)
     {
         Heroes = heroModels;
+        Count.Value = heroModels.Count;
         Initialize();
     }
 
@@ -23,7 +24,7 @@ public class SquadHeroModel
         {
             hero.HeroIsReady.Subscribe(AllHeroIsReady);
 
-            hero.Health.Subscribe(x => RemoveHero(hero, x));
+            hero.Die.Subscribe(x => RemoveHero(hero, x));
 
             hero.HeroIsReady.Value = true;
         }
@@ -31,14 +32,9 @@ public class SquadHeroModel
 
     private void AllHeroIsReady(bool isReady)
     {
-        if (isReady)
+        if(Heroes.FindAll(x => x.HeroIsReady.Value).Count == Heroes.Count)
         {
-            _count -= 1;
-        }
-
-        if(_count <= 0)
-        {
-            _count = Heroes.Count;
+            Count.Value = Heroes.Count;
             HeroesIsReady.Value = true;
         }
         else
@@ -62,12 +58,12 @@ public class SquadHeroModel
         return hero;
     }
 
-    public void RemoveHero(HeroModel hero, int health)
+    public void RemoveHero(HeroModel hero, bool isDie)
     {
-        if (health <= 0)
+        if (isDie)
         {
-            _count--;
             Heroes.Remove(hero);
+            Count.Value--;
         }
     }
 }

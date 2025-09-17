@@ -8,6 +8,8 @@ public class HeroModel
     public ReactiveProperty<RoomModel> CurrentRoomModel { get; } = new();
 
     public ReactiveProperty<bool> HeroIsReady = new ReactiveProperty<bool>();
+
+    public ReactiveProperty<bool> Die { get; } = new(false);
     public HeroState State { get; set; } = HeroState.Entering;
     public HeroClass Class { get; } = HeroClass.None;
 

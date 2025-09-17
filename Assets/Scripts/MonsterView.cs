@@ -5,45 +5,31 @@ public class MonsterView : MonoBehaviour
     [SerializeField] private Animator _animator;
     [SerializeField] private SpriteRenderer _spriteRenderer;
 
-    public void Initialize(MonsterType type)
-    {
-        // Настройка спрайта и анимаций
-    }
+    private bool _isDie = false;
 
-    private void Start()
+    public void Initialize(MonsterType type)
     {
         _animator.Play("Idle");
     }
 
-    public void SetFighting(bool isFighting = true)
+    public void Fight()
     {
-        if (_animator != null)
-        {
-            if (isFighting)
-            {
-                _animator.Play("Attack");
-            }
-            else
-            {
-                _animator.Play("Idle");
-            }
-        }
+        if (_isDie) return;
+        _animator.Play("Attack");
+    }
+
+    public void Idle()
+    {
+        if (_isDie) return;
+        _animator.Play("Idle");
     }
 
     public void Die()
     {
+        _isDie = true;
         _animator.Play("Die");
 
         // Автоматически уничтожаем через 1 секунду
         Destroy(gameObject, 1f);
-    }
-
-    // Добавляем DisposableCollector если его нет
-    private void Awake()
-    {
-        if (GetComponent<DisposableCollector>() == null)
-        {
-            gameObject.AddComponent<DisposableCollector>();
-        }
     }
 }

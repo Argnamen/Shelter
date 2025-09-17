@@ -55,19 +55,19 @@ public class MonsterPresenter : IDisposable
     {
         if (_isDisposed) return;
 
-        _view.SetFighting();
         await UniTask.Delay(500);
 
-        foreach (var squad in _roomModel.Squad.ToArray()) // Используем ToArray чтобы избежать модификации коллекции
+        _view.Fight();
+        while (_roomModel.Squad != null)
         {
-            var hero = squad.GetHero();
+            var hero = _roomModel.Squad.GetHero();
 
             if (hero == null)
-                return;
+                break;
 
-            while (hero.Health.Value > 0)
+            if (hero.Health.Value > 0)
             {
-                if (_isDisposed) break;
+                if (_isDisposed && hero.Die.Value) break;
 
                 hero.Health.Value -= _model.Damage.Value;
 
@@ -77,7 +77,7 @@ public class MonsterPresenter : IDisposable
             if (_isDisposed) break;
         }
 
-        _view.SetFighting(false);
+        _view.Idle();
     }
 
     private async UniTask RestInRoom(RoomModel room)

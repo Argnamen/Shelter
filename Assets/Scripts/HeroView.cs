@@ -7,11 +7,7 @@ public class HeroView : MonoBehaviour
 
     private void Start()
     {
-        if (_animator != null)
-        {
-            _animator.Play("Idle");
-        }
-        
+        _animator.Play("Idle");
     }
     public void SetMoving(bool isMoving)
     {
@@ -30,22 +26,15 @@ public class HeroView : MonoBehaviour
 
     public void SetFighting(bool isFighting = true)
     {
-        if (_animator != null)
+        if (isFighting)
         {
-            if (isFighting)
-            {
-                _animator.Play("Attack");
-            }
+            _animator.Play("Attack");
         }
     }
 
     public void Die()
     {
-        if (_animator != null)
-        {
-            _animator.Play("Die");
-        }
-
+        _animator.Play("Die");
         // Уничтожаем объект через 1 секунду
         Destroy(gameObject, 1f);
     }

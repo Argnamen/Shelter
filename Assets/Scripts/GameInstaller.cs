@@ -31,7 +31,7 @@ public class GameInstaller : MonoInstaller
         // Сервисы
         Container.Bind<GridService>().AsSingle();
         Container.Bind<RoomFactory>().AsSingle();
-        Container.Bind<HeroSpawner>().AsSingle();
+        Container.Bind<SquadSpawner>().AsSingle();
         Container.Bind<MonsterSpawner>().AsSingle();
         Container.Bind<MonsterFactory>().AsSingle();
         Container.Bind<DayCycleService>().AsSingle();

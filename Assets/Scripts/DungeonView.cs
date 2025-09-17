@@ -144,7 +144,7 @@ public class DungeonView : MonoBehaviour
     public HeroView CreateHeroView(GameObject prefab)
     {
         var view = Instantiate<HeroView>(prefab.GetComponent<HeroView>());
-        return Instantiate(view, _heroesContainer);
+        return view;
     }
 
     private bool IsValidGridPosition(Vector2Int position)

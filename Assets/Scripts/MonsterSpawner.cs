@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using R3;
 using System;
 using System.Collections.Generic;
@@ -36,25 +37,7 @@ public class MonsterSpawner
 
         _dayCycleService.Time.Subscribe(StartAutoSpawning).AddTo(_spawnDisposables);
     }
-
-    public void SpawnWave(MonsterType type, int roomIndex)
-    {
-        int monsterCount = _roomModel.Monsters.Count;
-
-        for (int i = 0; i < monsterCount; i++)
-        {
-            SpawnWithDelay(type, 0.5f);
-        }
-    }
-
-    private void SpawnWithDelay(MonsterType type, float delay)
-    {
-        Observable.Timer(TimeSpan.FromSeconds(delay))
-            .Subscribe(_ => Spawn(type))
-            .AddTo(_spawnDisposables);
-    }
-
-    public MonsterModel Spawn(MonsterType type, RoomModel roomModel = null)
+    public void Spawn(MonsterType type, RoomModel roomModel)
     {
         Debug.Log("Spawning monster...");
 
@@ -63,19 +46,19 @@ public class MonsterSpawner
         var model = new MonsterModel(type, monsterData.Health, monsterData.Damage, monsterData.DamageSpeadMillisecond);
 
         var view = _monsterFactory.Create(type);
+
         if (view == null)
         {
             Debug.LogError("Failed to create monster view!");
-            return null;
+            return;
         }
 
+        roomModel.Monsters.Add(model);
         roomModel.AddMonsterView.Value = view;
 
         _container.Instantiate<MonsterPresenter>(new object[] {
            type, model, view, roomModel, _gameData
         });
-
-        return model;
     }
 
     public void Remove(MonsterModel monster)
@@ -83,14 +66,18 @@ public class MonsterSpawner
         _roomModel.Monsters.Remove(monster);
     }
 
-    public void StartAutoSpawning(float time)
+    public async void StartAutoSpawning(float time)
     {
         if(time <= 0)
         {
             foreach(var room in _gameModel.Rooms)
             {
-                if (room.Monster != MonsterType.None && room.Monsters.Count <= 3)
-                    room.Monsters.Add(Spawn(room.Monster, room));
+                await new WaitWhile(() => room.Enter.Value);
+
+                if (room.Type == RoomType.Combat && room.Monsters.Count < 3)
+                {
+                    Spawn(room.Monster, room);
+                }
             }
         }
     }

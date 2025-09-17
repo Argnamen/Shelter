@@ -4,7 +4,7 @@ public class RoomView : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Transform[] _monstersContainer;
-    [SerializeField] private Transform _heroesContainer;
+    [SerializeField] private Transform[] _heroesContainers;
     public Vector2Int Position { get; private set; }
     public RoomType Type { get; private set; }
 
@@ -59,7 +59,13 @@ public class RoomView : MonoBehaviour
         if (heroView == null)
             return;
 
-        heroView.transform.SetParent(_heroesContainer);
+        for (int i = 0; i < _heroesContainers.Length; i++)
+        {
+            if (_heroesContainers[i].childCount == 0)
+            {
+                heroView.transform.SetParent(_heroesContainers[i]);
+            }
+        }
     }
 
     public void DestroyRoom()

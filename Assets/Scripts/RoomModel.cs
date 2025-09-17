@@ -10,14 +10,13 @@ public class RoomModel
     public MonsterType Monster { get; }
     public Vector2Int Position { get; set; }
     public List<MonsterModel> Monsters { get; } = new();
-    public List<SquadHeroModel> Squad { get; } = new();
     public ReactiveProperty<bool> Enter { get; } = new(false);
     public ReactiveProperty<bool> Destroy { get; } = new();
-
     public ReactiveProperty<MonsterView> AddMonsterView { get; } = new();
     public ReactiveProperty<HeroView> AddHeroView { get; } = new();
     public bool IsUnlocked { get; set; } = true;
 
+    public SquadHeroModel Squad;
     public RoomModel(RoomType type, MonsterType monster, Vector2Int position)
     {
         Type = type;

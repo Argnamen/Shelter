@@ -9,9 +9,9 @@ public class SquadHeroPresenter : IDisposable
 {
     private readonly GameModel _gameModel;
     private readonly GridService _gridService;
-    private readonly HeroSpawner _heroSpawner;
+    private readonly SquadSpawner _squadSpawner;
     private readonly GameData _gameData;
-    private SquadHeroModel _model;
+    private readonly SquadHeroModel _model;
 
     private RoomModel _roomModel;
 
@@ -25,14 +25,14 @@ public class SquadHeroPresenter : IDisposable
     public SquadHeroPresenter(SquadHeroModel model,
         GameModel gameModel,
         GridService gridService,
-        HeroSpawner heroSpawner,
+        SquadSpawner squadSpawner,
         GameData gameData)
     {
         _model = model;
         _gameModel = gameModel;
         _gridService = gridService;
         _gameData = gameData;
-        _heroSpawner = heroSpawner;
+        _squadSpawner = squadSpawner;
 
         Initialize();
     }
@@ -42,6 +42,7 @@ public class SquadHeroPresenter : IDisposable
         InitCleanRooms();
 
         _model.HeroesIsReady.Subscribe(OnRoomChanged).AddTo(_disposables);
+        _model.Count.Subscribe(Die).AddTo(_disposables);
     }
 
     private void InitCleanRooms()
@@ -69,7 +70,7 @@ public class SquadHeroPresenter : IDisposable
         }
 
         if (_roomModel != null)
-            _roomModel.Squad.Remove(_model);
+            _roomModel.Squad = null;
 
         _cleanRooms.Remove(room.Position);
 
@@ -77,7 +78,7 @@ public class SquadHeroPresenter : IDisposable
 
         NotifyAllHeroesOnRoomChanged(room);
 
-        room.Squad.Add(_model);
+        room.Squad = _model;
     }
 
     private void NotifyAllHeroesOnRoomChanged(RoomModel room)
@@ -150,11 +151,22 @@ public class SquadHeroPresenter : IDisposable
         }
     }
 
+    private void Die(int count)
+    {
+        if(count <= 0)
+        {
+            Dispose();
+        }
+    }
+
     public void Dispose()
     {
         if (_isDisposed) return;
 
         _isDisposed = true;
         _disposables.Dispose();
+        _squadSpawner.RemoveSquad(_model);
+        _roomModel.Squad = null;
+        _roomModel.Enter.Value = false;
     }
 }

@@ -10,7 +10,7 @@ public class GamePresenter : IInitializable, IDisposable
     private readonly DungeonView _dungeonView;
     private readonly UIView _uiView;
     private readonly GridService _gridService;
-    private readonly HeroSpawner _heroSpawner;
+    private readonly SquadSpawner _heroSpawner;
     private readonly CameraController _cameraController;
     private readonly GameData _gameData;
     private readonly DayCycleService _dayCycleService;
@@ -25,7 +25,7 @@ public class GamePresenter : IInitializable, IDisposable
         DungeonView dungeonView,
         UIView uiView,
         GridService gridService,
-        HeroSpawner heroSpawner,
+        SquadSpawner heroSpawner,
         CameraController cameraController,
         GameData gameData,
         DayCycleService dayCycleService)
@@ -80,7 +80,7 @@ public class GamePresenter : IInitializable, IDisposable
             .AddTo(_disposables);
 
         // Подписка на изменение количества героев
-        _model.ObserveHeroesCountChanged()
+        _model.ObserveSquadsCountChanged()
             .Subscribe(count => _uiView.UpdateHeroesCount(count))
             .AddTo(_disposables);
     }
