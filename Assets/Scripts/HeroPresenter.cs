@@ -32,8 +32,10 @@ public class HeroPresenter : IDisposable
 
     private void Initialize()
     {
+        _view.SetHealth(_model.Health.Value);
         _model.CurrentRoomModel.Subscribe(OnRoomChanged).AddTo(_disposables);
         _model.Health.Subscribe(OnHealthChanged).AddTo(_disposables);
+        _model.Health.Subscribe(_view.UpdateHealth).AddTo(_disposables);
     }
 
     private void OnHealthChanged(int health)
@@ -160,12 +162,17 @@ public class HeroPresenter : IDisposable
     {
         if (_isDisposed) return;
 
-        await UniTask.Delay(2000);
 
-        if (!_isDisposed)
+        while (_model.Health.Value != _model.MaxHealth)
         {
-            _model.Health.Value = Mathf.Min(100, _model.Health.Value + 30);
+            await UniTask.Delay(1000);
+
+            if (_isDisposed) return;
+
+            _model.Health.Value = Mathf.Min(_model.MaxHealth, _model.Health.Value + 30);
         }
+
+        await UniTask.Delay(100);
     }
 
     public async UniTask LootTreasure(RoomModel room)
@@ -176,10 +183,27 @@ public class HeroPresenter : IDisposable
 
         if (!_isDisposed)
         {
-            // Награда за сундук
-            int goldReward = UnityEngine.Random.Range(10, 30);
-            _gameModel.Gold.Value += goldReward;
+            switch (UnityEngine.Random.Range(0, 5))
+            {
+                case 0:
+                    break;
+                case 1:
+                    _model.MaxHealth += 5;
+                    _model.Health.Value = _model.Health.Value;
+                    break;
+                case 2:
+                    _model.Damage.Value += 5;
+                    break;
+                case 3:
+                    _model.Health.Value += 20;
+                    break;
+                case 4:
+                    _model.DamageSpead.Value += 10;
+                    break;
+            }
         }
+
+        await UniTask.Delay(100);
     }
 
     public void Dispose()

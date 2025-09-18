@@ -4,7 +4,10 @@ public class HeroView : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
     [SerializeField] private SpriteRenderer _spriteRenderer;
+    [SerializeField] private SpriteRenderer _healthSprite;
 
+    private float _oneHPSize;
+    private float _oneHPImage;
     private void Start()
     {
         _animator.Play("Idle");
@@ -30,6 +33,21 @@ public class HeroView : MonoBehaviour
         {
             _animator.Play("Attack");
         }
+    }
+
+    public void SetHealth(float health)
+    {
+        _oneHPSize = health;
+    }
+
+    public void UpdateHealth(int health)
+    {
+        if (_healthSprite == null)
+            return;
+
+        Debug.Log(health);
+
+        _healthSprite.size = new Vector2(1 / _oneHPSize * health, _healthSprite.size.y);
     }
 
     public void Die()

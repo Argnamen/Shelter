@@ -13,12 +13,16 @@ public class HeroModel
     public HeroState State { get; set; } = HeroState.Entering;
     public HeroClass Class { get; } = HeroClass.None;
 
+    public int MaxHealth;
+
     public HeroModel(HeroClass heroClass, int health, int damage, int damageSpead)
     {
         Class = heroClass;
         Health = new(health);
         Damage = new(damage);
         DamageSpead = new(damageSpead);
+
+        MaxHealth = health;
     }
 }
 

@@ -16,6 +16,7 @@ public class UIView : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _levelText;
     [SerializeField] private TextMeshProUGUI _heroesCountText;
     [SerializeField] private Slider _daySlider;
+    [SerializeField] private WinUICollection _winUICollection;
 
     [Header("Build Menu")]
     [SerializeField] private GameObject _buildMenu;
