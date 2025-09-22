@@ -35,6 +35,7 @@ public class GameInstaller : MonoInstaller
         Container.Bind<MonsterSpawner>().AsSingle();
         Container.Bind<MonsterFactory>().AsSingle();
         Container.Bind<DayCycleService>().AsSingle();
+        Container.Bind<WinSystem>().AsSingle();
 
         // Презентеры
         Container.BindInterfacesAndSelfTo<GamePresenter>().AsSingle().NonLazy();

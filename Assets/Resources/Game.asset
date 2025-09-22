@@ -17,6 +17,10 @@ MonoBehaviour:
   CellSize: 2.5
   StartHeroPosition: {x: 0, y: 5}
   StartRoomPosition: {x: 0, y: 4}
-  StartGold: 10000
+  StartGold: 1000
   TimeDaySecond: 10
   LengthDay: 10
+  MaxInteres: 1000
+  MaxGold: 1000
+  MaxGhost: 1000
+  MaxVlianie: 1000

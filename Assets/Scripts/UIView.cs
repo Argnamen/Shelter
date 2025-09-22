@@ -50,6 +50,11 @@ public class UIView : MonoBehaviour
 
     public float DayValue { get { return _daySlider.value; } set { _daySlider.value = value; } }
 
+    public float WinGhost { get => _winUICollection.GhostSlider.value; set { _winUICollection.GhostSlider.value = value; } }
+    public float WinInteres { get => _winUICollection.InteresSlider.value; set { _winUICollection.InteresSlider.value = value; } }
+    public float WinGold { get => _winUICollection.GoldSlider.value; set { _winUICollection.GoldSlider.value = value; } }
+    public float WinVlianie{ get => _winUICollection.VlianieSlider.value; set { _winUICollection.VlianieSlider.value = value; } }
+
     public Observable<RoomData> OnRoomSelected { get; private set; }
     public Observable<Unit> OnCloseBuildMenuClicked => _closeBuildMenuButton.OnClickAsObservable();
 

@@ -13,6 +13,7 @@ public class SquadSpawner
     private readonly GameData _gameData;
     private readonly DayCycleService _dayCycleService;
     private readonly HeroesData _heroesData;
+    private readonly WinSystem _winSystem;
 
     private float _spawnTime = 0;
 
@@ -25,7 +26,8 @@ public class SquadSpawner
         GridService gridService,
         GameData gameData,
         DayCycleService dayCycleService,
-        HeroesData heroesData)
+        HeroesData heroesData,
+        WinSystem winSystem)
     {
         _gameModel = gameModel;
         _dungeonView = dungeonView;
@@ -34,6 +36,7 @@ public class SquadSpawner
         _gameData = gameData;
         _dayCycleService = dayCycleService;
         _heroesData = heroesData;
+        _winSystem = winSystem;
 
         _dayCycleService.Time.Subscribe(StartAutoSpawning).AddTo(_spawnDisposables);
     }
@@ -77,7 +80,7 @@ public class SquadSpawner
             heroes.Add(heroModel);
 
             _container.Instantiate<HeroPresenter>(new object[] {
-            heroModel, heroView, _gameModel
+            heroModel, heroView, _gameModel, _winSystem
         });
         }
         squad = new SquadHeroModel(heroes);

@@ -16,4 +16,9 @@ public class GameData : ScriptableObject
 
     public int TimeDaySecond = 10;
     public int LengthDay = 100;
+
+    public int MaxInteres = 1000;
+    public int MaxGold = 1000;
+    public int MaxGhost = 1000;
+    public int MaxVlianie = 1000;
 }

@@ -10,6 +10,7 @@ public class HeroPresenter : IDisposable
     private readonly HeroModel _model;
     private readonly HeroView _view;
     private readonly GameModel _gameModel;
+    private readonly WinSystem _winSystem;
 
     private RoomModel _roomModel;
 
@@ -21,11 +22,13 @@ public class HeroPresenter : IDisposable
     public HeroPresenter(
         HeroModel model,
         HeroView view,
-        GameModel gameModel)
+        GameModel gameModel,
+        WinSystem winSystem)
     {
         _model = model;
         _view = view;
         _gameModel = gameModel;
+        _winSystem = winSystem;
 
         Initialize();
     }
@@ -42,6 +45,7 @@ public class HeroPresenter : IDisposable
     {
         if (health <= 0 && !_isDisposed)
         {
+            _winSystem.AddWinPoint(EventType.DieHero);
             isDie = true;
             Dispose();
         }
@@ -57,6 +61,16 @@ public class HeroPresenter : IDisposable
         if (_roomModel != null)
         {
             _roomModel.Enter.Value = false;
+
+            switch (_roomModel.Type)
+            {
+                case RoomType.Treasure:
+                    _winSystem.AddWinPoint(EventType.OpenChest);
+                    break;
+                case RoomType.Combat:
+                    _winSystem.AddWinPoint(EventType.WinBattle);
+                    break;
+            }
         }
 
         _roomModel = room;
@@ -66,6 +80,9 @@ public class HeroPresenter : IDisposable
         if(room == null)
         {
             await MoveToExit();
+
+            _winSystem.AddWinPoint(EventType.CleanDangeon);
+
             Dispose();
             return;
         }

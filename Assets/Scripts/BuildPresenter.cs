@@ -12,6 +12,7 @@ public class BuildPresenter : IInitializable, IDisposable
     private readonly GameData _gameData;
     private readonly CameraController _cameraController;
     private readonly DayCycleService _dayCycleService;
+    private readonly WinSystem _winSystem;
 
     private CompositeDisposable _disposables = new();
     private RoomType _selectedRoomType = RoomType.Combat;
@@ -26,7 +27,8 @@ public class BuildPresenter : IInitializable, IDisposable
         GameModel gameModel,
         GameData gameData,
         CameraController cameraController,
-        DayCycleService dayCycleService)
+        DayCycleService dayCycleService,
+        WinSystem winSystem)
     {
         _uiView = uiView;
         _gridService = gridService;
@@ -34,6 +36,7 @@ public class BuildPresenter : IInitializable, IDisposable
         _gameData = gameData;
         _cameraController = cameraController;
         _dayCycleService = dayCycleService;
+        _winSystem = winSystem;
     }
 
     public void Initialize()
@@ -67,6 +70,11 @@ public class BuildPresenter : IInitializable, IDisposable
         _uiView.OnDeleteRoomButtonClicked.Subscribe(_=> RemoveRoom()).AddTo(_disposables);
 
         _dayCycleService.Time.Subscribe(x => _uiView.DayValue = x).AddTo(_disposables);
+
+        _winSystem.Points[WinPoint.Interes].Subscribe(x => _uiView.WinInteres = 1 - (float)x / _gameData.MaxInteres).AddTo(_disposables);
+        _winSystem.Points[WinPoint.Gold].Subscribe(x => _uiView.WinGold = 1 - (float)x / _gameData.MaxGold).AddTo(_disposables);
+        _winSystem.Points[WinPoint.Vlianie].Subscribe(x => _uiView.WinVlianie = 1 - (float)x / _gameData.MaxVlianie).AddTo(_disposables);
+        _winSystem.Points[WinPoint.Ghost].Subscribe(x => _uiView.WinGhost = 1 - (float)x / _gameData.MaxGhost).AddTo(_disposables);
     }
 
     private void SetupGridInput()
