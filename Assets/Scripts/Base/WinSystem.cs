@@ -15,7 +15,7 @@ public class WinSystem
     }
 
 
-    private void AddWinPoint(WinPoint winPoint, int count)
+    public void AddWinPoint(WinPoint winPoint, int count)
     {
         Points[winPoint].Value = Mathf.Max(0, Points[winPoint].Value - count);
 

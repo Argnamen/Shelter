@@ -60,12 +60,16 @@ public class GridService
 
     public void RemoveRoom(Vector2Int position)
     {
-        if (_gameModel.Rooms[0].Position != position)
-        {
-            _gameModel.RemoveRoom(_gridModel.GetRoomAt(position));
-            _gridModel.RemoveRoom(position);
-            _dungeonView.RemoveRoomView(position);
-        }
+        if (_gameModel.Rooms[0].Position == position)
+            return;
+
+        var roomModel = _gridModel.GetRoomAt(position);
+        var roomData = _roomsData.Rooms.Find(x => x.Type == roomModel.Type && x.MonsterType == roomModel.Monster);
+
+        _gameModel.RemoveRoom(roomModel);
+        _gameModel.AddGold(roomData.Cost);
+        _gridModel.RemoveRoom(position);
+        _dungeonView.RemoveRoomView(position);
     }
 
     public IReadOnlyList<Vector2Int> GetAvailablePositions(RoomType roomType)

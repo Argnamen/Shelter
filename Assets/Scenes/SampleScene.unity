@@ -400,6 +400,7 @@ GameObject:
   - component: {fileID: 172881832}
   - component: {fileID: 172881831}
   - component: {fileID: 172881833}
+  - component: {fileID: 172881834}
   m_Layer: 5
   m_Name: PlayButton (2)
   m_TagString: Untagged
@@ -509,6 +510,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &172881834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 172881829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d8eec18c99b5241968de783de7f829, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _textMeshProUGUI: {fileID: 1634375365}
+  BayButton: {fileID: 172881833}
 --- !u!1 &195343676
 GameObject:
   m_ObjectHideFlags: 0
@@ -1162,6 +1177,7 @@ GameObject:
   - component: {fileID: 442608607}
   - component: {fileID: 442608606}
   - component: {fileID: 442608608}
+  - component: {fileID: 442608609}
   m_Layer: 5
   m_Name: PlayButton (4)
   m_TagString: Untagged
@@ -1271,6 +1287,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &442608609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 442608604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d8eec18c99b5241968de783de7f829, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _textMeshProUGUI: {fileID: 702798456}
+  BayButton: {fileID: 442608608}
 --- !u!1 &461541268
 GameObject:
   m_ObjectHideFlags: 0
@@ -1417,6 +1447,7 @@ GameObject:
   - component: {fileID: 465016609}
   - component: {fileID: 465016608}
   - component: {fileID: 465016610}
+  - component: {fileID: 465016611}
   m_Layer: 5
   m_Name: PlayButton (3)
   m_TagString: Untagged
@@ -1526,6 +1557,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &465016611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465016606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d8eec18c99b5241968de783de7f829, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _textMeshProUGUI: {fileID: 876751622}
+  BayButton: {fileID: 465016610}
 --- !u!1 &483055803
 GameObject:
   m_ObjectHideFlags: 0
@@ -2969,6 +3014,7 @@ GameObject:
   - component: {fileID: 991473512}
   - component: {fileID: 991473511}
   - component: {fileID: 991473513}
+  - component: {fileID: 991473514}
   m_Layer: 5
   m_Name: PlayButton (2)
   m_TagString: Untagged
@@ -3078,6 +3124,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &991473514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 991473509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d8eec18c99b5241968de783de7f829, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _textMeshProUGUI: {fileID: 741400182}
+  BayButton: {fileID: 991473513}
 --- !u!1 &1003286270
 GameObject:
   m_ObjectHideFlags: 0
@@ -3401,14 +3461,16 @@ MonoBehaviour:
   _daySlider: {fileID: 1003286272}
   _winUICollection: {fileID: 369992786}
   _buildMenu: {fileID: 965722788}
-  _restRoomButton: {fileID: 991473513}
-  _treasureRoomButton: {fileID: 465016610}
-  _stairsRoomButton: {fileID: 442608608}
   _closeBuildMenuButton: {fileID: 1155358950}
   _deleteRoom: {fileID: 1830751248}
-  _slimeButton: {fileID: 9208921025280663216}
-  _skelletButton: {fileID: 172881833}
-  _goblinButton: {fileID: 1182594289}
+  _peaceRooms:
+  - {fileID: 991473514}
+  - {fileID: 465016611}
+  - {fileID: 442608609}
+  _monsterRooms:
+  - {fileID: 9208921025280663217}
+  - {fileID: 172881834}
+  - {fileID: 1182594290}
   _roomSelectionPanel: {fileID: 514308361}
   _selectedRoomText: {fileID: 744533480}
   _messageText: {fileID: 1873346721}
@@ -4096,6 +4158,7 @@ GameObject:
   - component: {fileID: 1182594288}
   - component: {fileID: 1182594287}
   - component: {fileID: 1182594289}
+  - component: {fileID: 1182594290}
   m_Layer: 5
   m_Name: PlayButton (3)
   m_TagString: Untagged
@@ -4205,6 +4268,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1182594290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1182594285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d8eec18c99b5241968de783de7f829, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _textMeshProUGUI: {fileID: 1362123491}
+  BayButton: {fileID: 1182594289}
 --- !u!1 &1212132580
 GameObject:
   m_ObjectHideFlags: 0
@@ -6762,6 +6839,7 @@ GameObject:
   - component: {fileID: 2808422552067397877}
   - component: {fileID: 6982683250879220178}
   - component: {fileID: 9208921025280663216}
+  - component: {fileID: 9208921025280663217}
   m_Layer: 5
   m_Name: PlayButton (1)
   m_TagString: Untagged
@@ -7106,6 +7184,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &9208921025280663217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5322752242835805532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d8eec18c99b5241968de783de7f829, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _textMeshProUGUI: {fileID: 3041822988687168882}
+  BayButton: {fileID: 9208921025280663216}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -64,7 +64,8 @@ public class SquadSpawner
         for (int i = 0; i < heroCount; i++)
         {
             var heroData = _heroesData.Heroes[UnityEngine.Random.Range(0, _heroesData.Heroes.Count)];
-            var heroModel = new HeroModel(heroData.Class, heroData.Health, heroData.Damage, heroData.DamageSpeadMillisecond);
+            var goldWithYou = UnityEngine.Random.Range(0, 100 + 1);
+            var heroModel = new HeroModel(heroData.Class, heroData.Health, heroData.Damage, heroData.DamageSpeadMillisecond, goldWithYou);
 
             var heroView = _dungeonView.CreateHeroView(heroData.Prefab);
 

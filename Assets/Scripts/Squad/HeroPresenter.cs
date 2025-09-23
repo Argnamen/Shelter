@@ -19,6 +19,8 @@ public class HeroPresenter : IDisposable
 
     public bool isDie = false;
 
+    private bool _isBattle = false;
+
     public HeroPresenter(
         HeroModel model,
         HeroView view,
@@ -47,6 +49,7 @@ public class HeroPresenter : IDisposable
         {
             _winSystem.AddWinPoint(EventType.DieHero);
             isDie = true;
+            _gameModel.AddGold(_model.Gold);
             Dispose();
         }
     }
@@ -68,7 +71,8 @@ public class HeroPresenter : IDisposable
                     _winSystem.AddWinPoint(EventType.OpenChest);
                     break;
                 case RoomType.Combat:
-                    _winSystem.AddWinPoint(EventType.WinBattle);
+                    if(_isBattle)
+                        _winSystem.AddWinPoint(EventType.WinBattle);
                     break;
             }
         }
@@ -165,6 +169,8 @@ public class HeroPresenter : IDisposable
                 if (_isDisposed) break;
 
                 room.Monsters[0].Health.Value -= _model.Damage.Value;
+
+                _isBattle = true;
             }
 
             if (_isDisposed) break;

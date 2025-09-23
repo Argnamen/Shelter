@@ -88,7 +88,6 @@ public class GamePresenter : IInitializable, IDisposable
     private void InitializeGame()
     {
         // Инициализация начального состояния
-        _model.Gold.Value = _gameData.StartGold; // Стартовое золото
         _model.DungeonLevel.Value = 1;
 
         _dungeonView.InitializeGrid();
@@ -145,7 +144,7 @@ public class GamePresenter : IInitializable, IDisposable
 
     public void AddGold(int amount)
     {
-        _model.Gold.Value += amount;
+        _model.AddGold(amount);
         _uiView.ShowMessage($"+{amount} gold!", 1.5f);
     }
 

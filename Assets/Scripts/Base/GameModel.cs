@@ -16,6 +16,7 @@ public class GameModel
     public List<RoomModel> Rooms { get; } = new();
 
     private readonly GameData _gameData;
+    private readonly WinSystem _winSystem;
 
     // События для уведомлений
     public Subject<Unit> OnSquadSpawned { get; } = new();
@@ -23,9 +24,10 @@ public class GameModel
     public Subject<RoomModel> OnRoomBuilt { get; } = new();
     public Subject<int> OnGoldChanged { get; } = new();
 
-    public GameModel(GameData gameData)
+    public GameModel(GameData gameData, WinSystem winSystem)
     {
         _gameData = gameData;
+        _winSystem = winSystem;
 
         Initialize();
     }
@@ -41,8 +43,7 @@ public class GameModel
     {
         if (Gold.Value >= amount)
         {
-            Gold.Value -= amount;
-            OnGoldChanged.OnNext(Gold.Value);
+            AddGold(-amount);
             return true;
         }
         return false;
@@ -51,6 +52,9 @@ public class GameModel
     public void AddGold(int amount)
     {
         Gold.Value += amount;
+
+        _winSystem.AddWinPoint(WinPoint.Gold, amount);
+
         OnGoldChanged.OnNext(Gold.Value);
     }
 
