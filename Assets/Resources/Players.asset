@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fc488cf926281846b85548634a1b5fa, type: 3}
+  m_Name: Players
+  m_EditorClassIdentifier: 
+  Players:
+  - playerType: 1
+    Image: {fileID: 21300000, guid: 6d4734b50e97f44faac533f157541747, type: 3}
+    StartGold: 1000
+    Rooms: {fileID: 11400000, guid: c53bcdf393a5d9646b364d077bdfedc4, type: 2}
+    Monsters: {fileID: 11400000, guid: 37f1411422c96454a8980b7c408ae56c, type: 2}
+  - playerType: 2
+    Image: {fileID: 21300000, guid: 55483373304e84a7c821d5390de99fdb, type: 3}
+    StartGold: 1500
+    Rooms: {fileID: 11400000, guid: c53bcdf393a5d9646b364d077bdfedc4, type: 2}
+    Monsters: {fileID: 11400000, guid: 37f1411422c96454a8980b7c408ae56c, type: 2}

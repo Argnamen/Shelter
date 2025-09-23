@@ -12,8 +12,6 @@ public class GameData : ScriptableObject
     public Vector2Int StartHeroPosition = new Vector2Int(0, 5);
     public Vector2Int StartRoomPosition = new Vector2Int(0, 4);
 
-    public int StartGold = 10000;
-
     public int TimeDaySecond = 10;
     public int LengthDay = 100;
 

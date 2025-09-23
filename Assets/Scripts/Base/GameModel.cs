@@ -17,6 +17,7 @@ public class GameModel
 
     private readonly GameData _gameData;
     private readonly WinSystem _winSystem;
+    private readonly PlayerData _playerData;
 
     // События для уведомлений
     public Subject<Unit> OnSquadSpawned { get; } = new();
@@ -24,10 +25,11 @@ public class GameModel
     public Subject<RoomModel> OnRoomBuilt { get; } = new();
     public Subject<int> OnGoldChanged { get; } = new();
 
-    public GameModel(GameData gameData, WinSystem winSystem)
+    public GameModel(GameData gameData, WinSystem winSystem, PlayerData playerData)
     {
         _gameData = gameData;
         _winSystem = winSystem;
+        _playerData = playerData;
 
         Initialize();
     }
@@ -35,7 +37,7 @@ public class GameModel
     private void Initialize()
     {
         // Начальные значения
-        Gold.Value = _gameData.StartGold;
+        Gold.Value = _playerData.StartGold;
         DungeonLevel.Value = 1;
     }
 
