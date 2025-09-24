@@ -13,6 +13,7 @@ public class HeroPresenter : IDisposable
     private readonly WinSystem _winSystem;
 
     private RoomModel _roomModel;
+    private List<RoomModel> _roomsToExit = new List<RoomModel>();
 
     private CompositeDisposable _disposables = new();
     private bool _isDisposed = false;
@@ -58,6 +59,22 @@ public class HeroPresenter : IDisposable
     {
         if (_roomModel == null && room == null)
             return;
+
+        if (_roomsToExit.Count == 0 ||
+            room == null ||
+            (room.Type == RoomType.Stairs && _roomsToExit.Find(x => x.Type == RoomType.Stairs) == null) 
+            )
+        {
+            if (room != null)
+            {
+                _roomsToExit.Add(room);
+            }
+            else
+            {
+                _roomsToExit.Add(_gameModel.Rooms.Find(x => x.Type == RoomType.Stairs && x.Position.y == _roomModel.Position.y));
+                _roomsToExit.Add(_roomModel);
+            }
+        }
 
         _model.HeroIsReady.Value = false;
 
@@ -129,18 +146,32 @@ public class HeroPresenter : IDisposable
 
     private async UniTask MoveToExit()
     {
+        float duration = 1f;
+
         if (_isDisposed) return;
 
         _view.SetMoving(true);
-        await MoveToPosition();
+        for(int i = _roomsToExit.Count - 1; i > 0; i--)
+        {
+            _roomsToExit[i - 1].AddHeroView.Value = _view;
+
+            if(i > 0)
+            {
+                duration = Mathf.Abs(_roomsToExit[i].Position.x - _roomsToExit[i - 1].Position.x);
+
+                if(duration == 0)
+                    duration = Mathf.Abs(_roomsToExit[i].Position.y - _roomsToExit[i - 1].Position.y);
+            }
+
+            await MoveToPosition(duration);
+        }
         _view.SetMoving(false);
     }
 
-    private async UniTask MoveToPosition()
+    private async UniTask MoveToPosition(float duration = 1f)
     {
         if (_isDisposed) return;
 
-        float duration = 1f;
         Vector3 startPosition = _view.transform.localPosition;
 
         if (_isDisposed) return;

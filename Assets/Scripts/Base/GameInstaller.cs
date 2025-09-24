@@ -10,6 +10,7 @@ public class GameInstaller : MonoInstaller
     [SerializeField] private GameData _gameData;
     [SerializeField] private HeroesData _heroesData;
     [SerializeField] private PlayersData _playersData;
+    [SerializeField] private MonstersData _monstersData;
 
     public override void InstallBindings()
     {
@@ -21,7 +22,7 @@ public class GameInstaller : MonoInstaller
 
         Container.Bind<PlayerData>().FromInstance(playerData).AsSingle();
         Container.Bind<RoomsData>().FromInstance(playerData.Rooms).AsSingle();
-        Container.Bind<MonstersData>().FromInstance(playerData.Monsters).AsSingle();
+        Container.Bind<MonstersData>().FromInstance(_monstersData).AsSingle();
 
         // Модели
         Container.BindInterfacesAndSelfTo<GameModel>().AsSingle();
