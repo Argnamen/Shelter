@@ -50,6 +50,18 @@ public class HeroView : MonoBehaviour
         _healthSprite.size = new Vector2(1 / _oneHPSize * health, _healthSprite.size.y);
     }
 
+    public void SetPause(bool pause)
+    {
+        if (pause)
+        {
+            _animator.StopPlayback();
+        }
+        else
+        {
+            _animator.StartPlayback();
+        }
+    }
+
     public void Die()
     {
         _animator.Play("Die");

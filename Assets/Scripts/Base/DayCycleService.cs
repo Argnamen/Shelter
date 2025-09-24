@@ -8,6 +8,8 @@ public class DayCycleService
 {
     public ReactiveProperty<float> Time { get; } = new(0);
 
+    public ReactiveProperty<bool> IsTimeStop { get; } = new(true);
+
     private int _time;
     private float _lengthDay;
 
@@ -21,6 +23,7 @@ public class DayCycleService
 
     public void StartDay()
     {
+        IsTimeStop.Value = false;
         Observable.Interval(TimeSpan.FromSeconds(_lengthDay / _time))
             .Subscribe(_ => DayCycle())
             .AddTo(_cycleDisposables);
@@ -28,6 +31,7 @@ public class DayCycleService
 
     public void StopDay()
     {
+        IsTimeStop.Value = true;
         _cycleDisposables.Clear();
     }
 

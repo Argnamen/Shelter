@@ -14,16 +14,19 @@ public class MonsterPresenter : IDisposable
     private readonly MonsterModel _model;
     private readonly GameData _gameData;
     private readonly RoomModel _roomModel;
+    private readonly DayCycleService _dayCycleService;
+    private bool _isTimeStop;
 
     private CompositeDisposable _disposables = new();
     private bool _isDisposed = false;
-    public MonsterPresenter(MonsterType type, MonsterView view, MonsterModel model, RoomModel roomModel, GameData gameData, MonsterFactory monsterFactory)
+    public MonsterPresenter(MonsterType type, MonsterView view, MonsterModel model, RoomModel roomModel, GameData gameData, MonsterFactory monsterFactory, DayCycleService dayCycleService)
     {
         _type = type;
         _view = view;
         _model = model;
         _roomModel = roomModel;
         _gameData = gameData;
+        _dayCycleService = dayCycleService;
 
         Initialize();
     }
@@ -32,6 +35,16 @@ public class MonsterPresenter : IDisposable
     {
         _roomModel.Enter.Subscribe(OnRoomEnter).AddTo(_disposables);
         _model.Health.Subscribe(OnHealthChanged).AddTo(_disposables);
+        _dayCycleService.IsTimeStop.Subscribe(OnTimeStop).AddTo(_disposables);
+    }
+
+    private void OnTimeStop(bool isTimeStop)
+    {
+        if (_isDisposed) return;
+
+        _isTimeStop = isTimeStop;
+
+        _view.SetPause(!isTimeStop);
     }
 
     private async void OnRoomEnter(bool isEnter)
@@ -55,8 +68,6 @@ public class MonsterPresenter : IDisposable
     {
         if (_isDisposed) return;
 
-        await UniTask.Delay(500);
-
         _view.Fight();
         while (_roomModel.Squad != null)
         {
@@ -75,6 +86,8 @@ public class MonsterPresenter : IDisposable
             }
 
             if (_isDisposed) break;
+
+            await UniTask.WaitUntil(() => !_isTimeStop);
         }
 
         _view.Idle();

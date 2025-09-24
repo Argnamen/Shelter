@@ -24,6 +24,18 @@ public class MonsterView : MonoBehaviour
         _animator.Play("Idle");
     }
 
+    public void SetPause(bool pause)
+    {
+        if (pause)
+        {
+            _animator.StopPlayback();
+        }
+        else
+        {
+            _animator.StartPlayback();
+        }
+    }
+
     public void Die()
     {
         _isDie = true;

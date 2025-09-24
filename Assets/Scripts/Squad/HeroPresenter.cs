@@ -3,6 +3,8 @@ using DG.Tweening;
 using R3;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class HeroPresenter : IDisposable
@@ -11,9 +13,12 @@ public class HeroPresenter : IDisposable
     private readonly HeroView _view;
     private readonly GameModel _gameModel;
     private readonly WinSystem _winSystem;
+    private readonly DayCycleService _dayCycleService;
 
     private RoomModel _roomModel;
     private List<RoomModel> _roomsToExit = new List<RoomModel>();
+    private Tweener _tweener;
+    private bool _isTimeStop = false;
 
     private CompositeDisposable _disposables = new();
     private bool _isDisposed = false;
@@ -26,12 +31,14 @@ public class HeroPresenter : IDisposable
         HeroModel model,
         HeroView view,
         GameModel gameModel,
-        WinSystem winSystem)
+        WinSystem winSystem,
+        DayCycleService dayCycleService)
     {
         _model = model;
         _view = view;
         _gameModel = gameModel;
         _winSystem = winSystem;
+        _dayCycleService = dayCycleService;
 
         Initialize();
     }
@@ -42,6 +49,28 @@ public class HeroPresenter : IDisposable
         _model.CurrentRoomModel.Subscribe(OnRoomChanged).AddTo(_disposables);
         _model.Health.Subscribe(OnHealthChanged).AddTo(_disposables);
         _model.Health.Subscribe(_view.UpdateHealth).AddTo(_disposables);
+
+        _dayCycleService.IsTimeStop.Subscribe(TimeStop).AddTo(_disposables);
+    }
+
+    private void TimeStop(bool isTimeStop)
+    {
+        if (_isDisposed)
+            return;
+
+        _isTimeStop = isTimeStop;
+
+        _view.SetPause(!isTimeStop);
+
+        if (isTimeStop)
+        {
+            _tweener.Pause();
+            
+        }
+        else
+        {
+            _tweener.Play();
+        }
     }
 
     private void OnHealthChanged(int health)
@@ -71,7 +100,10 @@ public class HeroPresenter : IDisposable
             }
             else
             {
-                _roomsToExit.Add(_gameModel.Rooms.Find(x => x.Type == RoomType.Stairs && x.Position.y == _roomModel.Position.y));
+                if (_roomsToExit.Find(x => x.Type == RoomType.Stairs) != null)
+                {
+                    _roomsToExit.Add(_gameModel.Rooms.Find(x => x.Type == RoomType.Stairs && x.Position.y == _roomModel.Position.y));
+                }
                 _roomsToExit.Add(_roomModel);
             }
         }
@@ -176,9 +208,10 @@ public class HeroPresenter : IDisposable
 
         if (_isDisposed) return;
 
-        await _view.transform.DOLocalMove(Vector3.zero, duration)
-            .SetEase(Ease.Flash)
-            .AsyncWaitForCompletion();
+        _tweener = _view.transform.DOLocalMove(Vector3.zero, duration)
+            .SetEase(Ease.Flash);
+
+        await _tweener.AsyncWaitForCompletion();
 
         if (!_isDisposed)
         {
@@ -191,7 +224,6 @@ public class HeroPresenter : IDisposable
         if (_isDisposed) return;
 
         _view.SetFighting();
-        await UniTask.Delay(500);
 
         while (room.Monsters.Count > 0)
         {
@@ -202,11 +234,13 @@ public class HeroPresenter : IDisposable
                 room.Monsters[0].Health.Value -= _model.Damage.Value;
 
                 _isBattle = true;
+
+                await UniTask.Delay(_model.DamageSpead.Value);
             }
 
             if (_isDisposed) break;
 
-            await UniTask.Delay(_model.DamageSpead.Value);
+            await UniTask.WaitUntil(() => !_isTimeStop);
         }
 
         _view.SetFighting(false);
