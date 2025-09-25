@@ -94,7 +94,10 @@ public class GamePresenter : IInitializable, IDisposable
 
         // Создаем начальную комнату
         var startPosition = _gameData.StartRoomPosition;
-        _gridService.TryPlaceRoom(RoomType.Rest, startPosition);
+        _gridService.TryPlaceRoom(RoomType.Rest, startPosition, Faction.Player);
+        _gridService.TryPlaceRoom(RoomType.Rest, startPosition, Faction.Enemy1);
+        _gridService.TryPlaceRoom(RoomType.Rest, startPosition, Faction.Enemy2);
+        _gridService.TryPlaceRoom(RoomType.Rest, startPosition, Faction.Enemy3);
 
         _cameraController.FocusOnRoom(_gridService.GetWorldPosition(startPosition));
 
@@ -115,7 +118,7 @@ public class GamePresenter : IInitializable, IDisposable
         }
     }
 
-    private void StartHeroWave()
+    private void StartHeroWave(Faction faction)
     {
         if (_heroWaveSubscription != null)
         {
@@ -128,7 +131,7 @@ public class GamePresenter : IInitializable, IDisposable
         _heroWaveSubscription = Observable.Timer(TimeSpan.FromSeconds(1))
             .Subscribe(_ =>
             {
-                _heroSpawner.SpawnHeroWave();
+                _heroSpawner.SpawnHeroWave(faction);
                 ScheduleNextWave();
             })
             .AddTo(_disposables);

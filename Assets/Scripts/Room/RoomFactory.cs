@@ -26,13 +26,13 @@ public class RoomFactory
         _monsterSpawner = monsterSpawner;
     }
 
-    public RoomModel CreateRoom(RoomType type, Vector2Int position, MonsterType monsterType = MonsterType.None)
+    public RoomModel CreateRoom(RoomType type, Vector2Int position, Faction faction, MonsterType monsterType = MonsterType.None)
     {
         var roomModel = new RoomModel(type, monsterType, position);
 
         // Создаем визуальное представление
         var worldPosition = _gridModel.GridToWorldPosition(position);
-        var roomView = _dungeonView.CreateRoomView(type, worldPosition);
+        var roomView = _dungeonView.CreateRoomView(faction, type, worldPosition);
 
         if (roomView == null)
         {

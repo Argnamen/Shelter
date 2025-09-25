@@ -63,11 +63,16 @@ public class BuildPresenter : IInitializable, IDisposable
                 _selectedRoomType = room.Type;
                 _monsterType = room.MonsterType;
                 _uiView.SetSelectedRoomText(_selectedRoomType);
-                if (_isBuildMode) HighlightAvailablePositions();
+                if (_isBuildMode) HighlightAvailablePositions(Faction.Player);
             })
             .AddTo(_disposables);
 
-        _uiView.OnDeleteRoomButtonClicked.Subscribe(_=> RemoveRoom()).AddTo(_disposables);
+        _uiView.OnDeleteRoomButtonClicked.Subscribe(_=> RemoveRoom(Faction.Player)).AddTo(_disposables);
+
+        _uiView.OnSwitchToPlayer.Subscribe(_ => SwitchCharacterVisible(Faction.Player)).AddTo(_disposables);
+        _uiView.OnSwitchToEnemy1.Subscribe(_ => SwitchCharacterVisible(Faction.Enemy1)).AddTo(_disposables);
+        _uiView.OnSwitchToEnemy2.Subscribe(_ => SwitchCharacterVisible(Faction.Enemy2)).AddTo(_disposables);
+        _uiView.OnSwitchToEnemy3.Subscribe(_ => SwitchCharacterVisible(Faction.Enemy3)).AddTo(_disposables);
 
         _dayCycleService.Time.Subscribe(x => _uiView.DayValue = x).AddTo(_disposables);
 
@@ -86,6 +91,11 @@ public class BuildPresenter : IInitializable, IDisposable
             .AddTo(_disposables);
     }
 
+    private void SwitchCharacterVisible(Faction faction)
+    {
+        _dungeonView.ActivateRoomsContainer(faction);
+    }
+
     private void HandleGridClick()
     {
         var mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -94,7 +104,7 @@ public class BuildPresenter : IInitializable, IDisposable
             Mathf.RoundToInt(mouseWorldPos.y / _gameData.CellSize)
         );
 
-        if (_gridService.GetRoomAt(gridPosition) != null)
+        if (_gridService.GetRoomAt(gridPosition, Faction.Player) != null)
         {
             _cameraController.FocusOnRoom(_gridService.GetWorldPosition(gridPosition));
 
@@ -108,9 +118,9 @@ public class BuildPresenter : IInitializable, IDisposable
         {
             Debug.Log($"Clicked grid position: {gridPosition}");
 
-            if (_gridService.CanPlaceRoomAt(gridPosition, _selectedRoomType))
+            if (_gridService.CanPlaceRoomAt(gridPosition, _selectedRoomType, Faction.Player))
             {
-                TryBuildRoom(_selectedRoomType, gridPosition, _monsterType);
+                TryBuildRoom(_selectedRoomType, gridPosition, Faction.Player, _monsterType);
             }
             else
             {
@@ -138,7 +148,7 @@ public class BuildPresenter : IInitializable, IDisposable
     private void EnterBuildMode()
     {
         Debug.Log("Entering build mode");
-        HighlightAvailablePositions();
+        HighlightAvailablePositions(Faction.Player);
         _uiView.SetSelectedRoomText(_selectedRoomType);
         _uiView.ShowMessage("Build mode: Click on green cells to build");
     }
@@ -150,18 +160,18 @@ public class BuildPresenter : IInitializable, IDisposable
         _uiView.ShowMessage("Build mode deactivated");
     }
 
-    private void HighlightAvailablePositions()
+    private void HighlightAvailablePositions(Faction faction)
     {
-        var availablePositions = _gridService.GetAvailablePositions(_selectedRoomType);
+        var availablePositions = _gridService.GetAvailablePositions(_selectedRoomType, faction);
         _dungeonView.HighlightAvailablePositions(availablePositions);
     }
 
-    public bool TryBuildRoom(RoomType roomType, Vector2Int position, MonsterType monsterType = MonsterType.None)
+    public bool TryBuildRoom(RoomType roomType, Vector2Int position, Faction faction, MonsterType monsterType = MonsterType.None)
     {
-        if (_gridService.TryPlaceRoom(roomType, position, monsterType))
+        if (_gridService.TryPlaceRoom(roomType, position, faction, monsterType))
         {
             _uiView.ShowMessage($"Built {roomType} room!");
-            HighlightAvailablePositions(); // Обновляем подсветку
+            HighlightAvailablePositions(faction); // Обновляем подсветку
             return true;
         }
 
@@ -169,12 +179,12 @@ public class BuildPresenter : IInitializable, IDisposable
         return false;
     }
 
-    public void RemoveRoom()
+    public void RemoveRoom(Faction faction)
     {
         if (_destroyRoomPosition != null)
         {
-            _gridService.RemoveRoom(_destroyRoomPosition);
-            HighlightAvailablePositions();
+            _gridService.RemoveRoom(_destroyRoomPosition, faction);
+            HighlightAvailablePositions(faction);
         }
     }
 

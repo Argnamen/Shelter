@@ -41,26 +41,29 @@ public class SquadHeroPresenter : IDisposable
     {
         InitCleanRooms();
 
-        _model.HeroesIsReady.Subscribe(OnRoomChanged).AddTo(_disposables);
+        _model.HeroesIsReady.Subscribe((x) => OnRoomChanged(x, _model.Faction)).AddTo(_disposables);
         _model.Count.Subscribe(Die).AddTo(_disposables);
     }
 
     private void InitCleanRooms()
     {
-        foreach (var room in _gameModel.Rooms)
+        for (int i = 0; i < 4; i++)
         {
-            if (room.IsUnlocked)
-                _cleanRooms.Add(room.Position);
+            foreach (var room in _gameModel.Rooms[(Faction)i])
+            {
+                if (room.IsUnlocked)
+                    _cleanRooms.Add(room.Position);
+            }
         }
     }
 
-    private void OnRoomChanged(bool isReady)
+    private void OnRoomChanged(bool isReady, Faction faction)
     {
         if (_isDisposed) return;
 
         if (!isReady) return;
 
-        var room = FindRoom();
+        var room = FindRoom(faction);
 
         if (_cleanRooms.Count == 0 || room == null)
         {
@@ -89,9 +92,9 @@ public class SquadHeroPresenter : IDisposable
         }
     }
 
-    private RoomModel FindRoom()
+    private RoomModel FindRoom(Faction faction)
     {
-        var room = _gameModel.Rooms[0];
+        var room = _gameModel.Rooms[faction][0];
 
         if (_roomModel == null)
         {
@@ -99,7 +102,7 @@ public class SquadHeroPresenter : IDisposable
         }
         else
         {
-            var nextRoom = _gridService.GetRoomAt(_roomModel.Position + _moveVector);
+            var nextRoom = _gridService.GetRoomAt(_roomModel.Position + _moveVector, faction);
 
             if (_roomModel.Type == RoomType.Stairs)
             {
@@ -111,13 +114,13 @@ public class SquadHeroPresenter : IDisposable
                     }
 
                     _moveVector *= -1;
-                    return _gridService.GetRoomAt(_roomModel.Position + _moveVector);
+                    return _gridService.GetRoomAt(_roomModel.Position + _moveVector, faction);
 
                 }
 
                 if (_cleanRooms.FindAll(x => x.y == _roomModel.Position.y - 1).Count != 0)
                 {
-                    nextRoom = _gridService.GetRoomAt(_roomModel.Position + Vector2Int.down);
+                    nextRoom = _gridService.GetRoomAt(_roomModel.Position + Vector2Int.down, faction);
 
                     if (nextRoom != null)
                     {
@@ -129,7 +132,7 @@ public class SquadHeroPresenter : IDisposable
                         }
                         else
                         {
-                            return _gridService.GetRoomAt(_roomModel.Position + _moveVector);
+                            return _gridService.GetRoomAt(_roomModel.Position + _moveVector, faction);
                         }
                     }
                 }
@@ -144,7 +147,7 @@ public class SquadHeroPresenter : IDisposable
                 }
 
                 _moveVector *= -1;
-                return _gridService.GetRoomAt(_roomModel.Position + _moveVector);
+                return _gridService.GetRoomAt(_roomModel.Position + _moveVector, faction);
             }
 
 

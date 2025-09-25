@@ -9,8 +9,8 @@ public class GridModel
 
     private Vector2Int _startPosition;
 
-    public RoomModel[,] Grid { get; private set; }
-    public List<Vector2Int> AvailablePositions { get; } = new();
+    public Dictionary<Faction, RoomModel[,]> Grid { get; private set; } = new();
+    public Dictionary<Faction,List<Vector2Int>> AvailablePositions { get; } = new();
 
     public GridModel(int width, int height, float cellSize, Vector2Int startPos)
     {
@@ -23,19 +23,31 @@ public class GridModel
 
     private void InitializeGrid()
     {
-        Grid = new RoomModel[_width, _height];
+        Grid.Add(Faction.Player, new RoomModel[_width, _height]);
+        Grid.Add(Faction.Enemy1, new RoomModel[_width, _height]);
+        Grid.Add(Faction.Enemy2, new RoomModel[_width, _height]);
+        Grid.Add(Faction.Enemy3, new RoomModel[_width, _height]);
+
+        AvailablePositions.Add(Faction.Player, new());
+        AvailablePositions.Add(Faction.Enemy1, new());
+        AvailablePositions.Add(Faction.Enemy2, new());
+        AvailablePositions.Add(Faction.Enemy3, new());
+
         InitializeAvailablePositions();
     }
 
     private void InitializeAvailablePositions()
     {
         // Центральная позиция для стартовой комнаты
-        AvailablePositions.Add(_startPosition);
+        AvailablePositions[Faction.Player].Add(_startPosition);
+        AvailablePositions[Faction.Enemy1].Add(_startPosition);
+        AvailablePositions[Faction.Enemy2].Add(_startPosition);
+        AvailablePositions[Faction.Enemy3].Add(_startPosition);
     }
 
-    private bool IsGridNull()
+    private bool IsGridNull(Faction faction)
     {
-        foreach (var item in Grid)
+        foreach (var item in Grid[faction])
         {
             if (item != null)
             {
@@ -52,19 +64,19 @@ public class GridModel
                position.y >= 0 && position.y < _height;
     }
 
-    public bool IsPositionEmpty(Vector2Int position)
+    public bool IsPositionEmpty(Vector2Int position, Faction faction)
     {
-        return IsPositionValid(position) && Grid[position.x, position.y] == null;
+        return IsPositionValid(position) && Grid[faction][position.x, position.y] == null;
     }
 
-    public bool CanPlaceRoomAt(Vector2Int position, RoomData data)
+    public bool CanPlaceRoomAt(Vector2Int position, RoomData data, Faction faction)
     {
-        if (IsGridNull())
+        if (IsGridNull(faction))
         {
             return true;
         }
 
-        if (!IsPositionEmpty(position)) 
+        if (!IsPositionEmpty(position, faction)) 
         { 
             return false; 
         }
@@ -77,7 +89,7 @@ public class GridModel
             {
                 newNeighbor = neighbor + position;
 
-                if (IsPositionValid(newNeighbor) && Grid[newNeighbor.x, newNeighbor.y] != null)
+                if (IsPositionValid(newNeighbor) && Grid[faction][newNeighbor.x, newNeighbor.y] != null)
                 {
                     return true;
                 }
@@ -87,7 +99,7 @@ public class GridModel
             {
                 newNeighbor = neighbor.Neighbor + position;
 
-                if (IsPositionValid(newNeighbor) && Grid[newNeighbor.x, newNeighbor.y] != null)
+                if (IsPositionValid(newNeighbor) && Grid[faction][newNeighbor.x, newNeighbor.y] != null)
                 {
                     return true;
                 }
@@ -97,47 +109,24 @@ public class GridModel
         return false;
     }
 
-    public void AddRoom(RoomData data, RoomModel room, Vector2Int position)
+    public void AddRoom(Faction faction, RoomData data, RoomModel room, Vector2Int position)
     {
-        if (!IsPositionEmpty(position)) return;
+        if (!IsPositionEmpty(position, faction)) return;
 
-        Grid[position.x, position.y] = room;
+        Grid[faction][position.x, position.y] = room;
         room.Position = position;
 
         // Обновляем доступные позиции
         //UpdateAvailablePositions(data, position);
 
-        AvailablePositions.Add(position);
+        AvailablePositions[faction].Add(position);
     }
 
-    public void RemoveRoom(Vector2Int position)
+    public void RemoveRoom(Vector2Int position, Faction faction)
     {
-        if (IsPositionEmpty(position)) return;
+        if (IsPositionEmpty(position, faction)) return;
 
-        Grid[position.x, position.y] = null;
-    }
-
-    private void UpdateAvailablePositions(RoomData data, Vector2Int placedPosition)
-    {
-        AvailablePositions.Remove(placedPosition);
-
-        foreach (var direction in data.Neighbors)
-        {
-            var newPos = placedPosition + direction;
-            if (IsPositionEmpty(newPos) && CanPlaceRoomAt(newPos, data) && !AvailablePositions.Contains(newPos))
-            {
-                AvailablePositions.Add(newPos);
-            }
-        }
-
-        foreach (var direction in data.SpecialNeighbors)
-        {
-            var newPos = placedPosition + direction.Neighbor;
-            if (IsPositionEmpty(newPos) && CanPlaceRoomAt(newPos, data) && !AvailablePositions.Contains(newPos))
-            {
-                AvailablePositions.Add(newPos);
-            }
-        }
+        Grid[faction][position.x, position.y] = null;
     }
 
     public Vector3 GridToWorldPosition(Vector2Int gridPosition)
@@ -156,11 +145,11 @@ public class GridModel
         return new Vector2Int(x, y);
     }
 
-    public RoomModel GetRoomAt(Vector2Int position)
+    public RoomModel GetRoomAt(Vector2Int position, Faction faction)
     {
         if (IsPositionValid(position))
         {
-            return Grid[position.x, position.y];
+            return Grid[faction][position.x, position.y];
         }
         return null;
     }

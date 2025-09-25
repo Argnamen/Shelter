@@ -8,33 +8,42 @@ public class RoomView : MonoBehaviour
     public Vector2Int Position { get; private set; }
     public RoomType Type { get; private set; }
 
-    public void Initialize(Vector2Int position, RoomType type)
+    public void Initialize(Vector2Int position, RoomType type, Faction faction)
     {
         Position = position;
         Type = type;
-        name = $"{type}Room_{position.x}_{position.y}";
+        name = $"{faction}_{type}Room_{position.x}_{position.y}";
 
-        // Настраиваем внешний вид в зависимости от типа
-        UpdateVisuals();
+        UpdateVisuals(faction);
     }
 
-    private void UpdateVisuals()
+    private void UpdateVisuals(Faction faction)
     {
         if (_spriteRenderer != null)
         {
-            _spriteRenderer.color = GetRoomColor(Type);
+            _spriteRenderer.color = GetRoomColor(Type, faction);
         }
     }
 
-    private Color GetRoomColor(RoomType type)
+    private Color GetRoomColor(RoomType type, Faction faction)
     {
-        return type switch
+        Color baseColor = type switch
         {
-            RoomType.Combat => new Color(1, 0.5f, 0.5f, 1), // Красноватый
-            RoomType.Rest => new Color(0.5f, 0.5f, 1, 1),   // Синеватый
-            RoomType.Treasure => new Color(1, 1, 0.5f, 1),  // Желтоватый
-            RoomType.Stairs => new Color(0.5f, 1, 0.5f, 1), // Зеленоватый
+            RoomType.Combat => new Color(1, 0.5f, 0.5f, 1),
+            RoomType.Rest => new Color(0.5f, 0.5f, 1, 1),
+            RoomType.Treasure => new Color(1, 1, 0.5f, 1),
+            RoomType.Stairs => new Color(0.5f, 1, 0.5f, 1),
             _ => Color.white
+        };
+
+        // Добавляем оттенок фракции
+        return faction switch
+        {
+            Faction.Player => baseColor,
+            Faction.Enemy1 => Color.Lerp(baseColor, Color.red, 0.3f),
+            Faction.Enemy2 => Color.Lerp(baseColor, Color.blue, 0.3f),
+            Faction.Enemy3 => Color.Lerp(baseColor, Color.green, 0.3f),
+            _ => baseColor
         };
     }
 

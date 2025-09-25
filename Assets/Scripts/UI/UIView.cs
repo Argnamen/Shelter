@@ -34,6 +34,12 @@ public class UIView : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _messageText;
     [SerializeField] private float _messageDuration = 2f;
 
+    [Header("Characters")]
+    [SerializeField] private Button _playerCharacter;
+    [SerializeField] private Button _enemy1Character;
+    [SerializeField] private Button _enemy2Character;
+    [SerializeField] private Button _enemy3Character;
+
     [Inject] private RoomsData _roomsData;
 
     private IDisposable _messageDisposable;
@@ -43,6 +49,11 @@ public class UIView : MonoBehaviour
     public Observable<Unit> OnBuildButtonClicked => _buildButton.OnClickAsObservable();
     public Observable<Unit> OnPlayButtonClicked => _playButton.OnClickAsObservable();
     public Observable<Unit> OnDeleteRoomButtonClicked => _deleteRoom.OnClickAsObservable();
+
+    public Observable<Unit> OnSwitchToPlayer => _playerCharacter.OnClickAsObservable();
+    public Observable<Unit> OnSwitchToEnemy1 => _enemy1Character.OnClickAsObservable();
+    public Observable<Unit> OnSwitchToEnemy2 => _enemy2Character.OnClickAsObservable();
+    public Observable<Unit> OnSwitchToEnemy3 => _enemy3Character.OnClickAsObservable();
 
     public float DayValue { get { return _daySlider.value; } set { _daySlider.value = value; } }
 

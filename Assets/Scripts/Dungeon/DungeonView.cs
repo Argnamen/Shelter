@@ -4,9 +4,11 @@ using System.Collections.Generic;
 public class DungeonView : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Transform _roomsContainer;
+    [SerializeField] private Transform _gridContainer;
     [SerializeField] private Transform _heroesContainer;
     [SerializeField] private GameObject _gridCellPrefab;
+
+    [SerializeField] private Transform[] _roomsContainers;
 
     [Header("Grid Settings")]
     [SerializeField] private int _gridWidth = 5;
@@ -42,10 +44,25 @@ public class DungeonView : MonoBehaviour
         Debug.Log("Grid initialized successfully");
     }
 
+    public void ActivateRoomsContainer(Faction faction)
+    {
+        for (int i = 0; i < _roomsContainers.Length; i++)
+        {
+            _roomsContainers[i].gameObject.SetActive((Faction)i == faction);
+        }
+
+        ActivateGridContainer(faction == Faction.Player);
+    }
+
+    public void ActivateGridContainer(bool active)
+    {
+        _gridContainer.gameObject.SetActive(active);
+    }
+
     private void CreateGridCell(int x, int y)
     {
         var cellPos = new Vector3(x * _cellSize, y * _cellSize, 0);
-        var cell = Instantiate(_gridCellPrefab, cellPos, Quaternion.identity, _roomsContainer);
+        var cell = Instantiate(_gridCellPrefab, cellPos, Quaternion.identity, _gridContainer);
         cell.name = $"GridCell_{x}_{y}";
         _gridCells[x, y] = cell;
 
@@ -107,23 +124,23 @@ public class DungeonView : MonoBehaviour
         }
     }
 
-    public RoomView CreateRoomView(RoomType type, Vector3 worldPosition)
+    public RoomView CreateRoomView(Faction faction, RoomType type, Vector3 worldPosition)
     {
         var prefabPath = $"Rooms/{type}Room";
         var prefab = Resources.Load<RoomView>(prefabPath);
 
         if (prefab == null)
         {
-            Debug.LogError($"Prefab not found: {prefabPath}");
+            Debug.LogError($"Prefab for {faction} not found: {prefabPath}");
             return null;
         }
 
-        var room = Instantiate(prefab, worldPosition, Quaternion.identity, _roomsContainer);
+        var room = Instantiate(prefab, worldPosition, Quaternion.identity, _roomsContainers[(int)faction]);
         room.name = $"{type}Room_{worldPosition.x}_{worldPosition.y}";
 
         // Скрываем соответствующую клетку сетки
         var gridPos = WorldToGridPosition(worldPosition);
-        if (IsValidGridPosition(gridPos))
+        if (IsValidGridPosition(gridPos) && faction == Faction.Player)
         {
             _gridCells[gridPos.x, gridPos.y].SetActive(false);
         }
@@ -131,11 +148,11 @@ public class DungeonView : MonoBehaviour
         return room;
     }
 
-    public void RemoveRoomView(Vector2Int roomPosition)
+    public void RemoveRoomView(Vector2Int roomPosition, Faction faction)
     {
         var gridPos = roomPosition;
 
-        if (IsValidGridPosition(gridPos))
+        if (IsValidGridPosition(gridPos) && faction == Faction.Player)
         {
             _gridCells[gridPos.x, gridPos.y].SetActive(true);
         }

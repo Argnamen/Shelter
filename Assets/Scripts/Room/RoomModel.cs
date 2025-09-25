@@ -5,8 +5,7 @@ using UnityEngine;
 public enum RoomType { None, Combat, Rest, Treasure, Stairs }
 
 public class RoomModel
-{
-    public RoomType Type { get; }
+{    public RoomType Type { get; }
     public MonsterType Monster { get; }
     public Vector2Int Position { get; set; }
     public List<MonsterModel> Monsters { get; } = new();

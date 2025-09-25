@@ -47,5 +47,8 @@ public class GameInstaller : MonoInstaller
 
         //Камера
         Container.Bind<CameraController>().FromInstance(_cameraController).AsSingle();
+
+        //AI
+        Container.BindInterfacesAndSelfTo<AIManager>().AsSingle().NonLazy();
     }
 }

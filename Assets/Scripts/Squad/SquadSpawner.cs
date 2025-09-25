@@ -41,19 +41,19 @@ public class SquadSpawner
         _dayCycleService.Time.Subscribe(StartAutoSpawning).AddTo(_spawnDisposables);
     }
 
-    public void SpawnHeroWave()
+    public void SpawnHeroWave(Faction faction)
     {
-        SpawnHeroWithDelay(0.5f);
+        SpawnHeroWithDelay(faction, 0.5f);
     }
 
-    private void SpawnHeroWithDelay(float delay)
+    private void SpawnHeroWithDelay(Faction faction, float delay)
     {
         Observable.Timer(TimeSpan.FromSeconds(delay))
-            .Subscribe(_ => SpawnSquad())
+            .Subscribe(_ => SpawnSquad(faction))
             .AddTo(_spawnDisposables);
     }
 
-    private void SpawnSquad()
+    private void SpawnSquad(Faction faction)
     {
         Debug.Log("Spawning squad...");
 
@@ -65,7 +65,7 @@ public class SquadSpawner
         {
             var heroData = _heroesData.Heroes[UnityEngine.Random.Range(0, _heroesData.Heroes.Count)];
             var goldWithYou = UnityEngine.Random.Range(0, 100 + 1);
-            var heroModel = new HeroModel(heroData.Class, heroData.Health, heroData.Damage, heroData.DamageSpeadMillisecond, goldWithYou);
+            var heroModel = new HeroModel(faction, heroData.Class, heroData.Health, heroData.Damage, heroData.DamageSpeadMillisecond, goldWithYou);
 
             var heroView = _dungeonView.CreateHeroView(heroData.Prefab);
 
@@ -84,7 +84,7 @@ public class SquadSpawner
             heroModel, heroView, _gameModel, _winSystem
         });
         }
-        squad = new SquadHeroModel(heroes);
+        squad = new SquadHeroModel(faction, heroes);
 
         _gameModel.AddSquad(squad);
 
@@ -100,23 +100,26 @@ public class SquadSpawner
 
     public void StartAutoSpawning(float time)
     {
-        if (time <= 0)
+        for (int i = 0; i < 4; i++)
         {
-            _spawnTime = 0;
-            return;
-        }
-
-        if (time >= _spawnTime && _spawnTime <= _gameData.TimeDaySecond)
-        {
-            float interval = _gameModel.GetSquadSpawnInterval();
-
-            _spawnTime += interval;
-
-            if (_spawnTime <= _gameData.TimeDaySecond)
+            if (time <= 0)
             {
-                Observable.Timer(TimeSpan.FromSeconds(0.1f))
-                    .Subscribe(_ => SpawnHeroWave())
-                    .AddTo(_spawnDisposables);
+                _spawnTime = 0;
+                return;
+            }
+
+            if (time >= _spawnTime && _spawnTime <= _gameData.TimeDaySecond)
+            {
+                float interval = _gameModel.GetSquadSpawnInterval();
+
+                _spawnTime += interval;
+
+                if (_spawnTime <= _gameData.TimeDaySecond)
+                {
+                    Observable.Timer(TimeSpan.FromSeconds(0.1f))
+                        .Subscribe(_ => SpawnHeroWave((Faction)i))
+                        .AddTo(_spawnDisposables);
+                }
             }
         }
     }

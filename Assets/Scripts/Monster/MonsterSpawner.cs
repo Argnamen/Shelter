@@ -68,15 +68,18 @@ public class MonsterSpawner
 
     public async void StartAutoSpawning(float time)
     {
-        if(time <= 0)
+        if (time <= 0)
         {
-            foreach(var room in _gameModel.Rooms)
+            for (int i = 0; i < 4; i++)
             {
-                await new WaitWhile(() => room.Enter.Value);
-
-                if (room.Type == RoomType.Combat && room.Monsters.Count < 3)
+                foreach (var room in _gameModel.Rooms[(Faction)i])
                 {
-                    Spawn(room.Monster, room);
+                    await new WaitWhile(() => room.Enter.Value);
+
+                    if (room.Type == RoomType.Combat && room.Monsters.Count < 3)
+                    {
+                        Spawn(room.Monster, room);
+                    }
                 }
             }
         }

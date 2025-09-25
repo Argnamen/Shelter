@@ -6,13 +6,15 @@ using UnityEngine;
 
 public class SquadHeroModel
 {
+    public Faction Faction;
     public List<HeroModel> Heroes = new List<HeroModel>();
     public ReactiveProperty<bool> HeroesIsReady { get; } = new();
 
     public ReactiveProperty<int> Count { get; } = new();
 
-    public SquadHeroModel(List<HeroModel> heroModels)
+    public SquadHeroModel(Faction faction, List<HeroModel> heroModels)
     {
+        Faction = faction;
         Heroes = heroModels;
         Count.Value = heroModels.Count;
         Initialize();

@@ -10,6 +10,7 @@ public class HeroModel
     public ReactiveProperty<bool> HeroIsReady = new ReactiveProperty<bool>();
 
     public ReactiveProperty<bool> Die { get; } = new(false);
+    public Faction Faction { get; }
     public HeroState State { get; set; } = HeroState.Entering;
     public HeroClass Class { get; } = HeroClass.None;
 
@@ -17,8 +18,9 @@ public class HeroModel
 
     public int MaxHealth;
 
-    public HeroModel(HeroClass heroClass, int health, int damage, int damageSpead, int gold)
+    public HeroModel(Faction faction, HeroClass heroClass, int health, int damage, int damageSpead, int gold)
     {
+        Faction = faction;
         Class = heroClass;
         Health = new(health);
         Damage = new(damage);

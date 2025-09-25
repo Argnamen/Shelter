@@ -102,7 +102,7 @@ public class HeroPresenter : IDisposable
             {
                 if (_roomsToExit.Find(x => x.Type == RoomType.Stairs) != null)
                 {
-                    _roomsToExit.Add(_gameModel.Rooms.Find(x => x.Type == RoomType.Stairs && x.Position.y == _roomModel.Position.y));
+                    _roomsToExit.Add(_gameModel.Rooms[_model.Faction].Find(x => x.Type == RoomType.Stairs && x.Position.y == _roomModel.Position.y));
                 }
                 _roomsToExit.Add(_roomModel);
             }

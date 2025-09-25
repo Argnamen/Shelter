@@ -13,7 +13,7 @@ public class GameModel
     public ReactiveProperty<int> TotalRoomsBuilt { get; } = new(0);
 
     public List<SquadHeroModel> ActiveSquads { get; } = new();
-    public List<RoomModel> Rooms { get; } = new();
+    public Dictionary<Faction, List<RoomModel>> Rooms { get; } = new();
 
     private readonly GameData _gameData;
     private readonly WinSystem _winSystem;
@@ -39,6 +39,11 @@ public class GameModel
         // Начальные значения
         Gold.Value = _playerData.StartGold;
         DungeonLevel.Value = 1;
+
+        Rooms.Add(Faction.Player, new List<RoomModel>());
+        Rooms.Add(Faction.Enemy1, new List<RoomModel>());
+        Rooms.Add(Faction.Enemy2, new List<RoomModel>());
+        Rooms.Add(Faction.Enemy3, new List<RoomModel>());
     }
 
     public bool TrySpendGold(int amount)
@@ -60,13 +65,13 @@ public class GameModel
         OnGoldChanged.OnNext(Gold.Value);
     }
 
-    public void AddRoom(RoomModel room)
+    public void AddRoom(RoomModel room, Faction faction)
     {
-        var findRoom = Rooms.Find(x => x.Position == room.Position);
+        var findRoom = Rooms[faction].Find(x => x.Position == room.Position);
 
         if (findRoom != null && findRoom.Type == RoomType.None)
         {
-            Rooms.Remove(findRoom);
+            Rooms[faction].Remove(findRoom);
         }
         else
         {
@@ -74,46 +79,46 @@ public class GameModel
             OnRoomBuilt.OnNext(room);
         }
 
-        Rooms.Add(room);
+        Rooms[faction].Add(room);
 
-        RoomsIsUnlock(room);
+        RoomsIsUnlock(faction, room);
 
         if(room.Type == RoomType.Stairs)
         {
-            UpdateStairsRoom(room, true);
+            UpdateStairsRoom(faction, room, true);
         }
     }
 
-    public void RemoveRoom(RoomModel room)
+    public void RemoveRoom(RoomModel room, Faction faction)
     {
-        Rooms.Remove(room);
+        Rooms[faction].Remove(room);
         TotalRoomsBuilt.Value--;
         room.Destroy.Value = true;
 
-        RoomsIsUnlock(room);
+        RoomsIsUnlock(faction, room);
 
         if (room.Type == RoomType.Stairs)
         {
-            UpdateStairsRoom(room, false);
+            UpdateStairsRoom(faction, room, false);
         }
 
-        foreach (var lockRoom in Rooms)
+        foreach (var lockRoom in Rooms[faction])
         {
             Debug.Log(lockRoom.Type + " " + lockRoom.Position + " " + lockRoom.IsUnlocked);
         }
     }
 
-    private void UpdateStairsRoom(RoomModel room, bool isSpawn)
+    private void UpdateStairsRoom(Faction faction, RoomModel room, bool isSpawn)
     {
-        var allStairRoom = Rooms.FindAll(x => x.Position.x == room.Position.x && x.Position.y < room.Position.y && x.Type == room.Type);
+        var allStairRoom = Rooms[faction].FindAll(x => x.Position.x == room.Position.x && x.Position.y < room.Position.y && x.Type == room.Type);
 
         foreach (var lockRoom in allStairRoom)
         {
             lockRoom.IsUnlocked = isSpawn;
-            RoomsIsUnlock(lockRoom);
+            RoomsIsUnlock(faction, lockRoom);
         }
     }
-    private void RoomsIsUnlock(RoomModel room, List<RoomModel> roomModels = null)
+    private void RoomsIsUnlock(Faction faction, RoomModel room, List<RoomModel> roomModels = null)
     {
         var rooms = new List<RoomModel>();
 
@@ -123,7 +128,7 @@ public class GameModel
         }
         else
         {
-            rooms = Rooms.FindAll(x => x.Position.y == room.Position.y);
+            rooms = Rooms[faction].FindAll(x => x.Position.y == room.Position.y);
         }
 
         rooms = rooms.OrderBy(x => x.Position.x).ToList();
@@ -143,12 +148,12 @@ public class GameModel
                 for (int j = 0; j <= i; j++)
                 {
                     rooms[j].IsUnlocked = isStair;
-                    Rooms.Find(x => x == rooms[j]).IsUnlocked = isStair;
+                    Rooms[faction].Find(x => x == rooms[j]).IsUnlocked = isStair;
                 }
 
                 rooms.RemoveRange(0, i + 1);
 
-                RoomsIsUnlock(room, rooms);
+                RoomsIsUnlock(faction, room, rooms);
 
                 return;
             }
@@ -156,14 +161,14 @@ public class GameModel
         }
     }
 
-    public RoomModel GetRoomAtPosition(Vector2Int position)
+    public RoomModel GetRoomAtPosition(Faction faction, Vector2Int position)
     {
-        return Rooms.FirstOrDefault(room => room.Position == position);
+        return Rooms[faction].FirstOrDefault(room => room.Position == position);
     }
 
-    public bool HasRoomAtPosition(Vector2Int position)
+    public bool HasRoomAtPosition(Faction faction, Vector2Int position)
     {
-        return Rooms.Any(room => room.Position == position);
+        return Rooms[faction].Any(room => room.Position == position);
     }
 
     public void AddSquad(SquadHeroModel squad)
