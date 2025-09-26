@@ -38,7 +38,7 @@ public class GridService
         }
 
         int roomCost = roomData.Cost;
-        if (position != _gameData.StartRoomPosition && !_gameModel.TrySpendGold(roomCost))
+        if (position != _gameData.StartRoomPosition && !_gameModel.TrySpendGold(roomCost, faction))
         {
             Debug.LogWarning($"Not enough gold to build {roomType} room. Need {roomCost} gold.");
             return false;
@@ -67,7 +67,7 @@ public class GridService
         var roomData = _roomsData.Rooms.Find(x => x.Type == roomModel.Type && x.MonsterType == roomModel.Monster);
 
         _gameModel.RemoveRoom(roomModel, faction);
-        _gameModel.AddGold(roomData.Cost);
+        _gameModel.AddGold(roomData.Cost, faction);
         _gridModel.RemoveRoom(position, faction);
         _dungeonView.RemoveRoomView(position, faction);
     }

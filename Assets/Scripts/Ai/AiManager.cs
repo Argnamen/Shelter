@@ -1,6 +1,7 @@
 using R3;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -9,12 +10,14 @@ public class AIManager : IInitializable, IDisposable
     private readonly List<AIPlayer> _aiPlayers = new();
     private readonly GridService _gridService;
     private readonly RoomFactory _roomFactory;
+    private readonly DayCycleService _dayCycleService;
     private readonly CompositeDisposable _disposables = new();
 
-    public AIManager(GridService gridService, RoomFactory roomFactory)
+    public AIManager(GridService gridService, RoomFactory roomFactory, DayCycleService dayCycleService)
     {
         _gridService = gridService;
         _roomFactory = roomFactory;
+        _dayCycleService = dayCycleService;
     }
 
     public void Initialize()
@@ -22,10 +25,17 @@ public class AIManager : IInitializable, IDisposable
         // Создаем AI противников
         CreateAIPlayers();
 
-        // Запускаем ходы AI каждые 10 секунд
-        Observable.Interval(TimeSpan.FromSeconds(10))
-            .Subscribe(_ => ExecuteAITurns())
-            .AddTo(_disposables);
+        _dayCycleService.IsTimeStop.Subscribe(StartAutoSpawning).AddTo(_disposables);
+    }
+
+    public async void StartAutoSpawning(bool isTimeStop)
+    {
+        while (!isTimeStop)
+        {
+            ExecuteAITurns();
+
+            await Task.Delay(100);
+        }
     }
 
     private void CreateAIPlayers()

@@ -29,10 +29,9 @@ public class AIPlayer
     private void ExecuteAIAction()
     {
         // Выбираем случайный тип комнаты
-        var roomTypes = new[] { RoomType.Combat, RoomType.Rest, RoomType.Treasure };
-        var randomRoomType = roomTypes[UnityEngine.Random.Range(0, roomTypes.Length)];
+        var roomType = GetRoomType();
 
-        var availablePositions = _gridService.GetAvailablePositions(randomRoomType ,Faction);
+        var availablePositions = _gridService.GetAvailablePositions(roomType ,Faction);
 
         if (availablePositions.Count == 0)
         {
@@ -41,15 +40,39 @@ public class AIPlayer
         }
 
         var randomPosition = availablePositions[UnityEngine.Random.Range(0, availablePositions.Count)];
+        var monsterType = GetMonsterType(roomType);
 
-        if (_gridService.TryPlaceRoom(randomRoomType, randomPosition, Faction))
+        if (_gridService.TryPlaceRoom(roomType, randomPosition, Faction, monsterType))
         {
-            Debug.Log($"{Faction} successfully built {randomRoomType} at {randomPosition}");
+            Debug.Log($"{Faction} successfully built {roomType} at {randomPosition}");
         }
         else
         {
             Debug.LogWarning($"{Faction} failed to build at {randomPosition}");
         }
+    }
+
+    private RoomType GetRoomType()
+    {
+        var roomTypes = new[] { RoomType.Combat, RoomType.Stairs, RoomType.Rest, RoomType.Treasure };
+
+        for (int i = 0; i < roomTypes.Length; i++)
+        {
+            if (_gridService.GetAvailablePositions(roomTypes[i], Faction).Count > 0)
+                return roomTypes[i];
+        }
+
+        return roomTypes[UnityEngine.Random.Range(0, roomTypes.Length)];
+    }
+
+    private MonsterType GetMonsterType(RoomType roomType)
+    {
+        if (roomType != RoomType.Combat)
+            return MonsterType.None;
+
+        var monsterTypes = new[] { MonsterType.Slime, MonsterType.Eagle, MonsterType.Skeleton };
+
+        return monsterTypes[UnityEngine.Random.Range(0, monsterTypes.Length)];
     }
 
     public void Dispose()

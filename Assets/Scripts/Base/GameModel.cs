@@ -19,6 +19,8 @@ public class GameModel
     private readonly WinSystem _winSystem;
     private readonly PlayerData _playerData;
 
+    private Dictionary<Faction, int> _goldEnemys = new();
+
     // События для уведомлений
     public Subject<Unit> OnSquadSpawned { get; } = new();
     public Subject<Unit> OnSquadDefeated { get; } = new();
@@ -38,6 +40,9 @@ public class GameModel
     {
         // Начальные значения
         Gold.Value = _playerData.StartGold;
+        _goldEnemys.Add(Faction.Enemy1, _playerData.StartGold);
+        _goldEnemys.Add(Faction.Enemy2, _playerData.StartGold);
+        _goldEnemys.Add(Faction.Enemy3, _playerData.StartGold);
         DungeonLevel.Value = 1;
 
         Rooms.Add(Faction.Player, new List<RoomModel>());
@@ -46,23 +51,40 @@ public class GameModel
         Rooms.Add(Faction.Enemy3, new List<RoomModel>());
     }
 
-    public bool TrySpendGold(int amount)
+    public bool TrySpendGold(int amount, Faction faction)
     {
-        if (Gold.Value >= amount)
+        if(faction != Faction.Player)
         {
-            AddGold(-amount);
+            if (_goldEnemys[faction] >= amount) 
+            {
+                AddGold(-amount, faction);
+                return true;
+            }
+
+            return false;
+        }
+        else if (Gold.Value >= amount)
+        {
+            AddGold(-amount, faction);
             return true;
         }
         return false;
     }
 
-    public void AddGold(int amount)
+    public void AddGold(int amount, Faction faction)
     {
-        Gold.Value += amount;
+        if (faction == Faction.Player)
+        {
+            Gold.Value += amount;
 
-        _winSystem.AddWinPoint(WinPoint.Gold, amount);
+            _winSystem.AddWinPoint(WinPoint.Gold, amount);
 
-        OnGoldChanged.OnNext(Gold.Value);
+            OnGoldChanged.OnNext(Gold.Value);
+        }
+        else
+        {
+            _goldEnemys[faction] += amount;
+        }
     }
 
     public void AddRoom(RoomModel room, Faction faction)

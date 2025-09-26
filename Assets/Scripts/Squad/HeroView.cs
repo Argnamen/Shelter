@@ -45,8 +45,6 @@ public class HeroView : MonoBehaviour
         if (_healthSprite == null)
             return;
 
-        Debug.Log(health);
-
         _healthSprite.size = new Vector2(1 / _oneHPSize * health, _healthSprite.size.y);
     }
 

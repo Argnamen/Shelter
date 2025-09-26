@@ -158,9 +158,9 @@ public class DungeonView : MonoBehaviour
         }
     }
 
-    public HeroView CreateHeroView(GameObject prefab)
+    public HeroView CreateHeroView(GameObject prefab, Faction faction)
     {
-        var view = Instantiate<HeroView>(prefab.GetComponent<HeroView>());
+        var view = Instantiate<HeroView>(prefab.GetComponent<HeroView>(), _roomsContainers[(int)faction]);
         return view;
     }
 

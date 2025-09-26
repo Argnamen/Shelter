@@ -147,7 +147,7 @@ public class GamePresenter : IInitializable, IDisposable
 
     public void AddGold(int amount)
     {
-        _model.AddGold(amount);
+        _model.AddGold(amount, Faction.Player);
         _uiView.ShowMessage($"+{amount} gold!", 1.5f);
     }
 

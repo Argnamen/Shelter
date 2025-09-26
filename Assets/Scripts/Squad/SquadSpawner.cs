@@ -15,7 +15,7 @@ public class SquadSpawner
     private readonly HeroesData _heroesData;
     private readonly WinSystem _winSystem;
 
-    private float _spawnTime = 0;
+    private float[] _spawnTime = new float[4];
 
     private CompositeDisposable _spawnDisposables = new();
 
@@ -67,7 +67,7 @@ public class SquadSpawner
             var goldWithYou = UnityEngine.Random.Range(0, 100 + 1);
             var heroModel = new HeroModel(faction, heroData.Class, heroData.Health, heroData.Damage, heroData.DamageSpeadMillisecond, goldWithYou);
 
-            var heroView = _dungeonView.CreateHeroView(heroData.Prefab);
+            var heroView = _dungeonView.CreateHeroView(heroData.Prefab, faction);
 
             if (heroView == null)
             {
@@ -104,21 +104,19 @@ public class SquadSpawner
         {
             if (time <= 0)
             {
-                _spawnTime = 0;
+                _spawnTime[i] = 0;
                 return;
             }
 
-            if (time >= _spawnTime && _spawnTime <= _gameData.TimeDaySecond)
+            if (time >= _spawnTime[i] && _spawnTime[i] <= _gameData.TimeDaySecond)
             {
                 float interval = _gameModel.GetSquadSpawnInterval();
 
-                _spawnTime += interval;
+                _spawnTime[i] += interval;
 
-                if (_spawnTime <= _gameData.TimeDaySecond)
+                if (_spawnTime[i] <= _gameData.TimeDaySecond)
                 {
-                    Observable.Timer(TimeSpan.FromSeconds(0.1f))
-                        .Subscribe(_ => SpawnHeroWave((Faction)i))
-                        .AddTo(_spawnDisposables);
+                    SpawnHeroWave((Faction)i);
                 }
             }
         }
