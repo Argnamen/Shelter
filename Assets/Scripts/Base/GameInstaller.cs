@@ -50,5 +50,6 @@ public class GameInstaller : MonoInstaller
 
         //AI
         Container.BindInterfacesAndSelfTo<AIManager>().AsSingle().NonLazy();
+        Container.Bind<EnemyPlayerFactory>().AsSingle();
     }
 }

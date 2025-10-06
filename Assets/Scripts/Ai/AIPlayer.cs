@@ -5,12 +5,15 @@ using UnityEngine;
 public class AIPlayer
 {
     public Faction Faction { get; }
+
+    private readonly IEnemyPlayer _player;
     private readonly GridService _gridService;
     private readonly RoomFactory _roomFactory;
     private readonly CompositeDisposable _disposables = new();
 
-    public AIPlayer(Faction faction, GridService gridService, RoomFactory roomFactory)
+    public AIPlayer(IEnemyPlayer player, Faction faction, GridService gridService, RoomFactory roomFactory)
     {
+        _player = player;
         Faction = faction;
         _gridService = gridService;
         _roomFactory = roomFactory;

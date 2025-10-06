@@ -12,12 +12,16 @@ public class AIManager : IInitializable, IDisposable
     private readonly RoomFactory _roomFactory;
     private readonly DayCycleService _dayCycleService;
     private readonly CompositeDisposable _disposables = new();
+    private readonly DiContainer _diContainer;
+    private readonly EnemyPlayerFactory _enemyPlayerFactory;
 
-    public AIManager(GridService gridService, RoomFactory roomFactory, DayCycleService dayCycleService)
+    public AIManager(GridService gridService, RoomFactory roomFactory, DayCycleService dayCycleService, DiContainer diContainer, EnemyPlayerFactory enemyPlayerFactory)
     {
         _gridService = gridService;
         _roomFactory = roomFactory;
         _dayCycleService = dayCycleService;
+        _diContainer = diContainer;
+        _enemyPlayerFactory = enemyPlayerFactory;
     }
 
     public void Initialize()
@@ -41,14 +45,23 @@ public class AIManager : IInitializable, IDisposable
     private void CreateAIPlayers()
     {
         var enemyFactions = new[] { Faction.Enemy1, Faction.Enemy2, Faction.Enemy3 };
+        var playerList = new[] { 
+            CreatyPlayer(PlayerType.SkeletonLedi),
+            CreatyPlayer(PlayerType.GigaKrish) };
 
         foreach (var faction in enemyFactions)
         {
-            var aiPlayer = new AIPlayer(faction, _gridService, _roomFactory);
+            var player = playerList[UnityEngine.Random.Range(0, playerList.Length)];
+            var aiPlayer = new AIPlayer(player, faction, _gridService, _roomFactory);
             _aiPlayers.Add(aiPlayer);
         }
 
         Debug.Log($"Created {_aiPlayers.Count} AI players");
+    }
+
+    private IEnemyPlayer CreatyPlayer(PlayerType playerType)
+    {
+        return _enemyPlayerFactory.Create(playerType);
     }
 
     private void ExecuteAITurns()

@@ -6,4 +6,6 @@ using Zenject.SpaceFighter;
 public interface IEnemyPlayer
 {
     public PlayerData PlayerData { get; }
+
+    public bool IsBuildRoom(RoomType roomType, Vector2Int position, MonsterType monsterType = MonsterType.None);
 }
