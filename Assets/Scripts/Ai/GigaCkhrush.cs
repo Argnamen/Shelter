@@ -13,11 +13,21 @@ public class GigaCkhrush : IEnemyPlayer
         _roomsData = roomData;
     }
 
+    public void StartLocalRools()
+    {
+        SpawnRoom();
+    }
+
     public bool IsBuildRoom(RoomType roomType, Vector2Int position, MonsterType monsterType = MonsterType.None)
     {
         RoomData roomData = _roomsData.Rooms.Find(x => x.Type == roomType && x.MonsterType == monsterType);
 
 
         return true;
+    }
+
+    private void SpawnRoom()
+    {
+
     }
 }

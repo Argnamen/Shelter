@@ -7,5 +7,7 @@ public interface IEnemyPlayer
 {
     public PlayerData PlayerData { get; }
 
+    public void StartLocalRools();
+
     public bool IsBuildRoom(RoomType roomType, Vector2Int position, MonsterType monsterType = MonsterType.None);
 }

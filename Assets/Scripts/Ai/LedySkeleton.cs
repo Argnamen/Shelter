@@ -12,6 +12,10 @@ public class LedySkeleton : IEnemyPlayer
     {
         _roomsData = roomData;
     }
+    public void StartLocalRools()
+    {
+
+    }
 
     public bool IsBuildRoom(RoomType roomType, Vector2Int position, MonsterType monsterType = MonsterType.None)
     {
