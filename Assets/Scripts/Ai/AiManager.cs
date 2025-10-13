@@ -14,14 +14,16 @@ public class AIManager : IInitializable, IDisposable
     private readonly CompositeDisposable _disposables = new();
     private readonly DiContainer _diContainer;
     private readonly EnemyPlayerFactory _enemyPlayerFactory;
+    private readonly SquadSpawner _spawner;
 
-    public AIManager(GridService gridService, RoomFactory roomFactory, DayCycleService dayCycleService, DiContainer diContainer, EnemyPlayerFactory enemyPlayerFactory)
+    public AIManager(GridService gridService, RoomFactory roomFactory, DayCycleService dayCycleService, DiContainer diContainer, EnemyPlayerFactory enemyPlayerFactory, SquadSpawner squadSpawner)
     {
         _gridService = gridService;
         _roomFactory = roomFactory;
         _dayCycleService = dayCycleService;
         _diContainer = diContainer;
         _enemyPlayerFactory = enemyPlayerFactory;
+        _spawner = squadSpawner;
     }
 
     public void Initialize()
@@ -34,11 +36,11 @@ public class AIManager : IInitializable, IDisposable
 
     public async void StartAutoSpawning(bool isTimeStop)
     {
-        while (!isTimeStop)
+        while (isTimeStop)
         {
             ExecuteAITurns();
 
-            await Task.Delay(100);
+            await Task.Delay(10);
         }
     }
 
@@ -52,7 +54,7 @@ public class AIManager : IInitializable, IDisposable
         foreach (var faction in enemyFactions)
         {
             var player = playerList[UnityEngine.Random.Range(0, playerList.Length)];
-            var aiPlayer = new AIPlayer(player, faction, _gridService, _roomFactory);
+            var aiPlayer = new AIPlayer(player, faction, _gridService, _roomFactory, _spawner, _dayCycleService);
             _aiPlayers.Add(aiPlayer);
         }
 

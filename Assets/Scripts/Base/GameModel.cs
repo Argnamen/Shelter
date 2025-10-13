@@ -9,7 +9,6 @@ public class GameModel
 {
     public ReactiveProperty<int> Gold { get; } = new(0);
     public ReactiveProperty<int> DungeonLevel { get; } = new(1);
-    public ReactiveProperty<int> TotalSquadsDefeated { get; } = new(0);
     public ReactiveProperty<int> TotalRoomsBuilt { get; } = new(0);
 
     public List<SquadHeroModel> ActiveSquads { get; } = new();
@@ -22,8 +21,6 @@ public class GameModel
     private Dictionary<Faction, int> _goldEnemys = new();
 
     // События для уведомлений
-    public Subject<Unit> OnSquadSpawned { get; } = new();
-    public Subject<Unit> OnSquadDefeated { get; } = new();
     public Subject<RoomModel> OnRoomBuilt { get; } = new();
     public Subject<int> OnGoldChanged { get; } = new();
 
@@ -196,7 +193,6 @@ public class GameModel
     public void AddSquad(SquadHeroModel squad)
     {
         ActiveSquads.Add(squad);
-        OnSquadSpawned.OnNext(Unit.Default);
 
         // Подписываемся на смерть отряда
         squad.Count
@@ -207,11 +203,7 @@ public class GameModel
 
     public void RemoveSquad(SquadHeroModel squad)
     {
-        if (ActiveSquads.Remove(squad))
-        {
-            TotalSquadsDefeated.Value++;
-            OnSquadDefeated.OnNext(Unit.Default);
-        }
+        ActiveSquads.Remove(squad);
     }
 
     public void LevelUpDungeon()

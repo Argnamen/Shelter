@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using R3;
 using System;
 using System.Collections.Generic;
@@ -38,12 +39,13 @@ public class SquadSpawner
         _heroesData = heroesData;
         _winSystem = winSystem;
 
-        _dayCycleService.Time.Subscribe(StartAutoSpawning).AddTo(_spawnDisposables);
+        _dayCycleService.Time.Subscribe((x) => StartAutoSpawning(Faction.Player, x)).AddTo(_spawnDisposables);
     }
 
-    public void SpawnHeroWave(Faction faction)
+    public async UniTask SpawnHeroWave(Faction faction)
     {
         SpawnHeroWithDelay(faction, 0.5f);
+        await UniTask.WaitForSeconds(0.5f);
     }
 
     private void SpawnHeroWithDelay(Faction faction, float delay)
@@ -98,26 +100,23 @@ public class SquadSpawner
         _gameModel.RemoveSquad(squad);
     }
 
-    public void StartAutoSpawning(float time)
+    public async void StartAutoSpawning(Faction faction, float time)
     {
-        for (int i = 0; i < 4; i++)
+        if (time <= 0)
         {
-            if (time <= 0)
+            _spawnTime[(int)faction] = 0;
+            return;
+        }
+
+        if (time >= _spawnTime[(int)faction] && _spawnTime[(int)faction] <= _gameData.TimeDaySecond)
+        {
+            float interval = _gameModel.GetSquadSpawnInterval();
+
+            _spawnTime[(int)faction] += interval;
+
+            if (_spawnTime[(int)faction] <= _gameData.TimeDaySecond)
             {
-                _spawnTime[i] = 0;
-                return;
-            }
-
-            if (time >= _spawnTime[i] && _spawnTime[i] <= _gameData.TimeDaySecond)
-            {
-                float interval = _gameModel.GetSquadSpawnInterval();
-
-                _spawnTime[i] += interval;
-
-                if (_spawnTime[i] <= _gameData.TimeDaySecond)
-                {
-                    SpawnHeroWave((Faction)i);
-                }
+                await SpawnHeroWave(faction);
             }
         }
     }

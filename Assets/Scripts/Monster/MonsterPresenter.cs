@@ -109,7 +109,6 @@ public class MonsterPresenter : IDisposable
     {
         if (_isDisposed) return;
 
-        _view.Die();
         Dispose();
     }
 

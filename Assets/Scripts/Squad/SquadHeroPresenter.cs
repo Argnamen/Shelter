@@ -47,13 +47,10 @@ public class SquadHeroPresenter : IDisposable
 
     private void InitCleanRooms()
     {
-        for (int i = 0; i < 4; i++)
+        foreach (var room in _gameModel.Rooms[_model.Faction])
         {
-            foreach (var room in _gameModel.Rooms[(Faction)i])
-            {
-                if (room.IsUnlocked)
-                    _cleanRooms.Add(room.Position);
-            }
+            if (room.IsUnlocked)
+                _cleanRooms.Add(room.Position);
         }
     }
 
@@ -68,7 +65,6 @@ public class SquadHeroPresenter : IDisposable
         if (_cleanRooms.Count == 0 || room == null)
         {
             NotifyAllHeroesOnRoomChanged(null);
-            Dispose();
             return;
         }
 
@@ -89,6 +85,11 @@ public class SquadHeroPresenter : IDisposable
         foreach (var hero in _model.Heroes) 
         {
             hero.CurrentRoomModel.Value = room;
+        }
+
+        if(room == null)
+        {
+            Dispose();
         }
     }
 

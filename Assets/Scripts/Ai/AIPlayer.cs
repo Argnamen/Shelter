@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using R3;
 using System;
 using UnityEngine;
@@ -9,14 +10,20 @@ public class AIPlayer
     private readonly IEnemyPlayer _player;
     private readonly GridService _gridService;
     private readonly RoomFactory _roomFactory;
+    private readonly SquadSpawner _spawner;
+    private readonly DayCycleService _dayCycleService;
     private readonly CompositeDisposable _disposables = new();
 
-    public AIPlayer(IEnemyPlayer player, Faction faction, GridService gridService, RoomFactory roomFactory)
+    private bool _isSpawnHero = false;
+
+    public AIPlayer(IEnemyPlayer player, Faction faction, GridService gridService, RoomFactory roomFactory, SquadSpawner squadSpawner, DayCycleService dayCycleService)
     {
         _player = player;
         Faction = faction;
         _gridService = gridService;
         _roomFactory = roomFactory;
+        _spawner = squadSpawner;
+        _dayCycleService = dayCycleService;
     }
 
     public void StartAITurn()
@@ -31,15 +38,35 @@ public class AIPlayer
 
     private void ExecuteAIAction()
     {
-        // Выбираем случайный тип комнаты
+        if (_dayCycleService.Time.Value <= 0)
+            _isSpawnHero = false;
+
+        if (!_isSpawnHero)
+        {
+            if (SpawnRooms())
+            {
+                return;
+            }
+        }
+
+        if (!_dayCycleService.IsTimeStop.Value)
+        {
+            _isSpawnHero = true;
+            SpawnSquad(_dayCycleService.Time.Value);
+        }
+
+    }
+
+    private bool SpawnRooms()
+    {
         var roomType = GetRoomType();
 
-        var availablePositions = _gridService.GetAvailablePositions(roomType ,Faction);
+        var availablePositions = _gridService.GetAvailablePositions(roomType, Faction);
 
         if (availablePositions.Count == 0)
         {
             Debug.Log($"{Faction} has no available positions");
-            return;
+            return false;
         }
 
         var randomPosition = availablePositions[UnityEngine.Random.Range(0, availablePositions.Count)];
@@ -48,11 +75,20 @@ public class AIPlayer
         if (_gridService.TryPlaceRoom(roomType, randomPosition, Faction, monsterType))
         {
             Debug.Log($"{Faction} successfully built {roomType} at {randomPosition}");
+            return true;
         }
         else
         {
             Debug.LogWarning($"{Faction} failed to build at {randomPosition}");
+            return false;
         }
+
+
+    }
+
+    private void SpawnSquad(float time)
+    {
+        _spawner.StartAutoSpawning(Faction, time);
     }
 
     private RoomType GetRoomType()

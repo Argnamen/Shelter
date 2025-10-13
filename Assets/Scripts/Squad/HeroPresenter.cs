@@ -134,7 +134,12 @@ public class HeroPresenter : IDisposable
         {
             await MoveToExit();
 
-            _winSystem.AddWinPoint(EventType.CleanDangeon);
+            if (_model.Faction == Faction.Player)
+                _winSystem.AddWinPoint(EventType.CleanDangeon);
+            else
+            {
+
+            }
 
             Dispose();
             return;

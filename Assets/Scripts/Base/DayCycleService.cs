@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DayCycleService
+public class DayCycleService: IDisposable
 {
     public ReactiveProperty<float> Time { get; } = new(0);
 
@@ -45,5 +45,11 @@ public class DayCycleService
         }
 
         Time.Value += 1 / _lengthDay;
+    }
+
+    public void Dispose()
+    {
+        Time.Dispose();
+        IsTimeStop.Dispose();
     }
 }
