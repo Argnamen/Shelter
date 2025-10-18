@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using R3;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AIPlayer
@@ -93,15 +94,39 @@ public class AIPlayer
 
     private RoomType GetRoomType()
     {
-        var roomTypes = new[] { RoomType.Combat, RoomType.Stairs, RoomType.Rest, RoomType.Treasure };
+        var roomTypes = new[] { 
+            RoomType.Stairs,
+            RoomType.Combat,
+            RoomType.Rest,
+            RoomType.Treasure
+        };
 
-        for (int i = 0; i < roomTypes.Length; i++)
+        float[] installRoomChance = new float[roomTypes.Length];
+
+        int indexReturn = 0;
+
+        for (int i = 0; i < installRoomChance.Length; i++)
         {
-            if (_gridService.GetAvailablePositions(roomTypes[i], Faction).Count > 0)
-                return roomTypes[i];
+            installRoomChance[i] = (_gridService.GetAvailablePositions(roomTypes[i], Faction).Count / 100f);
         }
 
-        return roomTypes[UnityEngine.Random.Range(0, roomTypes.Length)];
+        for (int i = 0; i < installRoomChance.Length; i++)
+        {
+            if (installRoomChance[indexReturn] == installRoomChance[i] && roomTypes[indexReturn] != RoomType.Stairs)
+            {
+                if(UnityEngine.Random.Range(0, 2) > 0)
+                    indexReturn = i;
+            }
+
+            if (installRoomChance[indexReturn] < installRoomChance[i])
+            {
+                indexReturn = i;
+
+                
+            }
+        }
+
+        return roomTypes[indexReturn];
     }
 
     private MonsterType GetMonsterType(RoomType roomType)

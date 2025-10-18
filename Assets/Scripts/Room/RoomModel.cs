@@ -2,6 +2,12 @@ using R3;
 using System.Collections.Generic;
 using UnityEngine;
 
+///<summary>RoomType 
+///Combat - Монстр
+///Rest - Восстановление героя
+///Treasure - Сокровище для героя
+///Stairs - Лестница
+///</summary>
 public enum RoomType { None, Combat, Rest, Treasure, Stairs }
 
 public class RoomModel
