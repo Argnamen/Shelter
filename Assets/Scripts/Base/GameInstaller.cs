@@ -15,6 +15,7 @@ public class GameInstaller : MonoInstaller
     public override void InstallBindings()
     {
         PlayerData playerData = _playersData.Players[1];
+        Container.BindInterfacesAndSelfTo<MainPlayerManager>().AsSingle();
 
         //Данные
         Container.Bind<GameData>().FromInstance(_gameData).AsSingle();

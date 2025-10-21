@@ -68,13 +68,23 @@ public class GameModel
         return false;
     }
 
+    public float GetGold(Faction faction)
+    {
+        if(faction == Faction.Player)
+        {
+            return Gold.Value;
+        }
+        else
+        {
+            return _goldEnemys[faction];
+        }
+    }
+
     public void AddGold(int amount, Faction faction)
     {
         if (faction == Faction.Player)
         {
             Gold.Value += amount;
-
-            _winSystem.AddWinPoint(WinPoint.Gold, amount);
 
             OnGoldChanged.OnNext(Gold.Value);
         }

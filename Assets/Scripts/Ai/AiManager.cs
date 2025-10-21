@@ -15,8 +15,9 @@ public class AIManager : IInitializable, IDisposable
     private readonly DiContainer _diContainer;
     private readonly EnemyPlayerFactory _enemyPlayerFactory;
     private readonly SquadSpawner _spawner;
+    private readonly GameModel _gameModel;
 
-    public AIManager(GridService gridService, RoomFactory roomFactory, DayCycleService dayCycleService, DiContainer diContainer, EnemyPlayerFactory enemyPlayerFactory, SquadSpawner squadSpawner)
+    public AIManager(GridService gridService, RoomFactory roomFactory, DayCycleService dayCycleService, DiContainer diContainer, EnemyPlayerFactory enemyPlayerFactory, SquadSpawner squadSpawner, GameModel gameModel)
     {
         _gridService = gridService;
         _roomFactory = roomFactory;
@@ -24,6 +25,7 @@ public class AIManager : IInitializable, IDisposable
         _diContainer = diContainer;
         _enemyPlayerFactory = enemyPlayerFactory;
         _spawner = squadSpawner;
+        _gameModel = gameModel;
     }
 
     public void Initialize()
@@ -54,7 +56,7 @@ public class AIManager : IInitializable, IDisposable
         foreach (var faction in enemyFactions)
         {
             var player = playerList[UnityEngine.Random.Range(0, playerList.Length)];
-            var aiPlayer = new AIPlayer(player, faction, _gridService, _roomFactory, _spawner, _dayCycleService);
+            var aiPlayer = new AIPlayer(player, faction, _gridService, _roomFactory, _spawner, _dayCycleService, _gameModel);
             _aiPlayers.Add(aiPlayer);
         }
 

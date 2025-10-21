@@ -79,7 +79,6 @@ public class HeroPresenter : IDisposable
         {
             _winSystem.AddWinPoint(EventType.DieHero);
             isDie = true;
-            _gameModel.AddGold(_model.Gold, _model.Faction);
             Dispose();
         }
     }

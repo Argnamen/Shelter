@@ -13,11 +13,12 @@ public class AIPlayer
     private readonly RoomFactory _roomFactory;
     private readonly SquadSpawner _spawner;
     private readonly DayCycleService _dayCycleService;
+    private readonly GameModel _gameModel;
     private readonly CompositeDisposable _disposables = new();
 
     private bool _isSpawnHero = false;
 
-    public AIPlayer(IEnemyPlayer player, Faction faction, GridService gridService, RoomFactory roomFactory, SquadSpawner squadSpawner, DayCycleService dayCycleService)
+    public AIPlayer(IEnemyPlayer player, Faction faction, GridService gridService, RoomFactory roomFactory, SquadSpawner squadSpawner, DayCycleService dayCycleService, GameModel gameModel)
     {
         _player = player;
         Faction = faction;
@@ -25,6 +26,10 @@ public class AIPlayer
         _roomFactory = roomFactory;
         _spawner = squadSpawner;
         _dayCycleService = dayCycleService;
+        _gameModel = gameModel;
+
+        _dayCycleService.Time.Subscribe(NewDay).AddTo(_disposables);
+        _dayCycleService.IsTimeStop.Subscribe(TimeStop).AddTo(_disposables);
     }
 
     public void StartAITurn()
@@ -37,25 +42,38 @@ public class AIPlayer
             .AddTo(_disposables);
     }
 
-    private void ExecuteAIAction()
+    private void NewDay(float time)
     {
-        if (_dayCycleService.Time.Value <= 0)
-            _isSpawnHero = false;
-
-        if (!_isSpawnHero)
+        if (time <= 0)
         {
-            if (SpawnRooms())
-            {
-                return;
-            }
-        }
+            _gameModel.AddGold(100, Faction);
 
-        if (!_dayCycleService.IsTimeStop.Value)
+            Debug.Log("AAAAAA " + Faction + " AAAA " + _gameModel.GetGold(Faction));
+        }
+    }
+
+    private void TimeStop(bool isTimeStop)
+    {
+        if (!isTimeStop)
         {
             _isSpawnHero = true;
+        }
+        else
+        {
+            _isSpawnHero = false;
+        }
+    }
+
+    private void ExecuteAIAction()
+    {
+        if (!_isSpawnHero)
+        {
+            SpawnRooms();
+        }
+        else
+        {
             SpawnSquad(_dayCycleService.Time.Value);
         }
-
     }
 
     private bool SpawnRooms()
