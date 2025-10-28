@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using R3;
 using System;
 using System.Collections.Generic;
@@ -55,7 +56,7 @@ public class SquadSpawner
             .AddTo(_spawnDisposables);
     }
 
-    private void SpawnSquad(Faction faction)
+    private async void SpawnSquad(Faction faction)
     {
         Debug.Log("Spawning squad...");
 
@@ -78,7 +79,12 @@ public class SquadSpawner
             }
 
             // Устанавливаем начальную позицию за пределами сетки
-            heroView.transform.position = ((Vector3Int)_gameData.StartHeroPosition);
+            //heroView.transform.position = ((Vector3Int)_gameData.StartHeroPosition);
+            heroView.SetMoving(true);
+
+            await heroView.transform.DOMove(_dungeonView.StartPoint.position, 3f).AsyncWaitForCompletion();
+
+            heroView.SetMoving(false);
 
             heroes.Add(heroModel);
 

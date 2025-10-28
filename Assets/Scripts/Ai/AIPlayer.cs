@@ -47,8 +47,6 @@ public class AIPlayer
         if (time <= 0)
         {
             _gameModel.AddGold(100, Faction);
-
-            Debug.Log("AAAAAA " + Faction + " AAAA " + _gameModel.GetGold(Faction));
         }
     }
 

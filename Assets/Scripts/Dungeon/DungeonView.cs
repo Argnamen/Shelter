@@ -15,6 +15,10 @@ public class DungeonView : MonoBehaviour
     [SerializeField] private int _gridHeight = 5;
     [SerializeField] private float _cellSize = 2.5f;
 
+    [Header("StartPoint")]
+    public Transform StartPoint;
+    [SerializeField] private Transform _spawnPoint;
+
     private GameObject[,] _gridCells;
     private bool _isGridInitialized = false;
 
@@ -161,6 +165,7 @@ public class DungeonView : MonoBehaviour
     public HeroView CreateHeroView(GameObject prefab, Faction faction)
     {
         var view = Instantiate<HeroView>(prefab.GetComponent<HeroView>(), _roomsContainers[(int)faction]);
+        view.transform.position = _spawnPoint.position;
         return view;
     }
 
