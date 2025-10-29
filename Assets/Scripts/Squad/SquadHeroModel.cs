@@ -8,14 +8,16 @@ public class SquadHeroModel
 {
     public Faction Faction;
     public List<HeroModel> Heroes = new List<HeroModel>();
+    public List<HeroView> ViewHeroes = new List<HeroView>();
     public ReactiveProperty<bool> HeroesIsReady { get; } = new();
 
     public ReactiveProperty<int> Count { get; } = new();
 
-    public SquadHeroModel(Faction faction, List<HeroModel> heroModels)
+    public SquadHeroModel(Faction faction, List<HeroModel> heroModels, List<HeroView> viewHeroes)
     {
         Faction = faction;
         Heroes = heroModels;
+        ViewHeroes = viewHeroes;
         Count.Value = heroModels.Count;
         Initialize();
     }

@@ -62,6 +62,7 @@ public class SquadSpawner
 
         int heroCount = _gameModel.GetSquadSpawnCount();
         var heroes = new List<HeroModel>();
+        var views = new List<HeroView>();
         SquadHeroModel squad;
 
         for (int i = 0; i < heroCount; i++)
@@ -80,24 +81,20 @@ public class SquadSpawner
 
             // Устанавливаем начальную позицию за пределами сетки
             //heroView.transform.position = ((Vector3Int)_gameData.StartHeroPosition);
-            heroView.SetMoving(true);
-
-            await heroView.transform.DOMove(_dungeonView.StartPoint.position, 3f).AsyncWaitForCompletion();
-
-            heroView.SetMoving(false);
 
             heroes.Add(heroModel);
+            views.Add(heroView);
 
             _container.Instantiate<HeroPresenter>(new object[] {
             heroModel, heroView, _gameModel, _winSystem
         });
         }
-        squad = new SquadHeroModel(faction, heroes);
+        squad = new SquadHeroModel(faction, heroes, views);
 
         _gameModel.AddSquad(squad);
 
         _container.Instantiate<SquadHeroPresenter>(new object[] {
-            squad, _gameModel, _gridService, this
+            squad, _gameModel, _gridService, this, _dungeonView.StartPoint.position
         });
     }
 

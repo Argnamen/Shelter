@@ -48,6 +48,16 @@ public class HeroView : MonoBehaviour
         _healthSprite.size = new Vector2(1 / _oneHPSize * health, _healthSprite.size.y);
     }
 
+    public void HealthVisible(bool visible)
+    {
+        _healthSprite.gameObject.SetActive(visible);
+    }
+
+    public SpriteRenderer GerSpriteRender()
+    {
+        return _spriteRenderer;
+    }
+
     public void SetPause(bool pause)
     {
         if (pause)

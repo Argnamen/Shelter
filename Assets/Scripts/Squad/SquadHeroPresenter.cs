@@ -1,8 +1,10 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using R3;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class SquadHeroPresenter : IDisposable
@@ -12,11 +14,13 @@ public class SquadHeroPresenter : IDisposable
     private readonly SquadSpawner _squadSpawner;
     private readonly GameData _gameData;
     private readonly SquadHeroModel _model;
+    private readonly Vector3 _startDungeonPos;
 
     private RoomModel _roomModel;
 
     private CompositeDisposable _disposables = new();
     private bool _isDisposed = false;
+    private bool _isStart = true;
 
     private Vector2Int _moveVector = Vector2Int.right;
 
@@ -26,13 +30,15 @@ public class SquadHeroPresenter : IDisposable
         GameModel gameModel,
         GridService gridService,
         SquadSpawner squadSpawner,
-        GameData gameData)
+        GameData gameData,
+        Vector3 StartDungeonPos)
     {
         _model = model;
         _gameModel = gameModel;
         _gridService = gridService;
         _gameData = gameData;
         _squadSpawner = squadSpawner;
+        _startDungeonPos = StartDungeonPos;
 
         Initialize();
     }
@@ -60,6 +66,12 @@ public class SquadHeroPresenter : IDisposable
 
         if (!isReady) return;
 
+        if (_isStart)
+        {
+            GoToEnterTheDungeon();
+            return;
+        }
+
         var room = FindRoom(faction);
 
         if (_cleanRooms.Count == 0 || room == null)
@@ -78,6 +90,36 @@ public class SquadHeroPresenter : IDisposable
         NotifyAllHeroesOnRoomChanged(room);
 
         room.Squad = _model;
+    }
+
+    private async void GoToEnterTheDungeon()
+    {
+        Sequence sequence;
+
+        foreach (var heroView in _model.ViewHeroes)
+        {
+            sequence = DOTween.Sequence();
+
+            heroView.SetMoving(true);
+
+            sequence.AppendCallback(() => heroView.HealthVisible(false));
+
+            sequence.Append(heroView.transform.DOMove(_startDungeonPos, 2.8f).SetEase(Ease.Flash));
+
+            heroView.SetMoving(false);
+
+            sequence.Append(heroView.GerSpriteRender().DOFade(0,0.2f)).SetEase(Ease.Flash);
+
+            sequence.AppendInterval(1f);
+            sequence.Append(heroView.GerSpriteRender().DOFade(1, 0.2f)).SetEase(Ease.Flash);
+            sequence.AppendCallback(() => heroView.HealthVisible(true));
+        }
+
+        await Task.Delay(3 * 1000);
+
+        _isStart = false;
+
+        OnRoomChanged(true, _model.Faction);
     }
 
     private void NotifyAllHeroesOnRoomChanged(RoomModel room)
