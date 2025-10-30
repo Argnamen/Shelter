@@ -60,7 +60,7 @@ public class SquadHeroPresenter : IDisposable
         }
     }
 
-    private void OnRoomChanged(bool isReady, Faction faction)
+    private async void OnRoomChanged(bool isReady, Faction faction)
     {
         if (_isDisposed) return;
 
@@ -68,8 +68,7 @@ public class SquadHeroPresenter : IDisposable
 
         if (_isStart)
         {
-            GoToEnterTheDungeon();
-            return;
+            await GoToEnterTheDungeon();
         }
 
         var room = FindRoom(faction);
@@ -77,6 +76,7 @@ public class SquadHeroPresenter : IDisposable
         if (_cleanRooms.Count == 0 || room == null)
         {
             NotifyAllHeroesOnRoomChanged(null);
+            Debug.Log($"_cleanRooms.Count = {_cleanRooms.Count} / room == {room == null}");
             return;
         }
 
@@ -92,7 +92,7 @@ public class SquadHeroPresenter : IDisposable
         room.Squad = _model;
     }
 
-    private async void GoToEnterTheDungeon()
+    private async UniTask GoToEnterTheDungeon()
     {
         Sequence sequence;
 
@@ -118,8 +118,6 @@ public class SquadHeroPresenter : IDisposable
         await Task.Delay(3 * 1000);
 
         _isStart = false;
-
-        OnRoomChanged(true, _model.Faction);
     }
 
     private void NotifyAllHeroesOnRoomChanged(RoomModel room)

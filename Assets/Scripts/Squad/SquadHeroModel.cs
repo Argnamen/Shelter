@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class SquadHeroModel
 {
+    private int HeroIsReadyCount = 0;
+
     public Faction Faction;
     public List<HeroModel> Heroes = new List<HeroModel>();
     public List<HeroView> ViewHeroes = new List<HeroView>();
@@ -36,14 +38,15 @@ public class SquadHeroModel
 
     private void AllHeroIsReady(bool isReady)
     {
-        if(Heroes.FindAll(x => x.HeroIsReady.Value).Count == Heroes.Count)
+        if(isReady)
+            HeroIsReadyCount++;
+
+        if(HeroIsReadyCount == Heroes.Count)
         {
+            HeroIsReadyCount = 0;
+
             Count.Value = Heroes.Count;
-            HeroesIsReady.Value = true;
-        }
-        else
-        {
-            HeroesIsReady.Value = false;
+            HeroesIsReady.OnNext(true);
         }
     }
 
