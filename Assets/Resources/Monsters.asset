@@ -31,3 +31,9 @@ MonoBehaviour:
     Damage: 20
     DamageSpeadMillisecond: 300
     Prefab: {fileID: 5336564136609127741, guid: c158cb7a70264d749b650fad8bedfb1e, type: 3}
+  - Type: 4
+    Name: Slime_2
+    Health: 20
+    Damage: 30
+    DamageSpeadMillisecond: 300
+    Prefab: {fileID: 62595088797411816, guid: 011a15d158d40b946a4063fd3eed2b4b, type: 3}

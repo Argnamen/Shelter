@@ -91,5 +91,6 @@ public enum Faction
     Player,
     Enemy1,
     Enemy2,
-    Enemy3
+    Enemy3,
+    Enemy4,
 }

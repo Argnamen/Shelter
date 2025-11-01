@@ -20,4 +20,4 @@ public class Monster
     public GameObject Prefab;
 }
 
-public enum MonsterType { None, Slime, Skeleton, Eagle }
+public enum MonsterType { None, Slime, Skeleton, Eagle, Slime_2}

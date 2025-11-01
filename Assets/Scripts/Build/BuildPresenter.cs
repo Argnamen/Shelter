@@ -70,9 +70,9 @@ public class BuildPresenter : IInitializable, IDisposable
         _uiView.OnDeleteRoomButtonClicked.Subscribe(_=> RemoveRoom(Faction.Player)).AddTo(_disposables);
 
         _uiView.OnSwitchToPlayer.Subscribe(_ => SwitchCharacterVisible(Faction.Player)).AddTo(_disposables);
-        _uiView.OnSwitchToEnemy1.Subscribe(_ => SwitchCharacterVisible(Faction.Enemy1)).AddTo(_disposables);
-        _uiView.OnSwitchToEnemy2.Subscribe(_ => SwitchCharacterVisible(Faction.Enemy2)).AddTo(_disposables);
-        _uiView.OnSwitchToEnemy3.Subscribe(_ => SwitchCharacterVisible(Faction.Enemy3)).AddTo(_disposables);
+        _uiView.OnSwitchToEnemys[0].Subscribe(_ => SwitchCharacterVisible(Faction.Enemy1)).AddTo(_disposables);
+        _uiView.OnSwitchToEnemys[1].Subscribe(_ => SwitchCharacterVisible(Faction.Enemy2)).AddTo(_disposables);
+        _uiView.OnSwitchToEnemys[2].Subscribe(_ => SwitchCharacterVisible(Faction.Enemy3)).AddTo(_disposables);
 
         _dayCycleService.Time.Subscribe(x => _uiView.DayValue = x).AddTo(_disposables);
 

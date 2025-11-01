@@ -36,9 +36,7 @@ public class UIView : MonoBehaviour
 
     [Header("Characters")]
     [SerializeField] private Button _playerCharacter;
-    [SerializeField] private Button _enemy1Character;
-    [SerializeField] private Button _enemy2Character;
-    [SerializeField] private Button _enemy3Character;
+    [SerializeField] private List<Button> _enemysCharacter;
 
     [Inject] private RoomsData _roomsData;
 
@@ -51,9 +49,7 @@ public class UIView : MonoBehaviour
     public Observable<Unit> OnDeleteRoomButtonClicked => _deleteRoom.OnClickAsObservable();
 
     public Observable<Unit> OnSwitchToPlayer => _playerCharacter.OnClickAsObservable();
-    public Observable<Unit> OnSwitchToEnemy1 => _enemy1Character.OnClickAsObservable();
-    public Observable<Unit> OnSwitchToEnemy2 => _enemy2Character.OnClickAsObservable();
-    public Observable<Unit> OnSwitchToEnemy3 => _enemy3Character.OnClickAsObservable();
+    public List<Observable<Unit>> OnSwitchToEnemys = new List<Observable<Unit>>();
 
     public float DayValue { get { return _daySlider.value; } set { _daySlider.value = value; } }
 
@@ -67,6 +63,11 @@ public class UIView : MonoBehaviour
 
     private void Awake()
     {
+        for (int i = 0; i < _enemysCharacter.Count; i++)
+        {
+            OnSwitchToEnemys.Add(_enemysCharacter[i].OnClickAsObservable());
+        }
+
         InitializeRoomSelection();
         ToggleBuildMenu(false);
     }
@@ -84,6 +85,8 @@ public class UIView : MonoBehaviour
         SetupRoom(_monsterRooms[1], roomSelectionSubject, RoomType.Combat, MonsterType.Skeleton);
 
         SetupRoom(_monsterRooms[2], roomSelectionSubject, RoomType.Combat, MonsterType.Eagle);
+
+        SetupRoom(_monsterRooms[3], roomSelectionSubject, RoomType.Combat, MonsterType.Slime_2);
 
         SetupRoom(_peaceRooms[0], roomSelectionSubject, RoomType.Rest);
 
