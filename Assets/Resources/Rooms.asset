@@ -65,9 +65,11 @@ MonoBehaviour:
     - {x: 1, y: 0}
     - {x: -1, y: 0}
     SpecialNeighbors: []
-  - Type: 0
-    MonsterType: 0
+  - Type: 1
+    MonsterType: 4
     CellSize: 2.5
-    Cost: 0
-    Neighbors: []
+    Cost: 180
+    Neighbors:
+    - {x: 1, y: 0}
+    - {x: -1, y: 0}
     SpecialNeighbors: []

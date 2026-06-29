@@ -111,8 +111,6 @@ public class HeroPresenter : IDisposable
 
         if (_roomModel != null)
         {
-            _roomModel.Enter.Value = false;
-
             switch (_roomModel.Type)
             {
                 case RoomType.Treasure:
@@ -124,6 +122,9 @@ public class HeroPresenter : IDisposable
                     break;
             }
         }
+
+        if(_roomModel != null)
+            _roomModel.Enter.Value = false;
 
         _roomModel = room;
 
