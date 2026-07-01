@@ -209,9 +209,7 @@ public class HeroPresenter : IDisposable
     {
         if (_isDisposed) return;
 
-        Vector3 startPosition = _view.transform.localPosition;
-
-        if (_isDisposed) return;
+        RotateHero();
 
         _tweener = _view.transform.DOLocalMove(Vector3.zero, duration)
             .SetEase(Ease.Flash);
@@ -221,6 +219,20 @@ public class HeroPresenter : IDisposable
         if (!_isDisposed)
         {
             _view.transform.localPosition = Vector3.zero;
+        }
+
+        RotateHero();
+    }
+
+    private void RotateHero()
+    {
+        if (_view.transform.localPosition.x <= 0 && _view.transform.rotation.eulerAngles.y > 0)
+        {
+            _view.transform.DORotate(Vector3.zero, 0.2f);
+        }
+        else if(_view.transform.localPosition.x > 0 && _view.transform.rotation.eulerAngles.y <= 0)
+        {
+            _view.transform.DORotate(Vector3.up * 180, 0.2f);
         }
     }
 

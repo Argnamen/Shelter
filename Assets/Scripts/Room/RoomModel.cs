@@ -27,6 +27,8 @@ public class RoomModel
         Type = type;
         Position = position;
         Monster = monster;
+
+        Enter.Subscribe(isEnter);
     }
 
     public RoomModel(RoomType type, Vector2Int position)
@@ -34,5 +36,13 @@ public class RoomModel
         Type = type;
         Position = position;
         Monster = MonsterType.None;
+
+        Enter.Subscribe(isEnter);
+    }
+
+    private void isEnter(bool value)
+    {
+        if (Monsters.Count <= 0 && value)
+            Enter.Value = false;
     }
 }
