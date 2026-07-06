@@ -88,23 +88,9 @@ public class HeroPresenter : IDisposable
         if (_roomModel == null && room == null)
             return;
 
-        if (_roomsToExit.Count == 0 ||
-            room == null ||
-            (room.Type == RoomType.Stairs && _roomsToExit.Find(x => x.Type == RoomType.Stairs) == null) 
-            )
+        if (room != null)
         {
-            if (room != null)
-            {
-                _roomsToExit.Add(room);
-            }
-            else
-            {
-                if (_roomsToExit.Find(x => x.Type == RoomType.Stairs) != null)
-                {
-                    _roomsToExit.Add(_gameModel.Rooms[_model.Faction].Find(x => x.Type == RoomType.Stairs && x.Position.y == _roomModel.Position.y));
-                }
-                _roomsToExit.Add(_roomModel);
-            }
+            _roomsToExit.Add(room);
         }
 
         _model.HeroIsReady.Value = false;
@@ -122,11 +108,6 @@ public class HeroPresenter : IDisposable
                     break;
             }
         }
-
-        if(_roomModel != null)
-            _roomModel.Enter.Value = false;
-
-        _roomModel = room;
 
         if (_isDisposed) return;
 
@@ -159,6 +140,11 @@ public class HeroPresenter : IDisposable
     {
         if (_isDisposed) return;
 
+        if (_roomModel != null)
+            _roomModel.Enter.Value = false;
+
+        _roomModel = room;
+
         _view.SetMoving(true);
 
         await MoveToPosition();
@@ -179,6 +165,8 @@ public class HeroPresenter : IDisposable
                 await LootTreasure(room);
                 break;
         }
+
+        room.Enter.Value = false;
     }
 
     private async UniTask MoveToExit()
@@ -242,22 +230,22 @@ public class HeroPresenter : IDisposable
 
         _view.SetFighting();
 
-        while (room.Monsters.Count > 0)
+        foreach (var monster in room.Monsters.FindAll(x => x.Health.CurrentValue > 0))
         {
-            if (room.Monsters[0].Health.Value > 0)
+            while (monster.Health.Value > 0)
             {
                 if (_isDisposed) break;
 
-                room.Monsters[0].Health.Value -= _model.Damage.Value;
+                monster.Health.Value -= _model.Damage.Value;
 
                 _isBattle = true;
 
                 await UniTask.Delay(_model.DamageSpead.Value);
+
+                if (_isDisposed) break;
+
+                await UniTask.WaitUntil(() => !_isTimeStop);
             }
-
-            if (_isDisposed) break;
-
-            await UniTask.WaitUntil(() => !_isTimeStop);
         }
 
         _view.SetFighting(false);

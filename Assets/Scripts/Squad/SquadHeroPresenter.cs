@@ -73,11 +73,6 @@ public class SquadHeroPresenter : IDisposable
 
         var room = FindRoom(faction);
 
-        if (!room.IsUnlocked)
-        {
-
-        }
-
         if (_cleanRooms.Count == 0 || room == null)
         {
             NotifyAllHeroesOnRoomChanged(null);

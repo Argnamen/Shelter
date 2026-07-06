@@ -61,9 +61,13 @@ public class MonsterSpawner
         });
     }
 
-    public void Remove(MonsterModel monster)
+    public void Respawn(MonsterType type, RoomModel roomModel)
     {
-        _roomModel.Monsters.Remove(monster);
+        var monsterData = _monstersData.Monsters.Find(monster => monster.Type == type);
+
+        int index = roomModel.Monsters.FindIndex(x => x.Type == type && x.Health.CurrentValue <= 0);
+
+        roomModel.Monsters[index].Health.Value = monsterData.Health;
     }
 
     public async void StartAutoSpawning(float time)
@@ -76,9 +80,9 @@ public class MonsterSpawner
                 {
                     await new WaitWhile(() => room.Enter.Value);
 
-                    if (room.Type == RoomType.Combat && room.Monsters.Count < 3)
+                    if (room.Type == RoomType.Combat && room.Monsters.FindAll(x => x.Health.CurrentValue <= 0).Count > 0)
                     {
-                        Spawn(room.Monster, room);
+                        Respawn(room.Monster, room);
                     }
                 }
             }

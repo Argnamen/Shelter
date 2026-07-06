@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 public class MonsterView : MonoBehaviour
@@ -36,12 +37,19 @@ public class MonsterView : MonoBehaviour
         }
     }
 
+    public void Respawn()
+    {
+        _isDie = false;
+        _animator.Play("Idle");
+
+        _spriteRenderer.DOFade(1, 1);
+    }
+
     public void Die()
     {
         _isDie = true;
         _animator.Play("Die");
 
-        // Автоматически уничтожаем через 1 секунду
-        Destroy(gameObject, 1f);
+        _spriteRenderer.DOFade(0, 1);
     }
 }

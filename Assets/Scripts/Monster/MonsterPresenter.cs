@@ -62,6 +62,10 @@ public class MonsterPresenter : IDisposable
         {
             Die();
         }
+        else if (_isDisposed)
+        {
+            Rest();
+        }
     }
 
     private async UniTask FightHeroes()
@@ -105,11 +109,17 @@ public class MonsterPresenter : IDisposable
         }
     }
 
+    private void Rest()
+    {
+        _view.Respawn();
+        _isDisposed = false;
+    }
+
     private void Die()
     {
-        if (_isDisposed) return;
+        _view.Die();
 
-        Dispose();
+        _isDisposed = true;
     }
 
     private Vector3 GetWorldPosition(Vector2Int gridPosition)
@@ -124,8 +134,6 @@ public class MonsterPresenter : IDisposable
     public void Dispose()
     {
         if (_isDisposed) return;
-
-        _roomModel.Monsters.Remove(_model);
 
         _isDisposed = true;
         _disposables.Dispose();
