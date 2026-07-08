@@ -99,14 +99,12 @@ public class BuildPresenter : IInitializable, IDisposable
     private void HandleGridClick()
     {
         var mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        var gridPosition = new Vector2Int(
-            Mathf.RoundToInt(mouseWorldPos.x / _gameData.CellSize), // Соответствует CellSize
-            Mathf.RoundToInt(mouseWorldPos.y / _gameData.CellSize)
-        );
+        var gridPosition = _dungeonView.WorldToGridPosition(mouseWorldPos);
+        
 
         if (_gridService.GetRoomAt(gridPosition, Faction.Player) != null)
         {
-            _cameraController.FocusOnRoom(_gridService.GetWorldPosition(gridPosition));
+            _cameraController.FocusOnRoom(_dungeonView.GridCells[gridPosition.x, gridPosition.y].transform.position);
 
             if (_isBuildMode)
             {

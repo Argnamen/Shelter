@@ -167,7 +167,7 @@ public class GameModel
         for (int i = 0; i < rooms.Count; i++)
         {
             if ((rooms[i].Type == RoomType.Stairs && rooms[i].IsUnlocked) || 
-                (rooms[i].Position == _gameData.StartRoomPosition))
+                (rooms[i].Position == Vector2Int.zero))
             {
                 isStair = true;
             }

@@ -31,7 +31,7 @@ public class RoomFactory
         var roomModel = new RoomModel(type, monsterType, position);
 
         // Создаем визуальное представление
-        var worldPosition = _gridModel.GridToWorldPosition(position);
+        var worldPosition = _dungeonView.GridCells[position.x, position.y].transform.position;
         var roomView = _dungeonView.CreateRoomView(faction, type, worldPosition);
 
         if (roomView == null)

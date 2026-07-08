@@ -9,8 +9,6 @@ public class GameData : ScriptableObject
     public int GridWidth = 5;
     public float CellSize = 2.5f;
 
-    public Vector2Int StartHeroPosition = new Vector2Int(0, 5);
-    public Vector2Int StartRoomPosition = new Vector2Int(0, 4);
 
     public int TimeDaySecond = 10;
     public int LengthDay = 100;

@@ -7,17 +7,22 @@ public class GridModel
     private int _height  = 5;
     private float _cellSize = 2.5f;
 
+    private DungeonView _view;
+
     private Vector2Int _startPosition;
 
     public Dictionary<Faction, RoomModel[,]> Grid { get; private set; } = new();
     public Dictionary<Faction,List<Vector2Int>> AvailablePositions { get; } = new();
 
-    public GridModel(int width, int height, float cellSize, Vector2Int startPos)
+    public GridModel(int width, int height, float cellSize, DungeonView dungeonView)
     {
         _width = width;
         _height = height;
         _cellSize = cellSize;
-        _startPosition = startPos;
+        _startPosition = Vector2Int.zero;
+
+        _view = dungeonView;
+
         InitializeGrid();
     }
 
@@ -136,13 +141,6 @@ public class GridModel
             gridPosition.y * _cellSize,
             0
         );
-    }
-
-    public Vector2Int WorldToGridPosition(Vector3 worldPosition)
-    {
-        int x = Mathf.RoundToInt(worldPosition.x / _cellSize);
-        int y = Mathf.RoundToInt(worldPosition.y / _cellSize);
-        return new Vector2Int(x, y);
     }
 
     public RoomModel GetRoomAt(Vector2Int position, Faction faction)

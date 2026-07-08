@@ -25,7 +25,7 @@ public class GridService
     {
         RoomData roomData = _roomsData.Rooms.Find(x => x.Type == roomType && x.MonsterType == monsterType);
 
-        if (position != _gameData.StartRoomPosition && !GetAvailablePositions(roomType, faction).ContainsItem(position))
+        if (position != Vector2Int.zero && !GetAvailablePositions(roomType, faction).ContainsItem(position))
         {
             Debug.LogWarning($"Cannot place room at position {position}");
             return false;
@@ -38,7 +38,7 @@ public class GridService
         }
 
         int roomCost = roomData.Cost;
-        if (position != _gameData.StartRoomPosition && !_gameModel.TrySpendGold(roomCost, faction))
+        if (position != Vector2Int.zero && !_gameModel.TrySpendGold(roomCost, faction))
         {
             Debug.LogWarning($"Not enough gold to build {roomType} room. Need {roomCost} gold.");
             return false;
@@ -144,7 +144,7 @@ public class GridService
 
     public Vector2Int GetGridPosition(Vector3 worldPosition)
     {
-        return _gridModel.WorldToGridPosition(worldPosition);
+        return _dungeonView.WorldToGridPosition(worldPosition);
     }
 
     public bool IsPositionValid(Vector2Int position)

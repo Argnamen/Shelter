@@ -10,31 +10,30 @@ public class DungeonView : MonoBehaviour
 
     [SerializeField] private Transform[] _roomsContainers;
 
-    [Header("Grid Settings")]
-    [SerializeField] private int _gridWidth = 5;
-    [SerializeField] private int _gridHeight = 5;
-    [SerializeField] private float _cellSize = 2.5f;
-
     [Header("StartPoint")]
     public Transform StartPoint;
     [SerializeField] private Transform _spawnPoint;
 
-    private GameObject[,] _gridCells;
+    public GameObject[,] GridCells;
     private bool _isGridInitialized = false;
 
-    public int GridWidth => _gridWidth;
-    public int GridHeight => _gridHeight;
-    public float CellSize => _cellSize;
+    private int _gridWidth;
+    private int _gridHeight;
+    private float _cellSize;
 
-    public void InitializeGrid()
+    public void InitializeGrid(GameData gameData)
     {
+        _gridWidth = gameData.GridWidth;
+        _gridHeight = gameData.GridHeight;
+        _cellSize = gameData.CellSize;
+
         if (_isGridInitialized)
         {
             Debug.LogWarning("Grid already initialized!");
             return;
         }
 
-        _gridCells = new GameObject[_gridWidth, _gridHeight];
+        GridCells = new GameObject[_gridWidth, _gridHeight];
 
         for (int x = 0; x < _gridWidth; x++)
         {
@@ -67,8 +66,9 @@ public class DungeonView : MonoBehaviour
     {
         var cellPos = new Vector3(x * _cellSize, y * _cellSize, 0);
         var cell = Instantiate(_gridCellPrefab, cellPos, Quaternion.identity, _gridContainer);
+        cell.transform.localPosition = cellPos;
         cell.name = $"GridCell_{x}_{y}";
-        _gridCells[x, y] = cell;
+        GridCells[x, y] = cell;
 
         var renderer = cell.GetComponent<SpriteRenderer>();
         if (renderer != null)
@@ -79,19 +79,11 @@ public class DungeonView : MonoBehaviour
         }
     }
 
-    public Vector3 GridToWorldPosition(Vector2Int gridPosition)
-    {
-        return new Vector3(
-            gridPosition.x * _cellSize,
-            gridPosition.y * _cellSize,
-            0
-        );
-    }
-
     public Vector2Int WorldToGridPosition(Vector3 worldPosition)
     {
-        int x = Mathf.RoundToInt(worldPosition.x / _cellSize);
-        int y = Mathf.RoundToInt(worldPosition.y / _cellSize);
+        int x = Mathf.RoundToInt((worldPosition.x / _cellSize));
+        int y = Mathf.RoundToInt((_gridHeight - worldPosition.y) / _cellSize);
+
         return new Vector2Int(x, y);
     }
 
@@ -103,7 +95,7 @@ public class DungeonView : MonoBehaviour
         {
             if (IsValidGridPosition(pos))
             {
-                var cell = _gridCells[pos.x, pos.y];
+                var cell = GridCells[pos.x, pos.y];
                 var renderer = cell.GetComponent<SpriteRenderer>();
                 if (renderer != null)
                 {
@@ -119,7 +111,7 @@ public class DungeonView : MonoBehaviour
         {
             for (int y = 0; y < _gridHeight; y++)
             {
-                var renderer = _gridCells[x, y].GetComponent<SpriteRenderer>();
+                var renderer = GridCells[x, y].GetComponent<SpriteRenderer>();
                 if (renderer != null)
                 {
                     renderer.color = new Color(1, 1, 1, 0.3f);
@@ -146,7 +138,7 @@ public class DungeonView : MonoBehaviour
         var gridPos = WorldToGridPosition(worldPosition);
         if (IsValidGridPosition(gridPos) && faction == Faction.Player)
         {
-            _gridCells[gridPos.x, gridPos.y].SetActive(false);
+            GridCells[gridPos.x, gridPos.y].SetActive(false);
         }
 
         return room;
@@ -158,7 +150,7 @@ public class DungeonView : MonoBehaviour
 
         if (IsValidGridPosition(gridPos) && faction == Faction.Player)
         {
-            _gridCells[gridPos.x, gridPos.y].SetActive(true);
+            GridCells[gridPos.x, gridPos.y].SetActive(true);
         }
     }
 

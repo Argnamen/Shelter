@@ -90,16 +90,16 @@ public class GamePresenter : IInitializable, IDisposable
         // Инициализация начального состояния
         _model.DungeonLevel.Value = 1;
 
-        _dungeonView.InitializeGrid();
+        _dungeonView.InitializeGrid(_gameData);
 
         // Создаем начальную комнату
-        var startPosition = _gameData.StartRoomPosition;
+        var startPosition = Vector2Int.zero;
         _gridService.TryPlaceRoom(RoomType.Rest, startPosition, Faction.Player);
         _gridService.TryPlaceRoom(RoomType.Rest, startPosition, Faction.Enemy1);
         _gridService.TryPlaceRoom(RoomType.Rest, startPosition, Faction.Enemy2);
         _gridService.TryPlaceRoom(RoomType.Rest, startPosition, Faction.Enemy3);
 
-        _cameraController.FocusOnRoom(_gridService.GetWorldPosition(startPosition));
+        _cameraController.FocusOnRoom(_dungeonView.GridCells[startPosition.x, startPosition.y].transform.position);
 
         _uiView.ShowMessage("Welcome to Dungeon Shelter! Build rooms and defend against heroes!");
     }

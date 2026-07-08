@@ -27,7 +27,7 @@ public class GameInstaller : MonoInstaller
 
         // Модели
         Container.BindInterfacesAndSelfTo<GameModel>().AsSingle();
-        Container.Bind<GridModel>().FromInstance(new GridModel(_gameData.GridWidth, _gameData.GridHeight, _gameData.CellSize, _gameData.StartHeroPosition)).AsSingle();
+        Container.Bind<GridModel>().FromInstance(new GridModel(_gameData.GridWidth, _gameData.GridHeight, _gameData.CellSize, _dungeonView)).AsSingle();
 
         // Вью
         Container.Bind<DungeonView>().FromInstance(_dungeonView).AsSingle();

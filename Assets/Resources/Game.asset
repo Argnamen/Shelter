@@ -12,12 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d0189600985d9d4c84d7714e4bb4f66, type: 3}
   m_Name: Game
   m_EditorClassIdentifier: 
-  GridHeight: 5
+  GridHeight: 10
   GridWidth: 5
   CellSize: 2.5
-  StartHeroPosition: {x: 0, y: 5}
-  StartRoomPosition: {x: 0, y: 4}
-  StartGold: 1000
   TimeDaySecond: 10
   LengthDay: 10
   MaxInteres: 1000

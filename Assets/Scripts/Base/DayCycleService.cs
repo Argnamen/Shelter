@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using R3;
 using System;
 using System.Collections;
@@ -29,7 +30,7 @@ public class DayCycleService: IDisposable
             .AddTo(_cycleDisposables);
     }
 
-    public void StopDay()
+    public async UniTask StopDay()
     {
         IsTimeStop.Value = true;
         _cycleDisposables.Clear();
