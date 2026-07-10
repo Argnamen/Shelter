@@ -82,7 +82,7 @@ public class DungeonView : MonoBehaviour
     public Vector2Int WorldToGridPosition(Vector3 worldPosition)
     {
         int x = Mathf.RoundToInt((worldPosition.x / _cellSize));
-        int y = Mathf.RoundToInt((_gridHeight - worldPosition.y) / _cellSize);
+        int y = Mathf.RoundToInt((10 - worldPosition.y) / _cellSize);
 
         return new Vector2Int(x, y);
     }

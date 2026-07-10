@@ -159,9 +159,10 @@ public class SquadHeroPresenter : IDisposable
 
                 }
 
-                if (_cleanRooms.FindAll(x => x.y == _roomModel.Position.y - 1).Count != 0)
+                //Лестница ведёт вниз, но её объект контейнер перевернут (на 180 относительно Y)
+                if (_cleanRooms.FindAll(x => x.y == _roomModel.Position.y + 1).Count != 0) //По этому мы ищем объекты выше неё
                 {
-                    nextRoom = _gridService.GetRoomAt(_roomModel.Position + Vector2Int.down, faction);
+                    nextRoom = _gridService.GetRoomAt(_roomModel.Position + Vector2Int.up, faction); // Потому мы возвращаем комнату стоящую выше
 
                     if (nextRoom != null)
                     {
