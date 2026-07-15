@@ -8,9 +8,9 @@ public class LedySkeleton : IEnemyPlayer
 
     private readonly RoomsData _roomsData;
 
-    public LedySkeleton(RoomsData roomData)
+    public LedySkeleton(GameModel gameModel)
     {
-        _roomsData = roomData;
+        _roomsData = gameModel.GetPlayer(PlayerType.GigaKrish).Rooms;
     }
     public void StartLocalRools()
     {

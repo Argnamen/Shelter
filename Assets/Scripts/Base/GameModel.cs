@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Zenject.SpaceFighter;
 
 public class GameModel
 {
@@ -14,8 +15,11 @@ public class GameModel
     public List<SquadHeroModel> ActiveSquads { get; } = new();
     public Dictionary<Faction, List<RoomModel>> Rooms { get; } = new();
 
+    private Dictionary<Faction, PlayerData> _players { get; } = new();
+
     private readonly GameData _gameData;
     private readonly WinSystem _winSystem;
+    private readonly PlayersData _playersData;
     private readonly PlayerData _playerData;
 
     private Dictionary<Faction, int> _goldEnemys = new();
@@ -24,11 +28,12 @@ public class GameModel
     public Subject<RoomModel> OnRoomBuilt { get; } = new();
     public Subject<int> OnGoldChanged { get; } = new();
 
-    public GameModel(GameData gameData, WinSystem winSystem, PlayerData playerData)
+    public GameModel(GameData gameData, WinSystem winSystem, PlayersData playersData)
     {
         _gameData = gameData;
         _winSystem = winSystem;
-        _playerData = playerData;
+        _playersData = playersData;
+        _playerData = GetPlayer(PlayerType.GigaKrish);
 
         Initialize();
     }
@@ -46,6 +51,26 @@ public class GameModel
         Rooms.Add(Faction.Enemy1, new List<RoomModel>());
         Rooms.Add(Faction.Enemy2, new List<RoomModel>());
         Rooms.Add(Faction.Enemy3, new List<RoomModel>());
+
+        _players.Add(Faction.Player, GetPlayer(PlayerType.GigaKrish));
+        _players.Add(Faction.Enemy1, GetPlayer(PlayerType.SkeletonLedi));
+        _players.Add(Faction.Enemy2, GetPlayer(PlayerType.Succub));
+        _players.Add(Faction.Enemy3, GetPlayer(PlayerType.Succub));
+    }
+
+    public GameData GetData(PlayerType playerType) 
+    {
+        return GetPlayer(playerType).Data;
+    }
+
+    public PlayerData GetPlayer(PlayerType playerType)
+    {
+        return _playersData.Players.Find(x => x.playerType == playerType);
+    }
+
+    public PlayerData GetPlayer(Faction faction)
+    {
+        return _players[faction];
     }
 
     public bool TrySpendGold(int amount, Faction faction)

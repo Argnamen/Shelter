@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9d0189600985d9d4c84d7714e4bb4f66, type: 3}
-  m_Name: Game
+  m_Name: Lady
   m_EditorClassIdentifier: 
   GridHeight: 10
   GridWidth: 5

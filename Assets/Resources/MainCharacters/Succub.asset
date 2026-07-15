@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d0189600985d9d4c84d7714e4bb4f66, type: 3}
+  m_Name: Succub
+  m_EditorClassIdentifier: 
+  GridHeight: 10
+  GridWidth: 5
+  CellSize: 2.5
+  TimeDaySecond: 10
+  LengthDay: 10
+  MaxInteres: 1000
+  MaxGold: 1000
+  MaxGhost: 1000
+  MaxVlianie: 1000

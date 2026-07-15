@@ -38,7 +38,9 @@ public class UIView : MonoBehaviour
     [SerializeField] private Button _playerCharacter;
     [SerializeField] private List<Button> _enemysCharacter;
 
-    [Inject] private RoomsData _roomsData;
+    [Inject] private GameModel _gameModel;
+
+    private RoomsData _roomsData;
 
     private IDisposable _messageDisposable;
 
@@ -74,6 +76,11 @@ public class UIView : MonoBehaviour
 
     private void InitializeRoomSelection()
     {
+        if (_roomsData == null)
+        {
+            _roomsData = _gameModel.GetPlayer(Faction.Player).Rooms;
+        }
+
         // Создаем Subject для выбора типа комнаты
         var roomSelectionSubject = new Subject<RoomData>();
         var room = _roomsData.Rooms.Find(x => x.Type == RoomType.Combat && x.MonsterType == MonsterType.Slime);
@@ -97,6 +104,11 @@ public class UIView : MonoBehaviour
 
     private void SetupRoom(MonsterButtonView monsterButtonView, Subject<RoomData> roomSelectionSubject, RoomType roomType, MonsterType monsterType = MonsterType.None)
     {
+        if (_roomsData == null)
+        {
+            _roomsData = _gameModel.GetPlayer(Faction.Player).Rooms;
+        }
+
         var room = _roomsData.Rooms.Find(x => x.Type == roomType && x.MonsterType == monsterType);
 
         monsterButtonView.BayButton.OnClickAsObservable().Subscribe(_ =>

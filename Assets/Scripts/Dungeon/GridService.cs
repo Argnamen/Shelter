@@ -8,21 +8,26 @@ public class GridService
     private readonly RoomFactory _roomFactory;
     private readonly GameModel _gameModel;
     private readonly GameData _gameData;
-    private readonly RoomsData _roomsData;
     private readonly DungeonView _dungeonView;
 
-    public GridService(GridModel gridModel, RoomFactory roomFactory, GameModel gameModel, GameData gameData, RoomsData roomData, DungeonView dungeonView)
+    private RoomsData _roomsData;
+
+    public GridService(GridModel gridModel, RoomFactory roomFactory, GameModel gameModel, GameData gameData, DungeonView dungeonView)
     {
         _gridModel = gridModel;
         _roomFactory = roomFactory;
         _gameModel = gameModel;
         _gameData = gameData;
-        _roomsData = roomData;
         _dungeonView = dungeonView;
     }
 
     public bool TryPlaceRoom(RoomType roomType, Vector2Int position, Faction faction, MonsterType monsterType = MonsterType.None)
     {
+        if(_roomsData == null)
+        {
+            _roomsData = _gameModel.GetPlayer(faction).Rooms;
+        }
+
         RoomData roomData = _roomsData.Rooms.Find(x => x.Type == roomType && x.MonsterType == monsterType);
 
         if (position != Vector2Int.zero && !GetAvailablePositions(roomType, faction).ContainsItem(position))
@@ -60,6 +65,11 @@ public class GridService
 
     public void RemoveRoom(Vector2Int position, Faction faction)
     {
+        if (_roomsData == null)
+        {
+            _roomsData = _gameModel.GetPlayer(faction).Rooms;
+        }
+
         if (_gameModel.Rooms[faction][0].Position == position)
             return;
 
@@ -74,6 +84,11 @@ public class GridService
 
     public IReadOnlyList<Vector2Int> GetAvailablePositions(RoomType roomType, Faction faction)
     {
+        if (_roomsData == null)
+        {
+            _roomsData = _gameModel.GetPlayer(faction).Rooms;
+        }
+
         RoomData roomData = _roomsData.Rooms.Find(x => x.Type == roomType);
         List<Vector2Int> newReturn = new List<Vector2Int>();
 

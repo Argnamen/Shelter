@@ -18,6 +18,8 @@ public class PlayerData
 
     public int StartGold;
     public RoomsData Rooms;
+
+    public GameData Data;
 }
 
-public enum PlayerType { None, SkeletonLedi, GigaKrish }
+public enum PlayerType { None, SkeletonLedi, GigaKrish, Succub }

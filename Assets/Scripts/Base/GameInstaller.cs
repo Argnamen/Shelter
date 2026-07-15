@@ -14,15 +14,13 @@ public class GameInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        PlayerData playerData = _playersData.Players[1];
         Container.BindInterfacesAndSelfTo<MainPlayerManager>().AsSingle();
 
         //Данные
         Container.Bind<GameData>().FromInstance(_gameData).AsSingle();
         Container.Bind<HeroesData>().FromInstance(_heroesData).AsSingle();
 
-        Container.Bind<PlayerData>().FromInstance(playerData).AsSingle();
-        Container.Bind<RoomsData>().FromInstance(playerData.Rooms).AsSingle();
+        Container.Bind<PlayersData>().FromInstance(_playersData).AsSingle();
         Container.Bind<MonstersData>().FromInstance(_monstersData).AsSingle();
 
         // Модели

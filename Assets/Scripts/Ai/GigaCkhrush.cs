@@ -8,9 +8,9 @@ public class GigaCkhrush : IEnemyPlayer
 
     private readonly RoomsData _roomsData;
 
-    public GigaCkhrush(RoomsData roomData)
+    public GigaCkhrush(GameModel gameModel)
     {
-        _roomsData = roomData;
+        _roomsData = gameModel.GetPlayer(PlayerType.GigaKrish).Rooms;
     }
 
     public void StartLocalRools()
