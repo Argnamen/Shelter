@@ -46,6 +46,8 @@ public class UIView : MonoBehaviour
 
     private bool _isPlay = false;
 
+    private Subject<RoomData> _roomSelectionSubject;
+
     public Observable<Unit> OnBuildButtonClicked => _buildButton.OnClickAsObservable();
     public Observable<Unit> OnPlayButtonClicked => _playButton.OnClickAsObservable();
     public Observable<Unit> OnDeleteRoomButtonClicked => _deleteRoom.OnClickAsObservable();
@@ -65,25 +67,17 @@ public class UIView : MonoBehaviour
 
     private void Awake()
     {
+        Initialize();
+    }
+    public void Initialize()
+    {
+        // Создаем Subject для выбора типа комнаты
+        var roomSelectionSubject = new Subject<RoomData>();
+
         for (int i = 0; i < _enemysCharacter.Count; i++)
         {
             OnSwitchToEnemys.Add(_enemysCharacter[i].OnClickAsObservable());
         }
-
-        InitializeRoomSelection();
-        ToggleBuildMenu(false);
-    }
-
-    private void InitializeRoomSelection()
-    {
-        if (_roomsData == null)
-        {
-            _roomsData = _gameModel.GetPlayer(Faction.Player).Rooms;
-        }
-
-        // Создаем Subject для выбора типа комнаты
-        var roomSelectionSubject = new Subject<RoomData>();
-        var room = _roomsData.Rooms.Find(x => x.Type == RoomType.Combat && x.MonsterType == MonsterType.Slime);
 
         OnRoomSelected = roomSelectionSubject;
 
@@ -100,15 +94,16 @@ public class UIView : MonoBehaviour
         SetupRoom(_peaceRooms[1], roomSelectionSubject, RoomType.Treasure);
 
         SetupRoom(_peaceRooms[2], roomSelectionSubject, RoomType.Stairs);
+
+        ToggleBuildMenu(false);
     }
 
     private void SetupRoom(MonsterButtonView monsterButtonView, Subject<RoomData> roomSelectionSubject, RoomType roomType, MonsterType monsterType = MonsterType.None)
     {
-        if (_roomsData == null)
+        if(_roomsData == null)
         {
             _roomsData = _gameModel.GetPlayer(Faction.Player).Rooms;
         }
-
         var room = _roomsData.Rooms.Find(x => x.Type == roomType && x.MonsterType == monsterType);
 
         monsterButtonView.BayButton.OnClickAsObservable().Subscribe(_ =>

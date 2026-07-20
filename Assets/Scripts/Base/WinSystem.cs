@@ -2,18 +2,26 @@ using R3;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class WinSystem
 {
+    private readonly GameModel _gameModel;
     public Dictionary<WinPoint, ReactiveProperty<int>> Points = new Dictionary<WinPoint, ReactiveProperty<int>>();
-    public WinSystem(GameData data)
+    public WinSystem(GameModel gameModel)
     {
+        _gameModel = gameModel;
+        Initialize();
+    }
+
+    public void Initialize()
+    {
+        var data = _gameModel.GetPlayer(Faction.Player).Data;
         Points[WinPoint.Interes] = new ReactiveProperty<int>(data.MaxInteres);
         Points[WinPoint.Gold] = new ReactiveProperty<int>(data.MaxGold);
         Points[WinPoint.Ghost] = new ReactiveProperty<int>(data.MaxGhost);
         Points[WinPoint.Vlianie] = new ReactiveProperty<int>(data.MaxVlianie);
     }
-
 
     public void AddWinPoint(WinPoint winPoint, int count)
     {

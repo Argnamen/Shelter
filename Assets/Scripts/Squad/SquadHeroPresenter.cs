@@ -6,13 +6,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using Zenject;
 
 public class SquadHeroPresenter : IDisposable
 {
     private readonly GameModel _gameModel;
     private readonly GridService _gridService;
     private readonly SquadSpawner _squadSpawner;
-    private readonly GameData _gameData;
     private readonly SquadHeroModel _model;
     private readonly Vector3 _startDungeonPos;
 
@@ -30,20 +30,17 @@ public class SquadHeroPresenter : IDisposable
         GameModel gameModel,
         GridService gridService,
         SquadSpawner squadSpawner,
-        GameData gameData,
         Vector3 StartDungeonPos)
     {
         _model = model;
         _gameModel = gameModel;
         _gridService = gridService;
-        _gameData = gameData;
         _squadSpawner = squadSpawner;
         _startDungeonPos = StartDungeonPos;
-
         Initialize();
     }
 
-    private void Initialize()
+    public void Initialize()
     {
         InitCleanRooms();
 

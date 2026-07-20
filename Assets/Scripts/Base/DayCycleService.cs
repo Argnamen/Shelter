@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class DayCycleService: IDisposable
 {
@@ -16,10 +17,19 @@ public class DayCycleService: IDisposable
 
     private CompositeDisposable _cycleDisposables = new();
 
-    public DayCycleService(GameData gameData)
+    private GameModel _gameModel;
+
+    public DayCycleService(GameModel gameModel)
     {
-        _time = gameData.TimeDaySecond;
-        _lengthDay = gameData.LengthDay;
+        _gameModel = gameModel;
+        Initialize();
+    }
+
+    public void Initialize()
+    {
+        var data = _gameModel.GetPlayer(Faction.Player).Data;
+        _time = data.TimeDaySecond;
+        _lengthDay = data.LengthDay;
     }
 
     public void StartDay()

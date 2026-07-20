@@ -28,3 +28,8 @@ MonoBehaviour:
     StartGold: 3000
     Rooms: {fileID: 11400000, guid: c53bcdf393a5d9646b364d077bdfedc4, type: 2}
     Data: {fileID: 11400000, guid: 8f942e9cdf496d24f80b6f6fa3c3e8f8, type: 2}
+  - playerType: 3
+    Image: {fileID: 21300000, guid: 2a3d9bc1b0c14f44a98ed352ba9dc8ac, type: 3}
+    StartGold: 1000
+    Rooms: {fileID: 11400000, guid: c53bcdf393a5d9646b364d077bdfedc4, type: 2}
+    Data: {fileID: 11400000, guid: 8f942e9cdf496d24f80b6f6fa3c3e8f8, type: 2}

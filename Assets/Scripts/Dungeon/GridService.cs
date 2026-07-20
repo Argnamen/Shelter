@@ -7,17 +7,15 @@ public class GridService
     private readonly GridModel _gridModel;
     private readonly RoomFactory _roomFactory;
     private readonly GameModel _gameModel;
-    private readonly GameData _gameData;
     private readonly DungeonView _dungeonView;
 
     private RoomsData _roomsData;
 
-    public GridService(GridModel gridModel, RoomFactory roomFactory, GameModel gameModel, GameData gameData, DungeonView dungeonView)
+    public GridService(GridModel gridModel, RoomFactory roomFactory, GameModel gameModel, DungeonView dungeonView)
     {
         _gridModel = gridModel;
         _roomFactory = roomFactory;
         _gameModel = gameModel;
-        _gameData = gameData;
         _dungeonView = dungeonView;
     }
 
@@ -139,9 +137,10 @@ public class GridService
 
     public Vector2Int? GetRoomPosition(RoomModel room, Faction faction)
     {
-        for (int x = 0; x < _gameData.GridWidth; x++)
+        var data = _gameModel.GetPlayer(faction).Data;
+        for (int x = 0; x < data.GridWidth; x++)
         {
-            for (int y = 0; y < _gameData.GridHeight; y++)
+            for (int y = 0; y < data.GridHeight; y++)
             {
                 if (_gridModel.Grid[faction][x, y] == room)
                 {

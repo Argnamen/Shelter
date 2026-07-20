@@ -12,7 +12,6 @@ public class SquadSpawner
     private readonly DungeonView _dungeonView;
     private readonly DiContainer _container;
     private readonly GridService _gridService;
-    private readonly GameData _gameData;
     private readonly DayCycleService _dayCycleService;
     private readonly HeroesData _heroesData;
     private readonly WinSystem _winSystem;
@@ -26,7 +25,6 @@ public class SquadSpawner
         DungeonView dungeonView,
         DiContainer container,
         GridService gridService,
-        GameData gameData,
         DayCycleService dayCycleService,
         HeroesData heroesData,
         WinSystem winSystem)
@@ -35,7 +33,6 @@ public class SquadSpawner
         _dungeonView = dungeonView;
         _container = container;
         _gridService = gridService;
-        _gameData = gameData;
         _dayCycleService = dayCycleService;
         _heroesData = heroesData;
         _winSystem = winSystem;
@@ -105,19 +102,21 @@ public class SquadSpawner
 
     public async void StartAutoSpawning(Faction faction, float time)
     {
+        var data = _gameModel.GetPlayer(Faction.Player).Data;
+
         if (time <= 0)
         {
             _spawnTime[(int)faction] = 0;
             return;
         }
 
-        if (time >= _spawnTime[(int)faction] && _spawnTime[(int)faction] <= _gameData.TimeDaySecond)
+        if (time >= _spawnTime[(int)faction] && _spawnTime[(int)faction] <= data.TimeDaySecond)
         {
             float interval = _gameModel.GetSquadSpawnInterval();
 
             _spawnTime[(int)faction] += interval;
 
-            if (_spawnTime[(int)faction] <= _gameData.TimeDaySecond)
+            if (_spawnTime[(int)faction] <= data.TimeDaySecond)
             {
                 await SpawnHeroWave(faction);
             }

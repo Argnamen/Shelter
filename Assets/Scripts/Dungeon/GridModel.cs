@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class GridModel
 {
@@ -8,30 +9,29 @@ public class GridModel
     private float _cellSize = 2.5f;
 
     private DungeonView _view;
+    private GameModel _gameModel;
 
     private Vector2Int _startPosition;
 
     public Dictionary<Faction, RoomModel[,]> Grid { get; private set; } = new();
     public Dictionary<Faction,List<Vector2Int>> AvailablePositions { get; } = new();
 
-    public GridModel(int width, int height, float cellSize, DungeonView dungeonView)
+    public GridModel(GameModel gameModel, DungeonView dungeonView)
     {
-        _width = width;
-        _height = height;
-        _cellSize = cellSize;
         _startPosition = Vector2Int.zero;
 
         _view = dungeonView;
+        _gameModel = gameModel;
 
-        InitializeGrid();
+        Initialize();
     }
 
-    private void InitializeGrid()
+    public void Initialize()
     {
-        Grid.Add(Faction.Player, new RoomModel[_width, _height]);
-        Grid.Add(Faction.Enemy1, new RoomModel[_width, _height]);
-        Grid.Add(Faction.Enemy2, new RoomModel[_width, _height]);
-        Grid.Add(Faction.Enemy3, new RoomModel[_width, _height]);
+        NewGrid(Faction.Player);
+        NewGrid(Faction.Enemy1);
+        NewGrid(Faction.Enemy2);
+        NewGrid(Faction.Enemy3);
 
         AvailablePositions.Add(Faction.Player, new());
         AvailablePositions.Add(Faction.Enemy1, new());
@@ -39,6 +39,20 @@ public class GridModel
         AvailablePositions.Add(Faction.Enemy3, new());
 
         InitializeAvailablePositions();
+    }
+
+    private void NewGrid(Faction faction)
+    {
+        var data = _gameModel.GetPlayer(faction).Data;
+
+        if (Grid.ContainsKey(faction))
+        {
+            Grid[faction] = new RoomModel[data.GridWidth, data.GridHeight];
+        }
+        else
+        {
+            Grid.Add(faction, new RoomModel[data.GridWidth, data.GridHeight]);
+        }
     }
 
     private void InitializeAvailablePositions()

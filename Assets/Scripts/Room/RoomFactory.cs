@@ -7,7 +7,6 @@ public class RoomFactory
     private readonly DungeonView _dungeonView;
     private readonly DiContainer _container;
     private readonly GridModel _gridModel;
-    private readonly GameData _gameData;
     private readonly MonsterSpawner _monsterSpawner;
     
     private List<RoomPresenter> roomPresenters = new List<RoomPresenter>();
@@ -16,13 +15,11 @@ public class RoomFactory
         DungeonView dungeonView,
         DiContainer container,
         GridModel gridModel,
-        GameData gameData,
         MonsterSpawner monsterSpawner)
     {
         _dungeonView = dungeonView;
         _container = container;
         _gridModel = gridModel;
-        _gameData = gameData;
         _monsterSpawner = monsterSpawner;
     }
 
@@ -43,18 +40,18 @@ public class RoomFactory
         // Создаем презентер
         _container.Instantiate<RoomPresenter>(new object[] { roomModel, roomView });
 
-        AddMonstersToRoom(roomModel);
+        AddMonstersToRoom(faction, roomModel);
 
         Debug.Log($"Room created at {position} - {type}");
         return roomModel;
     }
 
-    private void AddMonstersToRoom(RoomModel room)
+    private void AddMonstersToRoom(Faction faction, RoomModel room)
     {
         switch (room.Type)
         {
             case RoomType.Combat:
-                AddMonsters(room, room.Monster, 2);
+                AddMonsters(faction, room, room.Monster, 2);
                 break;
             case RoomType.Rest:
                 
@@ -68,11 +65,11 @@ public class RoomFactory
         }
     }
 
-    private void AddMonsters(RoomModel room, MonsterType type, int count)
+    private void AddMonsters(Faction faction, RoomModel room, MonsterType type, int count)
     {
         for (int i = 0; i < count; i++)
         {
-            _monsterSpawner.Spawn(type, room);
+            _monsterSpawner.Spawn(faction, type, room);
         }
     }
 }

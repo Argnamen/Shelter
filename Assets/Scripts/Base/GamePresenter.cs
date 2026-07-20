@@ -12,7 +12,6 @@ public class GamePresenter : IInitializable, IDisposable
     private readonly GridService _gridService;
     private readonly SquadSpawner _heroSpawner;
     private readonly CameraController _cameraController;
-    private readonly GameData _gameData;
     private readonly DayCycleService _dayCycleService;
 
     private CompositeDisposable _disposables = new();
@@ -27,7 +26,6 @@ public class GamePresenter : IInitializable, IDisposable
         GridService gridService,
         SquadSpawner heroSpawner,
         CameraController cameraController,
-        GameData gameData,
         DayCycleService dayCycleService)
     {
         _model = model;
@@ -36,7 +34,6 @@ public class GamePresenter : IInitializable, IDisposable
         _gridService = gridService;
         _heroSpawner = heroSpawner;
         _cameraController = cameraController;
-        _gameData = gameData;
         _dayCycleService = dayCycleService;
     }
 
@@ -87,10 +84,11 @@ public class GamePresenter : IInitializable, IDisposable
 
     private void InitializeGame()
     {
+        var data = _model.GetPlayer(Faction.Player).Data;
         // Инициализация начального состояния
         _model.DungeonLevel.Value = 1;
 
-        _dungeonView.InitializeGrid(_gameData);
+        _dungeonView.InitializeGrid(data);
 
         // Создаем начальную комнату
         var startPosition = Vector2Int.zero;

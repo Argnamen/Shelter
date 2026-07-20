@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Zenject;
 using Zenject.SpaceFighter;
 
 public class GameModel
@@ -17,10 +18,7 @@ public class GameModel
 
     private Dictionary<Faction, PlayerData> _players { get; } = new();
 
-    private readonly GameData _gameData;
-    private readonly WinSystem _winSystem;
     private readonly PlayersData _playersData;
-    private readonly PlayerData _playerData;
 
     private Dictionary<Faction, int> _goldEnemys = new();
 
@@ -28,23 +26,15 @@ public class GameModel
     public Subject<RoomModel> OnRoomBuilt { get; } = new();
     public Subject<int> OnGoldChanged { get; } = new();
 
-    public GameModel(GameData gameData, WinSystem winSystem, PlayersData playersData)
+    public GameModel(PlayersData playersData)
     {
-        _gameData = gameData;
-        _winSystem = winSystem;
         _playersData = playersData;
-        _playerData = GetPlayer(PlayerType.GigaKrish);
-
         Initialize();
     }
 
-    private void Initialize()
+    public void Initialize()
     {
         // Ќачальные значени€
-        Gold.Value = _playerData.StartGold;
-        _goldEnemys.Add(Faction.Enemy1, _playerData.StartGold);
-        _goldEnemys.Add(Faction.Enemy2, _playerData.StartGold);
-        _goldEnemys.Add(Faction.Enemy3, _playerData.StartGold);
         DungeonLevel.Value = 1;
 
         Rooms.Add(Faction.Player, new List<RoomModel>());
@@ -56,6 +46,11 @@ public class GameModel
         _players.Add(Faction.Enemy1, GetPlayer(PlayerType.SkeletonLedi));
         _players.Add(Faction.Enemy2, GetPlayer(PlayerType.Succub));
         _players.Add(Faction.Enemy3, GetPlayer(PlayerType.Succub));
+
+        Gold.Value = GetPlayer(Faction.Player).StartGold;
+        _goldEnemys.Add(Faction.Enemy1, GetPlayer(Faction.Enemy1).StartGold);
+        _goldEnemys.Add(Faction.Enemy2, GetPlayer(Faction.Enemy2).StartGold);
+        _goldEnemys.Add(Faction.Enemy3, GetPlayer(Faction.Enemy3).StartGold);
     }
 
     public GameData GetData(PlayerType playerType) 
@@ -65,7 +60,14 @@ public class GameModel
 
     public PlayerData GetPlayer(PlayerType playerType)
     {
-        return _playersData.Players.Find(x => x.playerType == playerType);
+        var player = _playersData.Players.Find(x => x.playerType == playerType);
+
+        if (player == null)
+        {
+            Debug.LogError("Player is not find");
+        }
+
+        return player;
     }
 
     public PlayerData GetPlayer(Faction faction)
@@ -255,7 +257,8 @@ public class GameModel
     public float GetSquadSpawnInterval()
     {
         // »нтервал между волнами уменьшаетс€ с уровнем
-        return _gameData.LengthDay / _gameData.TimeDaySecond * UnityEngine.Random.Range(1, _gameData.TimeDaySecond);
+        var data = GetPlayer(Faction.Player).Data;
+        return data.LengthDay / data.TimeDaySecond * UnityEngine.Random.Range(1, data.TimeDaySecond);
     }
 
     // ћетод дл€ наблюдени€ за изменением количества героев

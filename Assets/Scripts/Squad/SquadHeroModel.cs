@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Zenject;
 
 public class SquadHeroModel
 {
@@ -24,7 +25,7 @@ public class SquadHeroModel
         Initialize();
     }
 
-    private void Initialize()
+    public void Initialize()
     {
         foreach (var hero in Heroes) 
         {

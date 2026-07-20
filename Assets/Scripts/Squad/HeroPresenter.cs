@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using Zenject;
 
 public class HeroPresenter : IDisposable
 {
@@ -39,11 +40,10 @@ public class HeroPresenter : IDisposable
         _gameModel = gameModel;
         _winSystem = winSystem;
         _dayCycleService = dayCycleService;
-
         Initialize();
     }
 
-    private void Initialize()
+    public void Initialize()
     {
         _view.SetHealth(_model.Health.Value);
         _model.CurrentRoomModel.Subscribe(OnRoomChanged).AddTo(_disposables);

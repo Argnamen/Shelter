@@ -9,7 +9,6 @@ public class MonsterSpawner
 {
     private readonly DungeonView _dungeonView;
     private readonly DiContainer _container;
-    private readonly GameData _gameData;
     private readonly RoomModel _roomModel;
     private readonly MonsterFactory _monsterFactory;
     private readonly DayCycleService _dayCycleService;
@@ -22,14 +21,12 @@ public class MonsterSpawner
         GameModel gameModel,
         DungeonView dungeonView,
         DiContainer container,
-        GameData gameData,
         MonsterFactory monsterFactory,
         DayCycleService dayCycleService,
         MonstersData monstersData)
     {
         _dungeonView = dungeonView;
         _container = container;
-        _gameData = gameData;
         _monsterFactory = monsterFactory;
         _dayCycleService = dayCycleService;
         _gameModel = gameModel;
@@ -37,7 +34,7 @@ public class MonsterSpawner
 
         _dayCycleService.Time.Subscribe(StartAutoSpawning).AddTo(_spawnDisposables);
     }
-    public void Spawn(MonsterType type, RoomModel roomModel)
+    public void Spawn(Faction faction, MonsterType type, RoomModel roomModel)
     {
         Debug.Log("Spawning monster...");
 
@@ -57,7 +54,7 @@ public class MonsterSpawner
         roomModel.AddMonsterView.Value = view;
 
         _container.Instantiate<MonsterPresenter>(new object[] {
-           type, model, view, roomModel, _gameData
+           type, model, view, roomModel
         });
     }
 

@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class MonsterPresenter : IDisposable
 {
@@ -12,26 +13,23 @@ public class MonsterPresenter : IDisposable
     private readonly MonsterType _type;
     private readonly MonsterView _view;
     private readonly MonsterModel _model;
-    private readonly GameData _gameData;
     private readonly RoomModel _roomModel;
     private readonly DayCycleService _dayCycleService;
     private bool _isTimeStop;
 
     private CompositeDisposable _disposables = new();
     private bool _isDisposed = false;
-    public MonsterPresenter(MonsterType type, MonsterView view, MonsterModel model, RoomModel roomModel, GameData gameData, MonsterFactory monsterFactory, DayCycleService dayCycleService)
+    public MonsterPresenter(MonsterType type, MonsterView view, MonsterModel model, RoomModel roomModel, MonsterFactory monsterFactory, DayCycleService dayCycleService)
     {
         _type = type;
         _view = view;
         _model = model;
         _roomModel = roomModel;
-        _gameData = gameData;
         _dayCycleService = dayCycleService;
-
         Initialize();
     }
 
-    private void Initialize()
+    public void Initialize()
     {
         _roomModel.Enter.Subscribe(OnRoomEnter).AddTo(_disposables);
         _model.Health.Subscribe(OnHealthChanged).AddTo(_disposables);
@@ -120,15 +118,6 @@ public class MonsterPresenter : IDisposable
         _view.Die();
 
         _isDisposed = true;
-    }
-
-    private Vector3 GetWorldPosition(Vector2Int gridPosition)
-    {
-        return new Vector3(
-            gridPosition.x * _gameData.CellSize,
-            gridPosition.y * _gameData.CellSize,
-            0
-        );
     }
 
     public void Dispose()

@@ -25,7 +25,6 @@ public class BuildPresenter : IInitializable, IDisposable
         GridService gridService,
         DungeonView dungeonView,
         GameModel gameModel,
-        GameData gameData,
         CameraController cameraController,
         DayCycleService dayCycleService,
         WinSystem winSystem)
@@ -33,7 +32,7 @@ public class BuildPresenter : IInitializable, IDisposable
         _uiView = uiView;
         _gridService = gridService;
         _dungeonView = dungeonView;
-        _gameData = gameData;
+        _gameData = gameModel.GetPlayer(Faction.Player).Data;
         _cameraController = cameraController;
         _dayCycleService = dayCycleService;
         _winSystem = winSystem;
