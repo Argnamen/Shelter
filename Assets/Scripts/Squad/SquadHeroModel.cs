@@ -66,6 +66,17 @@ public class SquadHeroModel
         return hero;
     }
 
+    public void UpdateRoom(RoomModel room)
+    {
+        var heroes = Heroes.ToArray();
+
+        foreach (var hero in heroes)
+        {
+            if(hero.Die.Value == false)
+                hero.CurrentRoomModel.Value = room;
+        }
+    }
+
     public void RemoveHero(HeroModel hero, bool isDie)
     {
         if (isDie)

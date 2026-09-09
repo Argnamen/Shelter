@@ -88,7 +88,21 @@ public class HeroPresenter : IDisposable
         if (_roomModel == null && room == null)
             return;
 
-        if (room != null)
+        if (room == null)
+        {
+            await MoveToExit();
+
+            if (_model.Faction == Faction.Player)
+                _winSystem.AddWinPoint(EventType.CleanDangeon);
+            else
+            {
+
+            }
+
+            Dispose();
+            return;
+        }
+        else if (room != null)
         {
             _roomsToExit.Add(room);
         }
@@ -103,7 +117,7 @@ public class HeroPresenter : IDisposable
                     _winSystem.AddWinPoint(EventType.OpenChest);
                     break;
                 case RoomType.Combat:
-                    if(_isBattle)
+                    if (_isBattle)
                         _winSystem.AddWinPoint(EventType.WinBattle);
                     break;
             }
@@ -111,28 +125,13 @@ public class HeroPresenter : IDisposable
 
         if (_isDisposed) return;
 
-        if(room == null)
-        {
-            await MoveToExit();
 
-            if (_model.Faction == Faction.Player)
-                _winSystem.AddWinPoint(EventType.CleanDangeon);
-            else
-            {
+        await new WaitWhile(() => room.Enter.Value);
 
-            }
+        room.AddHeroView.Value = _view;
 
-            Dispose();
-            return;
-        }
-        else
-        {
-            await new WaitWhile(() => room.Enter.Value);
+        await MoveToRoom(room);
 
-            room.AddHeroView.Value = _view;
-
-            await MoveToRoom(room);
-        }
 
         _model.HeroIsReady.Value = true;
     }

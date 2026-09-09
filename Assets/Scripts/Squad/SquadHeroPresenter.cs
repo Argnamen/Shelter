@@ -70,15 +70,15 @@ public class SquadHeroPresenter : IDisposable
 
         var room = FindRoom(faction);
 
+        if (_roomModel != null)
+            _roomModel.Squad = null;
+
         if (_cleanRooms.Count == 0 || room == null)
         {
             NotifyAllHeroesOnRoomChanged(null);
             Debug.Log($"_cleanRooms.Count = {_cleanRooms.Count} / room == {room == null}");
             return;
         }
-
-        if (_roomModel != null)
-            _roomModel.Squad = null;
 
         _cleanRooms.Remove(room.Position);
 
@@ -119,15 +119,12 @@ public class SquadHeroPresenter : IDisposable
 
     private void NotifyAllHeroesOnRoomChanged(RoomModel room)
     {
-        foreach (var hero in _model.Heroes) 
-        {
-            hero.CurrentRoomModel.Value = room;
-        }
-
         if(room == null)
         {
             Dispose();
         }
+
+        _model.UpdateRoom(room);
     }
 
     private RoomModel FindRoom(Faction faction)

@@ -10,7 +10,7 @@ public class MonsterView : MonoBehaviour
 
     public void Initialize(MonsterType type)
     {
-        _animator.Play("Idle");
+        _animator.Play("Spawn");
     }
 
     public void Fight()
@@ -40,7 +40,7 @@ public class MonsterView : MonoBehaviour
     public void Respawn()
     {
         _isDie = false;
-        _animator.Play("Idle");
+        _animator.Play("Spawn");
 
         _spriteRenderer.DOFade(1, 1);
     }

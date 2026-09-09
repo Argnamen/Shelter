@@ -36,14 +36,9 @@ public class AIManager : IInitializable, IDisposable
         _dayCycleService.IsTimeStop.Subscribe(StartAutoSpawning).AddTo(_disposables);
     }
 
-    public async void StartAutoSpawning(bool isTimeStop)
+    public void StartAutoSpawning(bool isTimeStop)
     {
-        while (isTimeStop)
-        {
-            ExecuteAITurns();
-
-            await Task.Delay(10);
-        }
+        Observable.Timer(TimeSpan.FromSeconds(10)).Subscribe(_ => ExecuteAITurns());
     }
 
     private void CreateAIPlayers()
