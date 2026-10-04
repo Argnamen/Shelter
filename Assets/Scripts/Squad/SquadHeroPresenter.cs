@@ -71,11 +71,12 @@ public class SquadHeroPresenter : IDisposable
         var room = FindRoom(faction);
 
         if (_roomModel != null)
-            _roomModel.Squad = null;
+            _roomModel.Squad.Value = null;
 
         if (_cleanRooms.Count == 0 || room == null)
         {
             NotifyAllHeroesOnRoomChanged(null);
+            _roomModel = null;
             Debug.Log($"_cleanRooms.Count = {_cleanRooms.Count} / room == {room == null}");
             return;
         }
@@ -86,7 +87,7 @@ public class SquadHeroPresenter : IDisposable
 
         NotifyAllHeroesOnRoomChanged(room);
 
-        room.Squad = _model;
+        room.Squad.Value = _model;
     }
 
     private async UniTask GoToEnterTheDungeon()
@@ -129,11 +130,9 @@ public class SquadHeroPresenter : IDisposable
 
     private RoomModel FindRoom(Faction faction)
     {
-        var room = _gameModel.Rooms[faction][0];
-
         if (_roomModel == null)
         {
-            return room;
+            return _gameModel.Rooms[faction][0];
         }
         else
         {
@@ -205,7 +204,6 @@ public class SquadHeroPresenter : IDisposable
         _isDisposed = true;
         _disposables.Dispose();
         _squadSpawner.RemoveSquad(_model);
-        _roomModel.Squad = null;
-        _roomModel.Enter.Value = false;
+        _roomModel.Squad.Value = null;
     }
 }

@@ -31,7 +31,7 @@ public class MonsterPresenter : IDisposable
 
     public void Initialize()
     {
-        _roomModel.Enter.Subscribe(OnRoomEnter).AddTo(_disposables);
+        _roomModel.Squad.Subscribe(OnRoomEnter).AddTo(_disposables);
         _model.Health.Subscribe(OnHealthChanged).AddTo(_disposables);
         _dayCycleService.IsTimeStop.Subscribe(OnTimeStop).AddTo(_disposables);
     }
@@ -45,13 +45,12 @@ public class MonsterPresenter : IDisposable
         _view.SetPause(!isTimeStop);
     }
 
-    private async void OnRoomEnter(bool isEnter)
+    private async void OnRoomEnter(SquadHeroModel squad)
     {
-        if (isEnter)
-        {
-            Debug.Log("Fight!!!!!");
-            await FightHeroes();
-        }
+        if (squad == null)
+            return;
+
+        await FightHeroes(squad);
     }
 
     private void OnHealthChanged(int health)
@@ -66,17 +65,16 @@ public class MonsterPresenter : IDisposable
         }
     }
 
-    private async UniTask FightHeroes()
+    private async UniTask FightHeroes(SquadHeroModel squad)
     {
         if (_isDisposed) return;
 
-        _view.Fight();
-        while (_roomModel.Squad != null)
-        {
-            var hero = _roomModel.Squad.GetHero();
+        await UniTask.WaitUntil(() => squad.GetHero().State == HeroState.Fighting);
 
-            if (hero == null)
-                break;
+        _view.Fight();
+        while (squad.GetHero() != null)
+        {
+            var hero = squad.GetHero();
 
             if (hero.Health.Value > 0)
             {

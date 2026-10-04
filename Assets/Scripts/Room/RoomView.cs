@@ -63,17 +63,31 @@ public class RoomView : MonoBehaviour
         }
     }
 
+    int cycle = 0;
     public void AddHeroView(HeroView heroView)
     {
         if (heroView == null)
             return;
 
+        bool isEnter = false;
+
         for (int i = 0; i < _heroesContainers.Length; i++)
         {
-            if (_heroesContainers[i].childCount == 0)
+            if (_heroesContainers[i].childCount == cycle)
             {
                 heroView.transform.SetParent(_heroesContainers[i]);
+                isEnter = true;
             }
+        }
+
+        if (!isEnter)
+        {
+            cycle++;
+            AddHeroView(heroView);
+        }
+        else
+        {
+            cycle = 0;
         }
     }
 

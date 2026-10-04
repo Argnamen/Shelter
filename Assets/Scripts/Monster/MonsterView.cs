@@ -43,6 +43,8 @@ public class MonsterView : MonoBehaviour
         _animator.Play("Spawn");
 
         _spriteRenderer.DOFade(1, 1);
+
+        Idle();
     }
 
     public void Die()

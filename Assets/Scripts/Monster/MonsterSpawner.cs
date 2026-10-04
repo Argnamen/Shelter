@@ -75,8 +75,6 @@ public class MonsterSpawner
             {
                 foreach (var room in _gameModel.Rooms[(Faction)i])
                 {
-                    await new WaitWhile(() => room.Enter.Value);
-
                     if (room.Type == RoomType.Combat && room.Monsters.FindAll(x => x.Health.CurrentValue <= 0).Count > 0)
                     {
                         Respawn(room.Monster, room);

@@ -7,14 +7,14 @@ using Zenject;
 
 public class SquadHeroModel
 {
-    private int HeroIsReadyCount = 0;
-
     public Faction Faction;
     public List<HeroModel> Heroes = new List<HeroModel>();
     public List<HeroView> ViewHeroes = new List<HeroView>();
     public ReactiveProperty<bool> HeroesIsReady { get; } = new();
 
     public ReactiveProperty<int> Count { get; } = new();
+
+    private readonly object LockObj = new object();
 
     public SquadHeroModel(Faction faction, List<HeroModel> heroModels, List<HeroView> viewHeroes)
     {
@@ -39,15 +39,16 @@ public class SquadHeroModel
 
     private void AllHeroIsReady(bool isReady)
     {
-        if(isReady)
-            HeroIsReadyCount++;
+        if (!isReady)
+            return;
 
-        if(HeroIsReadyCount == Heroes.Count)
+        lock (LockObj)
         {
-            HeroIsReadyCount = 0;
-
-            Count.Value = Heroes.Count;
-            HeroesIsReady.OnNext(true);
+            if (Heroes.Count == Heroes.FindAll(x => x.HeroIsReady.Value).Count)
+            {
+                Count.Value = Heroes.Count;
+                HeroesIsReady.OnNext(true);
+            }
         }
     }
 

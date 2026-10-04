@@ -90,6 +90,7 @@ public class HeroPresenter : IDisposable
 
         if (room == null)
         {
+            _model.State = HeroState.Leaving;
             await MoveToExit();
 
             if (_model.Faction == Faction.Player)
@@ -125,9 +126,6 @@ public class HeroPresenter : IDisposable
 
         if (_isDisposed) return;
 
-
-        await new WaitWhile(() => room.Enter.Value);
-
         room.AddHeroView.Value = _view;
 
         await MoveToRoom(room);
@@ -139,8 +137,7 @@ public class HeroPresenter : IDisposable
     {
         if (_isDisposed) return;
 
-        if (_roomModel != null)
-            _roomModel.Enter.Value = false;
+        _model.State = HeroState.Entering;
 
         _roomModel = room;
 
@@ -150,22 +147,21 @@ public class HeroPresenter : IDisposable
 
         _view.SetMoving(false);
 
-        room.Enter.Value = true;
-
         switch (room.Type)
         {
             case RoomType.Combat:
+                _model.State = HeroState.Fighting;
                 await FightMonsters(room);
                 break;
             case RoomType.Rest:
+                _model.State = HeroState.Resting;
                 await RestInRoom(room);
                 break;
             case RoomType.Treasure:
+                _model.State = HeroState.Resting;
                 await LootTreasure(room);
                 break;
         }
-
-        room.Enter.Value = false;
     }
 
     private async UniTask MoveToExit()
@@ -226,6 +222,9 @@ public class HeroPresenter : IDisposable
     private async UniTask FightMonsters(RoomModel room)
     {
         if (_isDisposed) return;
+
+        if(room.Monsters.FindAll(x => x.Health.CurrentValue > 0).Count == 0)
+
 
         _view.SetFighting();
 
