@@ -73,8 +73,15 @@ public class SquadHeroModel
 
         foreach (var hero in heroes)
         {
-            if(hero.Die.Value == false)
-                hero.CurrentRoomModel.Value = room;
+            if (hero.Die.Value == false)
+                if (room != null)
+                {
+                    hero.CurrentRoomModel.Value = room;
+                }
+                else
+                {
+                    hero.MoveToExit.Value = true;
+                }
         }
     }
 

@@ -50,6 +50,8 @@ public class HeroPresenter : IDisposable
         _model.Health.Subscribe(OnHealthChanged).AddTo(_disposables);
         _model.Health.Subscribe(_view.UpdateHealth).AddTo(_disposables);
 
+        _model.MoveToExit.Subscribe(MoveToExit).AddTo(_disposables);
+
         _dayCycleService.IsTimeStop.Subscribe(TimeStop).AddTo(_disposables);
     }
 
@@ -88,25 +90,8 @@ public class HeroPresenter : IDisposable
         if (_roomModel == null && room == null)
             return;
 
-        if (room == null)
-        {
-            _model.State = HeroState.Leaving;
-            await MoveToExit();
-
-            if (_model.Faction == Faction.Player)
-                _winSystem.AddWinPoint(EventType.CleanDangeon);
-            else
-            {
-
-            }
-
-            Dispose();
-            return;
-        }
-        else if (room != null)
-        {
+        if(room != null)
             _roomsToExit.Add(room);
-        }
 
         _model.HeroIsReady.Value = false;
 
@@ -164,14 +149,19 @@ public class HeroPresenter : IDisposable
         }
     }
 
-    private async UniTask MoveToExit()
+    private async void MoveToExit(bool isExit)
     {
         float duration = 1f;
 
-        if (_isDisposed) return;
+        if (_isDisposed || _roomsToExit.Count == 0 || !isExit) return;
+
+        _model.State = HeroState.Leaving;
 
         _view.SetMoving(true);
-        for(int i = _roomsToExit.Count - 1; i > 0; i--)
+
+        ClearRoomsToExit();
+
+        for (int i = _roomsToExit.Count - 1; i > 0; i--)
         {
             _roomsToExit[i - 1].AddHeroView.Value = _view;
 
@@ -186,6 +176,28 @@ public class HeroPresenter : IDisposable
             await MoveToPosition(duration);
         }
         _view.SetMoving(false);
+
+        if (_model.Faction == Faction.Player)
+            _winSystem.AddWinPoint(EventType.CleanDangeon);
+
+        Dispose();
+    }
+
+    private void ClearRoomsToExit()
+    {
+        var stairs = _roomsToExit.FindLast(x => x.Type == RoomType.Stairs);
+        var lastRoom = _roomsToExit[_roomsToExit.Count - 1];
+        List<RoomModel> retRoooms = new List<RoomModel>();
+        try
+        {
+            retRoooms = _roomsToExit.FindAll(x => (x.Position.y == lastRoom.Position.y || x.Position.y == 0) && x.Position.x <= stairs.Position.x);
+        }
+        catch
+        {
+            retRoooms = _roomsToExit;
+        }
+
+        _roomsToExit = retRoooms;
     }
 
     private async UniTask MoveToPosition(float duration = 1f)

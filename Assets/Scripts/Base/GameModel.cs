@@ -135,6 +135,11 @@ public class GameModel
             OnRoomBuilt.OnNext(room);
         }
 
+        foreach (var clearRoom in Rooms[faction].FindAll(x => x.Position == room.Position))
+        {
+            Rooms[faction].Remove(clearRoom);
+        }
+
         Rooms[faction].Add(room);
 
         RoomsIsUnlock(faction, room);
@@ -156,11 +161,6 @@ public class GameModel
         if (room.Type == RoomType.Stairs)
         {
             UpdateStairsRoom(faction, room, false);
-        }
-
-        foreach (var lockRoom in Rooms[faction])
-        {
-            Debug.Log(lockRoom.Type + " " + lockRoom.Position + " " + lockRoom.IsUnlocked);
         }
     }
 

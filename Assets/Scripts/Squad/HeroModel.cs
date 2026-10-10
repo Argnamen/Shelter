@@ -10,6 +10,8 @@ public class HeroModel
     public ReactiveProperty<bool> HeroIsReady = new ReactiveProperty<bool>();
 
     public ReactiveProperty<bool> Die { get; } = new(false);
+
+    public ReactiveProperty<bool> MoveToExit { get; } = new();
     public Faction Faction { get; }
     public HeroState State { get; set; } = HeroState.Entering;
     public HeroClass Class { get; } = HeroClass.None;
