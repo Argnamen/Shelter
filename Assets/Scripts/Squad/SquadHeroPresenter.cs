@@ -46,6 +46,11 @@ public class SquadHeroPresenter : IDisposable
 
         _model.HeroesIsReady.Subscribe((x) => OnRoomChanged(x, _model.Faction)).AddTo(_disposables);
         _model.Count.Subscribe(Die).AddTo(_disposables);
+
+        foreach(var heroModel in _model.Heroes)
+        {
+            heroModel.State.Subscribe(SquadExit).AddTo(_disposables);
+        }
     }
 
     private void InitCleanRooms()
@@ -63,12 +68,15 @@ public class SquadHeroPresenter : IDisposable
 
         if (!isReady) return;
 
+        var room = FindRoom(faction);
+
         if (_isStart)
         {
-            await GoToEnterTheDungeon();
+            await GoToEnterTheDungeon(room);
         }
 
-        var room = FindRoom(faction);
+        //if(room != null)
+            //await UniTask.WaitUntil(() => room.Squad.Value == null);
 
         if (_roomModel != null)
             _roomModel.Squad.Value = null;
@@ -90,41 +98,81 @@ public class SquadHeroPresenter : IDisposable
         room.Squad.Value = _model;
     }
 
-    private async UniTask GoToEnterTheDungeon()
+    private async UniTask GoToEnterTheDungeon(RoomModel startRoom)
     {
-        Sequence sequence;
+        Sequence sequence = DOTween.Sequence();
 
         foreach (var heroView in _model.ViewHeroes)
         {
             sequence = DOTween.Sequence();
 
-            heroView.SetMoving(true);
+            sequence.AppendCallback(() => heroView.SetMoving(true));
 
             sequence.AppendCallback(() => heroView.HealthVisible(false));
 
             sequence.Append(heroView.transform.DOMove(_startDungeonPos, 2.8f).SetEase(Ease.Flash));
 
-            heroView.SetMoving(false);
+            sequence.AppendCallback(() => heroView.SetMoving(false));
 
             sequence.Append(heroView.GerSpriteRender().DOFade(0,0.2f)).SetEase(Ease.Flash);
-
-            sequence.AppendInterval(1f);
-            sequence.Append(heroView.GerSpriteRender().DOFade(1, 0.2f)).SetEase(Ease.Flash);
-            sequence.AppendCallback(() => heroView.HealthVisible(true));
         }
 
-        await Task.Delay(3 * 1000);
+        await sequence.AsyncWaitForCompletion();
 
         _isStart = false;
     }
 
-    private void NotifyAllHeroesOnRoomChanged(RoomModel room)
+    private async void SquadExit(HeroState heroState)
     {
-        if(room == null)
+        if (heroState == HeroState.Leaving)
         {
+            await GoToExitTheDungeon();
+
             Dispose();
         }
+    }
 
+    private async UniTask GoToExitTheDungeon()
+    {
+        Sequence sequence = DOTween.Sequence();
+
+        foreach (var heroView in _model.ViewHeroes)
+        {
+            sequence = DOTween.Sequence();
+
+            sequence.Append(heroView.GerSpriteRender().DOFade(0, 0.2f)).SetEase(Ease.Flash);
+
+            sequence.AppendCallback(() => heroView.HealthVisible(false));
+
+            sequence.AppendCallback(() => heroView.SetMoving(false));
+
+            sequence.Append(heroView.transform.DOMove(_startDungeonPos, 2.8f).SetEase(Ease.Flash));
+
+            sequence.Append(heroView.GerSpriteRender().DOFade(1, 0.2f)).SetEase(Ease.Flash);
+
+            sequence.AppendCallback(() => heroView.SetMoving(true));
+            sequence.Append(heroView.transform.DORotate(Vector3.up * 180, 0.01f).SetEase(Ease.Flash));
+
+            sequence.Append(heroView.transform.DOMove(_startDungeonPos + Vector3.left * 50, 10.0f).SetEase(Ease.Flash));
+        }
+
+        await sequence.AsyncWaitForCompletion();
+
+        CleanMemory();
+    }
+
+    private void CleanMemory()
+    {
+        var copyHeroes = new List<HeroModel>(_model.Heroes);
+
+        foreach (var heroModel in copyHeroes)
+        {
+            heroModel.Health.Value = 0;
+        }
+    }
+
+    private void NotifyAllHeroesOnRoomChanged(RoomModel room)
+    {
         _model.UpdateRoom(room);
     }
 

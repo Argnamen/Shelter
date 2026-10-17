@@ -24,7 +24,6 @@ public class RoomPresenter : IDisposable
         _model.AddMonsterView.Subscribe(_view.AddMonsterView).AddTo(_disposables);
         _model.AddHeroView.Subscribe(_view.AddHeroView).AddTo(_disposables);
     }
-
     private void Destroy(bool destroyed)
     {
         if (destroyed)

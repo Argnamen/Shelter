@@ -13,7 +13,7 @@ public class HeroModel
 
     public ReactiveProperty<bool> MoveToExit { get; } = new();
     public Faction Faction { get; }
-    public HeroState State { get; set; } = HeroState.Entering;
+    public ReactiveProperty<HeroState> State { get; } = new(HeroState.Entering);
     public HeroClass Class { get; } = HeroClass.None;
 
     public int Gold;

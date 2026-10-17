@@ -18,7 +18,7 @@ public class HeroPresenter : IDisposable
 
     private RoomModel _roomModel;
     private List<RoomModel> _roomsToExit = new List<RoomModel>();
-    private Tweener _tweener;
+    private Sequence _tweener;
     private bool _isTimeStop = false;
 
     private CompositeDisposable _disposables = new();
@@ -111,6 +111,10 @@ public class HeroPresenter : IDisposable
 
         if (_isDisposed) return;
 
+        if (_roomModel != null)
+        {
+            _roomModel.AddHeroView.Value = null;
+        }
         room.AddHeroView.Value = _view;
 
         await MoveToRoom(room);
@@ -122,7 +126,7 @@ public class HeroPresenter : IDisposable
     {
         if (_isDisposed) return;
 
-        _model.State = HeroState.Entering;
+        _model.State.Value = HeroState.Entering;
 
         _roomModel = room;
 
@@ -135,15 +139,15 @@ public class HeroPresenter : IDisposable
         switch (room.Type)
         {
             case RoomType.Combat:
-                _model.State = HeroState.Fighting;
+                _model.State.Value = HeroState.Fighting;
                 await FightMonsters(room);
                 break;
             case RoomType.Rest:
-                _model.State = HeroState.Resting;
+                _model.State.Value = HeroState.Resting;
                 await RestInRoom(room);
                 break;
             case RoomType.Treasure:
-                _model.State = HeroState.Resting;
+                _model.State.Value = HeroState.Resting;
                 await LootTreasure(room);
                 break;
         }
@@ -155,8 +159,6 @@ public class HeroPresenter : IDisposable
 
         if (_isDisposed || _roomsToExit.Count == 0 || !isExit) return;
 
-        _model.State = HeroState.Leaving;
-
         _view.SetMoving(true);
 
         ClearRoomsToExit();
@@ -165,7 +167,7 @@ public class HeroPresenter : IDisposable
         {
             _roomsToExit[i - 1].AddHeroView.Value = _view;
 
-            if(i > 0)
+            if (i > 0)
             {
                 duration = Mathf.Abs(_roomsToExit[i].Position.x - _roomsToExit[i - 1].Position.x);
 
@@ -180,7 +182,7 @@ public class HeroPresenter : IDisposable
         if (_model.Faction == Faction.Player)
             _winSystem.AddWinPoint(EventType.CleanDangeon);
 
-        Dispose();
+        _model.State.Value = HeroState.Leaving;
     }
 
     private void ClearRoomsToExit()
@@ -206,8 +208,16 @@ public class HeroPresenter : IDisposable
 
         RotateHero();
 
-        _tweener = _view.transform.DOLocalMove(Vector3.zero, duration)
-            .SetEase(Ease.Flash);
+        _tweener = DOTween.Sequence();
+
+        _tweener.Append( _view.transform.DOLocalMove(Vector3.zero, duration)
+            .SetEase(Ease.Flash));
+
+        if (_view.GerSpriteRender().color.a <= 0)
+        {
+            _tweener.Append(_view.GerSpriteRender().DOFade(1, 0.2f)).SetEase(Ease.Flash);
+            _tweener.AppendCallback(() => _view.HealthVisible(true));
+        }
 
         await _tweener.AsyncWaitForCompletion();
 
@@ -221,24 +231,25 @@ public class HeroPresenter : IDisposable
 
     private void RotateHero()
     {
+        var rotate = _view.transform.localRotation;
         if (_view.transform.localPosition.x <= 0 && _view.transform.rotation.eulerAngles.y > 0)
         {
-            _view.transform.DORotate(Vector3.zero, 0.2f);
+            rotate.eulerAngles = Vector3.zero;
         }
         else if(_view.transform.localPosition.x > 0 && _view.transform.rotation.eulerAngles.y <= 0)
         {
-            _view.transform.DORotate(Vector3.up * 180, 0.2f);
+            rotate.eulerAngles = Vector3.up * 180;
         }
+
+        _view.transform.localRotation = rotate;
     }
 
     private async UniTask FightMonsters(RoomModel room)
     {
         if (_isDisposed) return;
 
-        if(room.Monsters.FindAll(x => x.Health.CurrentValue > 0).Count == 0)
-
-
-        _view.SetFighting();
+        if(room.Monsters.FindAll(x => x.Health.CurrentValue > 0).Count > 0)
+            _view.SetFighting();
 
         foreach (var monster in room.Monsters.FindAll(x => x.Health.CurrentValue > 0))
         {
