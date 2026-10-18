@@ -19,6 +19,8 @@ public class MonsterPresenter : IDisposable
 
     private CompositeDisposable _disposables = new();
     private bool _isDisposed = false;
+
+    private bool _isFight = false;
     public MonsterPresenter(MonsterType type, MonsterView view, MonsterModel model, RoomModel roomModel, MonsterFactory monsterFactory, DayCycleService dayCycleService)
     {
         _type = type;
@@ -34,6 +36,8 @@ public class MonsterPresenter : IDisposable
         _roomModel.Squad.Subscribe(OnRoomEnter).AddTo(_disposables);
         _model.Health.Subscribe(OnHealthChanged).AddTo(_disposables);
         _dayCycleService.IsTimeStop.Subscribe(OnTimeStop).AddTo(_disposables);
+
+        MoveInRoom();
     }
 
     private void OnTimeStop(bool isTimeStop)
@@ -45,12 +49,36 @@ public class MonsterPresenter : IDisposable
         _view.SetPause(!isTimeStop);
     }
 
+    private async void MoveInRoom()
+    {
+        if(_isDisposed) return;
+
+        while (!_isFight)
+        {
+            await UniTask.WaitUntil(() => _isTimeStop == false);
+
+            _roomModel.RoomStateFight.Value = null;
+            _roomModel.RoomStateMove.Value = _view;
+
+            _view.Move();
+
+            await UniTask.WaitForSeconds(1.5f);
+        }
+    }
+
     private async void OnRoomEnter(SquadHeroModel squad)
     {
         if (squad == null)
             return;
 
+        _isFight = true;
+        _roomModel.RoomStateMove.Value = null;
+        _roomModel.RoomStateFight.Value = _view;
+
         await FightHeroes(squad);
+
+        _isFight = false;
+        MoveInRoom();
     }
 
     private void OnHealthChanged(int health)
@@ -109,6 +137,8 @@ public class MonsterPresenter : IDisposable
     {
         _view.Respawn();
         _isDisposed = false;
+
+        MoveInRoom();
     }
 
     private void Die()

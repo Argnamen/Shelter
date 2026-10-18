@@ -14,6 +14,7 @@ public class SquadHeroPresenter : IDisposable
     private readonly GridService _gridService;
     private readonly SquadSpawner _squadSpawner;
     private readonly SquadHeroModel _model;
+    private readonly DayCycleService _dayCycleService;
     private readonly Vector3 _startDungeonPos;
 
     private RoomModel _roomModel;
@@ -21,6 +22,9 @@ public class SquadHeroPresenter : IDisposable
     private CompositeDisposable _disposables = new();
     private bool _isDisposed = false;
     private bool _isStart = true;
+    private bool _isTimeStop = false;
+
+    private Sequence sequence;
 
     private Vector2Int _moveVector = Vector2Int.right;
 
@@ -30,13 +34,15 @@ public class SquadHeroPresenter : IDisposable
         GameModel gameModel,
         GridService gridService,
         SquadSpawner squadSpawner,
-        Vector3 StartDungeonPos)
+        Vector3 StartDungeonPos,
+        DayCycleService dayCycleService)
     {
         _model = model;
         _gameModel = gameModel;
         _gridService = gridService;
         _squadSpawner = squadSpawner;
         _startDungeonPos = StartDungeonPos;
+        _dayCycleService = dayCycleService;
         Initialize();
     }
 
@@ -46,11 +52,22 @@ public class SquadHeroPresenter : IDisposable
 
         _model.HeroesIsReady.Subscribe((x) => OnRoomChanged(x, _model.Faction)).AddTo(_disposables);
         _model.Count.Subscribe(Die).AddTo(_disposables);
+        _dayCycleService.IsTimeStop.Subscribe(TimeStop).AddTo(_disposables);
 
         foreach(var heroModel in _model.Heroes)
         {
             heroModel.State.Subscribe(SquadExit).AddTo(_disposables);
         }
+    }
+
+    private void TimeStop(bool isTimeStop)
+    {
+        _isTimeStop = isTimeStop;
+
+        if (isTimeStop)
+            sequence.Pause();
+        else
+            sequence.Play();
     }
 
     private void InitCleanRooms()
@@ -73,6 +90,8 @@ public class SquadHeroPresenter : IDisposable
         if (_isStart)
         {
             await GoToEnterTheDungeon(room);
+
+            await UniTask.WaitUntil(() => _isTimeStop == false);
         }
 
         //if(room != null)
@@ -100,10 +119,12 @@ public class SquadHeroPresenter : IDisposable
 
     private async UniTask GoToEnterTheDungeon(RoomModel startRoom)
     {
-        Sequence sequence = DOTween.Sequence();
+        sequence = DOTween.Sequence();
 
         foreach (var heroView in _model.ViewHeroes)
         {
+            await UniTask.WaitUntil(() => _isTimeStop == false);
+
             sequence = DOTween.Sequence();
 
             sequence.AppendCallback(() => heroView.SetMoving(true));
@@ -134,10 +155,12 @@ public class SquadHeroPresenter : IDisposable
 
     private async UniTask GoToExitTheDungeon()
     {
-        Sequence sequence = DOTween.Sequence();
+        sequence = DOTween.Sequence();
 
         foreach (var heroView in _model.ViewHeroes)
         {
+            await UniTask.WaitUntil(() => _isTimeStop == false);
+
             sequence = DOTween.Sequence();
 
             sequence.Append(heroView.GerSpriteRender().DOFade(0, 0.2f)).SetEase(Ease.Flash);

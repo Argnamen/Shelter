@@ -6,13 +6,15 @@ public class RoomPresenter : IDisposable
 {
     private readonly RoomModel _model;
     private readonly RoomView _view;
+    private readonly DayCycleService _dayCycleService;
 
     private CompositeDisposable _disposables = new();
 
-    public RoomPresenter(RoomModel model, RoomView view)
+    public RoomPresenter(RoomModel model, RoomView view, DayCycleService dayCycleService)
     {
         _model = model;
         _view = view;
+        _dayCycleService = dayCycleService;
 
         Spawn();
     }
@@ -23,6 +25,11 @@ public class RoomPresenter : IDisposable
 
         _model.AddMonsterView.Subscribe(_view.AddMonsterView).AddTo(_disposables);
         _model.AddHeroView.Subscribe(_view.AddHeroView).AddTo(_disposables);
+
+        _model.RoomStateMove.Subscribe(_view.RandomMovingInRoom).AddTo(_disposables);
+        _model.RoomStateFight.Subscribe(_view.ResetMoving).AddTo(_disposables);
+
+        _dayCycleService.IsTimeStop.Subscribe(_view.TimeStop).AddTo(_disposables);
     }
     private void Destroy(bool destroyed)
     {

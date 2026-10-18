@@ -18,6 +18,8 @@ public class RoomModel
     public ReactiveProperty<bool> Destroy { get; } = new();
     public ReactiveProperty<MonsterView> AddMonsterView { get; } = new();
     public ReactiveProperty<HeroView> AddHeroView { get; } = new();
+    public ReactiveProperty<MonsterView> RoomStateMove { get; } = new();
+    public ReactiveProperty<MonsterView> RoomStateFight { get; } = new();
     public bool IsUnlocked { get; set; } = true;
 
     public ReactiveProperty<SquadHeroModel> Squad { get; } = new();

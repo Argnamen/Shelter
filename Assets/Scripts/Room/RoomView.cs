@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 public class RoomView : MonoBehaviour
@@ -5,8 +6,14 @@ public class RoomView : MonoBehaviour
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Transform[] _monstersContainer;
     [SerializeField] private Transform[] _heroesContainers;
+
+    [SerializeField] private Transform[] _movingPoints;
     public Vector2Int Position { get; private set; }
     public RoomType Type { get; private set; }
+
+    private Sequence sequence;
+
+    private bool _isTimeStop = false;
 
     public void Initialize(Vector2Int position, RoomType type, Faction faction)
     {
@@ -15,6 +22,14 @@ public class RoomView : MonoBehaviour
         name = $"{faction}_{type}Room_{position.x}_{position.y}";
 
         UpdateVisuals(faction);
+    }
+
+    public void TimeStop(bool isTimeStop)
+    {
+        if (isTimeStop)
+            sequence.Pause();
+        else
+            sequence.Play();
     }
 
     private void UpdateVisuals(Faction faction)
@@ -89,6 +104,64 @@ public class RoomView : MonoBehaviour
         {
             cycle = 0;
         }
+    }
+
+    public void RandomMovingInRoom(MonsterView monsterView)
+    {
+        if (monsterView == null)
+            return;
+
+        var point = _movingPoints[Random.Range(0, _movingPoints.Length)];
+
+        float time = 1f;
+        var rotate = monsterView.transform.localRotation;
+
+        if (monsterView.transform.position.x > point.position.x)
+        {
+            rotate.eulerAngles = Vector3.zero;
+        }
+        else
+        {
+            rotate.eulerAngles = Vector3.up * 180;
+        }
+
+        monsterView.transform.localRotation = rotate;
+
+        sequence = DOTween.Sequence();
+
+        sequence.Join(monsterView.transform.DOMove(point.transform.position, time).SetEase(Ease.Flash));
+
+        if (point.position.z > 0)
+        {
+            sequence.Join(monsterView.transform.DOScale(1.5f, time).SetEase(Ease.Flash));
+        }
+        else if (point.position.z < 0)
+        {
+            sequence.Join(monsterView.transform.DOScale(0.5f, time).SetEase(Ease.Flash));
+        }
+        else
+        {
+            sequence.Join(monsterView.transform.DOScale(1, time).SetEase(Ease.Flash));
+        }
+    }
+
+    public void ResetMoving(MonsterView monsterView)
+    {
+        if (monsterView == null)
+            return;
+
+        var rotate = monsterView.transform.localRotation;
+
+        sequence.Pause();
+        sequence.Kill();
+        sequence = DOTween.Sequence();
+
+        rotate.eulerAngles = Vector3.zero;
+
+        monsterView.transform.localRotation = rotate;
+
+        monsterView.transform.DOLocalMove(Vector3.zero, 0.2f).SetEase(Ease.Flash);
+        monsterView.transform.DOScale(1, 0.2f).SetEase(Ease.Flash);
     }
 
     public void DestroyRoom()

@@ -15,6 +15,7 @@ public class RoomData
 {
     public RoomType Type;
     public MonsterType MonsterType;
+    public Sprite Icon;
     public float CellSize = 2.5f;
     public int Cost;
 

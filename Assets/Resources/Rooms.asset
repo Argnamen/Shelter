@@ -15,6 +15,7 @@ MonoBehaviour:
   Rooms:
   - Type: 1
     MonsterType: 1
+    Icon: {fileID: 21300000, guid: 15dc4eb01dbeea343b3b8dfcdeb10bb6, type: 3}
     CellSize: 2.5
     Cost: 100
     Neighbors:
@@ -23,6 +24,7 @@ MonoBehaviour:
     SpecialNeighbors: []
   - Type: 2
     MonsterType: 0
+    Icon: {fileID: 21300000, guid: 5001f9f26a272e74fa435bb63818b664, type: 3}
     CellSize: 2.5
     Cost: 200
     Neighbors:
@@ -31,6 +33,7 @@ MonoBehaviour:
     SpecialNeighbors: []
   - Type: 3
     MonsterType: 0
+    Icon: {fileID: 21300000, guid: 169dbfcb677ea1f4fab8af9cf5a483d3, type: 3}
     CellSize: 2.5
     Cost: 300
     Neighbors:
@@ -39,6 +42,7 @@ MonoBehaviour:
     SpecialNeighbors: []
   - Type: 4
     MonsterType: 0
+    Icon: {fileID: 21300000, guid: aed329ee9751f924f8a332ffe1e8dfc4, type: 3}
     CellSize: 2.5
     Cost: 400
     Neighbors:
@@ -51,6 +55,7 @@ MonoBehaviour:
       Neighbor: {x: 0, y: 1}
   - Type: 1
     MonsterType: 2
+    Icon: {fileID: 21300000, guid: aabc1c19f969648f1b7f276f8fbe99c8, type: 3}
     CellSize: 2.5
     Cost: 130
     Neighbors:
@@ -59,6 +64,7 @@ MonoBehaviour:
     SpecialNeighbors: []
   - Type: 1
     MonsterType: 3
+    Icon: {fileID: 21300000, guid: f240dfd4814d34d55a9b033f3c9d8a60, type: 3}
     CellSize: 2.5
     Cost: 160
     Neighbors:
@@ -67,6 +73,7 @@ MonoBehaviour:
     SpecialNeighbors: []
   - Type: 1
     MonsterType: 4
+    Icon: {fileID: 21300000, guid: 76fdbbd67e8984f79af950670c9297f7, type: 3}
     CellSize: 2.5
     Cost: 180
     Neighbors:
