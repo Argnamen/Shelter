@@ -248,9 +248,6 @@ public class HeroPresenter : IDisposable
     {
         if (_isDisposed) return;
 
-        if(room.Monsters.FindAll(x => x.Health.CurrentValue > 0).Count > 0)
-            _view.SetFighting();
-
         foreach (var monster in room.Monsters.FindAll(x => x.Health.CurrentValue > 0))
         {
             while (monster.Health.Value > 0)
@@ -258,6 +255,7 @@ public class HeroPresenter : IDisposable
                 if (_isDisposed) break;
 
                 monster.Health.Value -= _model.Damage.Value;
+                _view.SetFighting();
 
                 _isBattle = true;
 
@@ -268,8 +266,6 @@ public class HeroPresenter : IDisposable
                 await UniTask.WaitUntil(() => !_isTimeStop);
             }
         }
-
-        _view.SetFighting(false);
     }
 
     public async UniTask RestInRoom(RoomModel room)

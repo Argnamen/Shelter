@@ -10,10 +10,12 @@ public class HeroView : MonoBehaviour
     private float _oneHPImage;
     private void Start()
     {
+        _animator.StopPlayback();
         _animator.Play("Idle");
     }
     public void SetMoving(bool isMoving)
     {
+        _animator.StopPlayback();
         if (_animator != null)
         {
             if (isMoving)
@@ -29,10 +31,8 @@ public class HeroView : MonoBehaviour
 
     public void SetFighting(bool isFighting = true)
     {
-        if (isFighting)
-        {
-            _animator.Play("Attack");
-        }
+        _animator.StopPlayback();
+        _animator.Play("Attack");
     }
 
     public void SetHealth(float health)
@@ -72,6 +72,7 @@ public class HeroView : MonoBehaviour
 
     public void Die()
     {
+        _animator.StopPlayback();
         _animator.Play("Die");
         // Уничтожаем объект через 1 секунду
         Destroy(gameObject, 1f);

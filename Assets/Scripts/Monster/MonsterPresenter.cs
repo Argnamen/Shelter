@@ -95,7 +95,7 @@ public class MonsterPresenter : IDisposable
 
     private async UniTask FightHeroes(SquadHeroModel squad)
     {
-        if (_isDisposed || squad == null) return;
+        if ((_isDisposed || squad == null) && squad.GetHero() != null) return;
 
         await UniTask.WaitUntil(() => squad.GetHero().State.Value == HeroState.Fighting);
 

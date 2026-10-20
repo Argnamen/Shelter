@@ -112,6 +112,12 @@ public class SquadHeroPresenter : IDisposable
 
         _roomModel = room;
 
+        if(room.Squad.Value != null && room.Type != RoomType.Stairs)
+        {
+            OnRoomChanged(isReady, faction);
+            return;
+        }
+
         NotifyAllHeroesOnRoomChanged(room);
 
         room.Squad.Value = _model;
@@ -160,6 +166,9 @@ public class SquadHeroPresenter : IDisposable
         foreach (var heroView in _model.ViewHeroes)
         {
             await UniTask.WaitUntil(() => _isTimeStop == false);
+
+            if (heroView == null)
+                continue;
 
             sequence = DOTween.Sequence();
 
